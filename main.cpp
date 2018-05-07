@@ -6,5 +6,3 @@ int main (){
   GraphReader reader;
   Graph graph;
   reader.read(&graph);
-  return 0;
-}
