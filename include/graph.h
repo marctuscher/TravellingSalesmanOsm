@@ -1,8 +1,19 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-class Graph{
+#include "node.h"
+#include "edge.h"
+#include <vector>
+
+
+class Graph
+{
  public:
+  int nodecount;
+  std::vector<Node> nodes;
+  int edgecount;
+  std::vector<Edge> edges;
+  std::vector<int> edgeOffset;
 };
 
-#endif // GRAPH_H
+#endif// GRAPH_H

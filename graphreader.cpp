@@ -1,5 +1,6 @@
 #include "graphreader.h"
 #include "graph.h"
+#include "node.h"
 #include "stdio.h"
 #include <iostream>
 #include <osmpbf/blobfile.h>
@@ -11,7 +12,8 @@
 
 
   int GraphReader::read(Graph* out, char * inputFileName, bool verbose){
-
+    int nodeCount = 0;
+    int edgeCount = 0;
     osmpbf::OSMFileIn inFile(inputFileName, verbose);
     osmpbf::PrimitiveBlockInputAdaptor pbi;
     if (!inFile.open())
@@ -46,6 +48,13 @@
                 std::cout << '[' << i << "] " << way.key(i) << " = " << way.value(i) << std::endl;
             else
               std::cout << " <none>" << std::endl;
+            if (pbi.relationsSize()) {
+              std::cout << "found " << pbi.relationsSize() << " relations:" << std::endl;
+              for (osmpbf::IRelationStream relationStream = pbi.getRelationStream(); !relationStream.isNull(); relationStream.next())
+                {
+                  std::cout << "rel" << std::endl;
+                }
+            }
           }
       }
 
@@ -53,16 +62,14 @@
         std::cout << "found " << pbi.nodesSize() << " nodes:" << std::endl;
         for (osmpbf::INodeStream node = pbi.getNodeStream(); !node.isNull(); node.next())
           {
-            std::cout << "[Node]" <<
-              "\nid = " << node.id() <<
-              "\nlat = " << node.lati() <<
-              "\nlon = " << node.loni() <<
-              "\ntags ([#] <key> = <value>):" << std::endl;
-            if (node.tagsSize())
-              for (int i = 0; i < node.tagsSize(); i++)
-                std::cout << '[' << i << "] " << node.key(i) << " = " << node.value(i) << std::endl;
-            else
-              std::cout << " <none>" << std::endl;
+            // if (node.tagsSize())
+            //   for (int i = 0; i < node.tagsSize(); i++)
+            //     std::cout << '[' << i << "] " << node.key(i) << " = " << node.value(i) << std::endl;
+            // else
+            //   std::cout << " <none>" << std::endl;
+            out->nodes.push_back(Node(node.id(), node.lati(), node.loni()));
+            nodeCount++;
+            std::cout << nodeCount << std::endl;
           }
       }
 
