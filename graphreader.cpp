@@ -9,57 +9,82 @@
 #include <osmpbf/inode.h>
 #include <osmpbf/iway.h>
 #include <osmpbf/irelation.h>
+#include <osmpbf/parsehelpers.h>
+#include <osmpbf/filter.h>
+#include <math.h>
+#include <iostream>
+#include <chrono>
+#include <map>
 
+
+//haversine functionality from RosettaCode
+const static double EarthRadiusKm = 6372.8;
+inline double DegreeToRadian(double angle)
+{
+	return M_PI * angle / 180.0;
+}
+inline double haversine(double lat1,double lon1, double lat2, double lon2)
+{
+	double latRad1 = DegreeToRadian(lat1);
+	double latRad2 = DegreeToRadian(lat2);
+	double lonRad1 = DegreeToRadian(lon1);
+	double lonRad2 = DegreeToRadian(lon2);
+	double diffLa = latRad2 - latRad1;
+	double doffLo = lonRad2 - lonRad1;
+	double computation = asin(sqrt(sin(diffLa / 2) * sin(diffLa / 2) + cos(latRad1) * cos(latRad2) * sin(doffLo / 2) * sin(doffLo / 2)));
+	return 2 * EarthRadiusKm * computation;
+}
+inline int calculateWeight(double lat1, double lon1, double lat2, double lon2, int maxSpeed){
+  double distance = haversine(lat1, lon1, lat2, lon2);
+  return (int) (100 * distance * 3600/maxSpeed);
+}
+
+inline bool isNumber(const std::string& s)
+{
+  return !s.empty() && std::find_if(s.begin(), 
+                                    s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+}
+inline bool checkSpeedStr(std::string maxSpeedStr){
+  return (maxSpeedStr != "none" && maxSpeedStr != "signal" && maxSpeedStr != "walk" && maxSpeedStr != "DE:motorway");
+}
 
   int GraphReader::read(Graph* out, char * inputFileName, bool verbose){
-    int nodeCount = 0;
-    int edgeCount = 0;
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
+    std::map<std::string, int> speedMap;
+    speedMap.insert(std::pair<std::string, int>("motorway",  130));
+    speedMap.insert(std::pair<std::string, int>("motorway_link",  70));
+    speedMap.insert(std::pair<std::string, int>("primary" ,  100));
+    speedMap.insert(std::pair<std::string, int>("primary_link" ,  70));
+    speedMap.insert(std::pair<std::string, int>("secondary",  80));
+    speedMap.insert(std::pair<std::string, int>("secondary_link",  70));
+    speedMap.insert(std::pair<std::string, int>("tertiary", 70));
+    speedMap.insert(std::pair<std::string, int>("tertiary_link", 70));
+    speedMap.insert(std::pair<std::string, int>("trunk", 130));
+    speedMap.insert(std::pair<std::string, int>("trunk_link", 80));
+    speedMap.insert(std::pair<std::string, int>("unclassified", 50));
+    speedMap.insert(std::pair<std::string, int>("residential", 45));
+    speedMap.insert(std::pair<std::string, int>("living_street", 5));
+    speedMap.insert(std::pair<std::string, int>("road", 50));
+    speedMap.insert(std::pair<std::string, int>("service", 30));
+    speedMap.insert(std::pair<std::string, int>("turning_circle", 50));
     osmpbf::OSMFileIn inFile(inputFileName, verbose);
     osmpbf::PrimitiveBlockInputAdaptor pbi;
+    osmpbf::KeyMultiValueTagFilter motorWayFilter("highway", {"motorway", "motorway_link", "primary", "primary_link", "secondary",
+          "secondary_link", "tertiary", "tertiary_link", "trunk", "trunk_link", "unclassified", "residential", "living_street", "road", "service", "turning_circle"});
+    osmpbf::KeyMultiValueTagFilter oneWayFilter("oneway", {"yes"});
+    osmpbf::KeyMultiValueTagFilter maxSpeedFilter("maxspeed", {"none", "signals"});
     if (!inFile.open())
       return -1;
+
+
 
     while (inFile.parseNextBlock(pbi)) {
       if (pbi.isNull())
         continue;
 
-      if (pbi.waysSize()) {
-        std::cout << "found " << pbi.waysSize() << " ways:" << std::endl;
-        for (osmpbf::IWayStream way = pbi.getWayStream(); !way.isNull(); way.next())
-          {
-            std::cout << "[Way]" <<
-              "\nid = " << way.id() <<
-              "\nrefs_size = " << way.refsSize() <<
-              "\nrefs:" << std::endl;
-            if (way.refsSize()) {
-              generics::DeltaFieldConstForwardIterator<int64_t> it;
-
-              for(it = way.refBegin(); it != way.refEnd(); ++it) {
-                std::cout << '[' << *it << ']';
-              }
-              std::cout << std::endl;
-            }
-            else
-              std::cout << " <none>" << std::endl;
-
-            std::cout << "keys, vals:" << std::endl;
-            if (way.tagsSize())
-              for (int i = 0; i < way.tagsSize(); i++)
-                std::cout << '[' << i << "] " << way.key(i) << " = " << way.value(i) << std::endl;
-            else
-              std::cout << " <none>" << std::endl;
-            if (pbi.relationsSize()) {
-              std::cout << "found " << pbi.relationsSize() << " relations:" << std::endl;
-              for (osmpbf::IRelationStream relationStream = pbi.getRelationStream(); !relationStream.isNull(); relationStream.next())
-                {
-                  std::cout << "rel" << std::endl;
-                }
-            }
-          }
-      }
-
       if (pbi.nodesSize()) {
-        std::cout << "found " << pbi.nodesSize() << " nodes:" << std::endl;
+        if(verbose) std::cout << "found " << pbi.nodesSize() << " nodes:" << std::endl;
         for (osmpbf::INodeStream node = pbi.getNodeStream(); !node.isNull(); node.next())
           {
             // if (node.tagsSize())
@@ -68,13 +93,91 @@
             // else
             //   std::cout << " <none>" << std::endl;
             out->nodes.push_back(Node(node.id(), node.lati(), node.loni()));
-            nodeCount++;
-            std::cout << nodeCount << std::endl;
+          }
+      }
+      if(!motorWayFilter.rebuildCache());
+
+      if (pbi.waysSize()) {
+        for (osmpbf::IWayStream way = pbi.getWayStream(); !way.isNull(); way.next())
+          if(motorWayFilter.matches(way)){
+            std::string maxSpeedStr;
+            bool oneWay = false;
+            std::string highway_t;
+            int maxSpeed;
+            {
+              if (way.tagsSize())
+                {
+                  for (int i = 0; i < way.tagsSize(); i++)
+                    {
+                      if (verbose)std::cout << '[' << i << "] " << way.key(i) << " = " << way.value(i) << std::endl;
+                      if(way.key(i) == "highway"){
+                        highway_t == way.value(i);
+                      }
+                      if (way.key(i) == "maxspeed"){
+                        maxSpeedStr = way.value(i);
+                      }
+
+                    }
+                  if(!isNumber(maxSpeedStr)){
+                    maxSpeed = speedMap[ highway_t ];
+                  }else{
+                    maxSpeed = std::stoi(maxSpeedStr);
+                  }
+                }
+              else
+                std::cout << " not found maxSpeed" << std::endl;
+            }
+              if(oneWayFilter.matches(way)){
+                oneWay = true;
+              }
+              if (verbose) std::cout << "[Way]" <<
+                "\nid = " << way.id() <<
+                "\nrefs_size = " << way.refsSize() <<
+                "\nrefs:" << std::endl;
+              if (way.refsSize()) {
+                generics::DeltaFieldConstForwardIterator<int64_t> it;
+                std::vector<int64_t> refsVector;
+                for(it = way.refBegin(); it != way.refEnd(); ++it) {
+                  //putting ref ids in a vector because the iterator does no reverse iteration
+                  refsVector.push_back(*it);
+                }
+
+                for(size_t i = 0 ; i < refsVector.size(); i++){
+                  int64_t prevRef = -1;
+                  int64_t nextRef = -1;
+                  int currentRef = out->findNodeById(refsVector[i]);
+                  Node currentNode = out->nodes[currentRef];
+                  if (!(i == 0)){
+                      prevRef = out->findNodeById(refsVector[i-1]);
+                  }
+                  if (!(i == refsVector.size()-1)){
+                      nextRef = out->findNodeById(refsVector[i+1]);
+                  }
+                  if(!(nextRef == -1)){
+                    Node nextNode = out->nodes[nextRef];
+                    int cost = calculateWeight(currentNode.lati, currentNode.loni, nextNode.lati, nextNode.loni, maxSpeed);
+                    out->edges.push_back(Edge(currentRef, nextRef, cost));
+                  }
+                    if (!oneWay){
+                      if (!(prevRef == -1)){
+                        Node prevNode = out->nodes[prevRef];
+                        int cost = calculateWeight(currentNode.lati, currentNode.loni, prevNode.lati, prevNode.loni, maxSpeed);
+                        out->edges.push_back(Edge(currentRef, prevRef, cost));
+                      }
+                    }
+                }
+                if(!verbose) std::cout << "Edgecount: " << out->edges.size() << std::endl;
+              }
+              else
+                if (verbose) std::cout << " <none>" << std::endl;
           }
       }
 
     }
-
+    std::cout << "finished importing " << std::endl;
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+    std::cout << "time needed for graph import: " << durationEdge << " microseconds" << std::endl;
     inFile.close();
     return 0;
   }

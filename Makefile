@@ -6,4 +6,4 @@ INC=-I ./include/ -I ../osmpbf/osmpbf/include -I ../osmpbf
 LIBS=-losmpbf -lprotobuf -lz -pthread
 
 src:
-	g++ $(CXXFLAGS) $(INC) $(LIB) edge.cpp node.cpp graphreader.cpp main.cpp $(LIBS) -o main
+	g++ $(CXXFLAGS) $(INC) $(LIB) edge.cpp node.cpp graph.cpp graphreader.cpp main.cpp $(LIBS) -o main

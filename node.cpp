@@ -1,8 +1,9 @@
 #include "node.h"
+#include <cstdint>
 
-Node::Node(int _nodeid, float _latitude, float _longitude)
+Node::Node(int64_t _nodeid, float _latitude, float _longitude)
 {
-  nodeid = _nodeid;
-  latitude = _latitude;
-  longitude = _longitude;
+  id = _nodeid;
+  lati = _latitude;
+  loni = _longitude;
 }
