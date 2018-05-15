@@ -51,7 +51,9 @@ inline bool checkSpeedStr(std::string maxSpeedStr){
   int GraphReader::read(Graph* out, char * inputFileName, bool verbose){
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
+    std::map<int64_t, int> nodeMap;
     std::map<std::string, int> speedMap;
+    int nodesCount = 0;
     speedMap.insert(std::pair<std::string, int>("motorway",  130));
     speedMap.insert(std::pair<std::string, int>("motorway_link",  70));
     speedMap.insert(std::pair<std::string, int>("primary" ,  100));
@@ -93,9 +95,12 @@ inline bool checkSpeedStr(std::string maxSpeedStr){
             // else
             //   std::cout << " <none>" << std::endl;
             out->nodes.push_back(Node(node.id(), node.lati(), node.loni()));
+            nodeMap.insert(std::pair<int64_t, int>(node.id(), nodesCount));
+            nodesCount++;
           }
       }
-      if(!motorWayFilter.rebuildCache());
+      if(!motorWayFilter.rebuildCache())
+        ;
 
       if (pbi.waysSize()) {
         for (osmpbf::IWayStream way = pbi.getWayStream(); !way.isNull(); way.next())
@@ -111,7 +116,7 @@ inline bool checkSpeedStr(std::string maxSpeedStr){
                     {
                       if (verbose)std::cout << '[' << i << "] " << way.key(i) << " = " << way.value(i) << std::endl;
                       if(way.key(i) == "highway"){
-                        highway_t == way.value(i);
+                        highway_t = way.value(i);
                       }
                       if (way.key(i) == "maxspeed"){
                         maxSpeedStr = way.value(i);
@@ -145,13 +150,13 @@ inline bool checkSpeedStr(std::string maxSpeedStr){
                 for(size_t i = 0 ; i < refsVector.size(); i++){
                   int64_t prevRef = -1;
                   int64_t nextRef = -1;
-                  int currentRef = out->findNodeById(refsVector[i]);
+                  int currentRef = nodeMap[refsVector[i]];
                   Node currentNode = out->nodes[currentRef];
                   if (!(i == 0)){
-                      prevRef = out->findNodeById(refsVector[i-1]);
+                      prevRef = nodeMap[ refsVector[i-1] ];
                   }
                   if (!(i == refsVector.size()-1)){
-                      nextRef = out->findNodeById(refsVector[i+1]);
+                      nextRef = nodeMap[ refsVector[i+1] ];
                   }
                   if(!(nextRef == -1)){
                     Node nextNode = out->nodes[nextRef];
@@ -166,7 +171,7 @@ inline bool checkSpeedStr(std::string maxSpeedStr){
                       }
                     }
                 }
-                if(!verbose) std::cout << "Edgecount: " << out->edges.size() << std::endl;
+                if(verbose) std::cout << "Edgecount: " << out->edges.size() << std::endl;
               }
               else
                 if (verbose) std::cout << " <none>" << std::endl;
