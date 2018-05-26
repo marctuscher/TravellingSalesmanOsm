@@ -13,8 +13,8 @@ class Graph
   std::vector<Node> nodes;
   int edgecount;
   std::vector<Edge> edges;
-  std::vector<int> edgeOffset;
-  int findNodeById(int64_t id);
+  std::vector<int> offset;
+  void generateOffsetOut();
 
 };
 

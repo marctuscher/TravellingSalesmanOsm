@@ -3,11 +3,19 @@
 
 #include "stdio.h"
 
-int Graph::findNodeById(int64_t id){
-  for(size_t i = 0; i < this->nodes.size(); i++){
-    if (nodes[i].id == id){
-      return i;
+
+void Graph::generateOffsetOut() {
+    offset.push_back(0);
+    int v = 0;
+    for (int i = 0; i < edges.size(); i++) {
+        if (edges[i].src != v) {
+            while (v < edges[i].src) {
+                v++;
+                offset.push_back(i);
+            }
+        }
     }
-  }
-  return -1;
+    for (int k = v + 1; k < nodes.size() + 1; k++) {
+        offset.push_back(edges.size());
+    }
 }

@@ -15,7 +15,7 @@
 #include <iostream>
 #include <chrono>
 #include <map>
-
+#include <algorithm>
 
 //haversine functionality from RosettaCode
 const static double EarthRadiusKm = 6372.8;
@@ -25,18 +25,19 @@ inline double DegreeToRadian(double angle)
 }
 inline double haversine(double lat1,double lon1, double lat2, double lon2)
 {
-	double latRad1 = DegreeToRadian(lat1);
-	double latRad2 = DegreeToRadian(lat2);
-	double lonRad1 = DegreeToRadian(lon1);
-	double lonRad2 = DegreeToRadian(lon2);
-	double diffLa = latRad2 - latRad1;
-	double doffLo = lonRad2 - lonRad1;
-	double computation = asin(sqrt(sin(diffLa / 2) * sin(diffLa / 2) + cos(latRad1) * cos(latRad2) * sin(doffLo / 2) * sin(doffLo / 2)));
-	return 2 * EarthRadiusKm * computation;
+	double phi1 = DegreeToRadian(lat1);
+	double phi2 = DegreeToRadian(lat2);
+  double deltaPhi = DegreeToRadian(lat2-lat1);
+  double deltaLam = DegreeToRadian(lon2-lon1);
+  double a = sin(deltaPhi/2)*sin(deltaPhi/2)+cos(phi1)*cos(phi2)*sin(deltaLam/2)*sin(deltaLam/2);
+  double c = atan2(sqrt(a), sqrt(1-a));
+  return 2 * EarthRadiusKm * c * 0.001;
 }
 inline int calculateWeight(double lat1, double lon1, double lat2, double lon2, int maxSpeed){
   double distance = haversine(lat1, lon1, lat2, lon2);
-  return (int) (100 * distance * 3600/maxSpeed);
+  std::cout << distance << std::endl;
+  std::cout << (int) (100*distance*3600/maxSpeed) << std::endl;
+  return (int) ((100 * distance * 3600)/maxSpeed);
 }
 
 inline bool isNumber(const std::string& s)
@@ -47,6 +48,13 @@ inline bool isNumber(const std::string& s)
 inline bool checkSpeedStr(std::string maxSpeedStr){
   return (maxSpeedStr != "none" && maxSpeedStr != "signal" && maxSpeedStr != "walk" && maxSpeedStr != "DE:motorway");
 }
+struct sort_operator
+{
+  inline bool operator() (const Edge& edge1, const Edge& edge2)
+  {
+    return (edge1.src < edge2.src);
+  }
+};
 
   int GraphReader::read(Graph* out, char * inputFileName, bool verbose){
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
@@ -152,13 +160,13 @@ inline bool checkSpeedStr(std::string maxSpeedStr){
                   int64_t nextRef = -1;
                   int currentRef = nodeMap[refsVector[i]];
                   Node currentNode = out->nodes[currentRef];
-                  if (!(i == 0)){
+                  if (i != 0){
                       prevRef = nodeMap[ refsVector[i-1] ];
                   }
-                  if (!(i == refsVector.size()-1)){
+                  if (i != refsVector.size()-1){
                       nextRef = nodeMap[ refsVector[i+1] ];
                   }
-                  if(!(nextRef == -1)){
+                  if(nextRef != -1){
                     Node nextNode = out->nodes[nextRef];
                     int cost = calculateWeight(currentNode.lati, currentNode.loni, nextNode.lati, nextNode.loni, maxSpeed);
                     out->edges.push_back(Edge(currentRef, nextRef, cost));
@@ -184,6 +192,9 @@ inline bool checkSpeedStr(std::string maxSpeedStr){
     auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
     std::cout << "time needed for graph import: " << durationEdge << " microseconds" << std::endl;
     inFile.close();
+    std::sort(out->edges.begin(), out->edges.end(), sort_operator());
+    out->generateOffsetOut();
     return 0;
   }
+
 
