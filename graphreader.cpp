@@ -141,22 +141,22 @@ struct sort_operator
                 "\nrefs:" << std::endl;
               if (way.refsSize()) {
                 generics::DeltaFieldConstForwardIterator<int64_t> it;
-                std::vector<int64_t> refsVector;
+                std::vector<int> refsVector;
                 for(it = way.refBegin(); it != way.refEnd(); ++it) {
                   //putting ref ids in a vector because the iterator does no reverse iteration
-                  refsVector.push_back(*it);
+                  refsVector.push_back(nodeMap[*it]);
                 }
 
                 for(size_t i = 0 ; i < refsVector.size(); i++){
-                  int64_t prevRef = -1;
-                  int64_t nextRef = -1;
-                  int currentRef = nodeMap[refsVector[i]];
+                  int prevRef = -1;
+                  int nextRef = -1;
+                  int currentRef = refsVector[i];
                   Node currentNode = out->nodes[currentRef];
                   if (i != 0){
-                      prevRef = nodeMap[ refsVector[i-1] ];
+                      prevRef =refsVector[i-1] ;
                   }
                   if (i != refsVector.size()-1){
-                      nextRef = nodeMap[ refsVector[i+1] ];
+                      nextRef = refsVector[i+1];
                   }
                   if(nextRef != -1){
                     Node nextNode = out->nodes[nextRef];
