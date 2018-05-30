@@ -87,20 +87,13 @@ struct sort_operator
       return -1;
 
 
-
     while (inFile.parseNextBlock(pbi)) {
       if (pbi.isNull())
         continue;
-
       if (pbi.nodesSize()) {
         if(verbose) std::cout << "found " << pbi.nodesSize() << " nodes:" << std::endl;
         for (osmpbf::INodeStream node = pbi.getNodeStream(); !node.isNull(); node.next())
           {
-            // if (node.tagsSize())
-            //   for (int i = 0; i < node.tagsSize(); i++)
-            //     std::cout << '[' << i << "] " << node.key(i) << " = " << node.value(i) << std::endl;
-            // else
-            //   std::cout << " <none>" << std::endl;
             out->nodes.push_back(Node(node.id(), node.latd(), node.lond()));
             nodeMap.insert(std::pair<int64_t, int>(node.id(), nodesCount));
             nodesCount++;
@@ -184,7 +177,6 @@ struct sort_operator
                 if (verbose) std::cout << " <none>" << std::endl;
           }
       }
-
     }
     std::cout << "finished importing " << std::endl;
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
