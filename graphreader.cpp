@@ -25,18 +25,17 @@ inline double DegreeToRadian(double angle)
 }
 inline double haversine(double lat1,double lon1, double lat2, double lon2)
 {
-	double phi1 = DegreeToRadian(lat1);
-	double phi2 = DegreeToRadian(lat2);
-  double deltaPhi = DegreeToRadian(lat2-lat1);
-  double deltaLam = DegreeToRadian(lon2-lon1);
-  double a = sin(deltaPhi/2)*sin(deltaPhi/2)+cos(phi1)*cos(phi2)*sin(deltaLam/2)*sin(deltaLam/2);
-  double c = atan2(sqrt(a), sqrt(1-a));
-  return 2 * EarthRadiusKm * c * 0.001;
+  double latRad1 = DegreeToRadian(lat1);
+	double latRad2 = DegreeToRadian(lat2);
+	double lonRad1 = DegreeToRadian(lon1);
+	double lonRad2 = DegreeToRadian(lon2);
+	double diffLa = latRad2 - latRad1;
+	double doffLo = lonRad2 - lonRad1;
+	double computation = asin(sqrt(sin(diffLa / 2) * sin(diffLa / 2) + cos(latRad1) * cos(latRad2) * sin(doffLo / 2) * sin(doffLo / 2)));
+	return 2 * EarthRadiusKm * computation;
 }
 inline int calculateWeight(double lat1, double lon1, double lat2, double lon2, int maxSpeed){
   double distance = haversine(lat1, lon1, lat2, lon2);
-  std::cout << distance << std::endl;
-  std::cout << (int) (100*distance*3600/maxSpeed) << std::endl;
   return (int) ((100 * distance * 3600)/maxSpeed);
 }
 
@@ -102,7 +101,7 @@ struct sort_operator
             //     std::cout << '[' << i << "] " << node.key(i) << " = " << node.value(i) << std::endl;
             // else
             //   std::cout << " <none>" << std::endl;
-            out->nodes.push_back(Node(node.id(), node.lati(), node.loni()));
+            out->nodes.push_back(Node(node.id(), node.latd(), node.lond()));
             nodeMap.insert(std::pair<int64_t, int>(node.id(), nodesCount));
             nodesCount++;
           }

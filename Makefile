@@ -1,4 +1,4 @@
-CXXFLAGS=-std=c++11 -Wall
+CXXFLAGS=-O3 -std=c++11 -Wall
 
 
 LIB=-L ./../osmpbf/build/osmpbf/
