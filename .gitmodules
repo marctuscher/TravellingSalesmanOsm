@@ -1,0 +1,3 @@
+[submodule "osmpbf"]
+	path = osmpbf
+	url = git@github.com:marctuscher/osmpbf.git
