@@ -10,6 +10,7 @@ class Node
   float lati;
   float loni;
   int dist;
+  Node();
   Node(int64_t _nodeid, float _latitude, float _longitude);
 };
 

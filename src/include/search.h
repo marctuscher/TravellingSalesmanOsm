@@ -9,12 +9,12 @@
 #include <iostream>
 #include <queue>
 #include <cstdint>
-
+#include <utility>
 using namespace std;
 
 struct sort_operator
 {
-  inline bool operator() (const tuple<int64_t, int>& t1, const tuple<int64_t, int> & t2)
+  inline bool operator() (const pair<int, int>& t1, const pair<int, int> & t2)
   {
     return (get<0>(t1) < get<0>(t2));
   }
@@ -25,8 +25,8 @@ class Search
   Graph* g;
   std::vector<bool> visited;
   Search(Graph* g);
-  std::priority_queue<tuple<int64_t, int>, std::vector<tuple<int64_t, int>>, sort_operator> pq;
-  int64_t dijkstra(int source, int target);
+  std::priority_queue<pair<int, int>, std::vector<pair<int, int>>, sort_operator> pq;
+  int dijkstra(int source, int target);
   void expand(int source, int costs);
 };
 

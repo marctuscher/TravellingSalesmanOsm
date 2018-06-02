@@ -57,10 +57,18 @@ struct sort_operator
 
   int GraphReader::read(Graph* out, char * inputFileName, bool verbose){
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-
+    Node currentNode, nextNode, prevNode;
+    int currentRef, nextRef, prevRef;
+    int refCount;
     std::map<int64_t, int> nodeMap;
     std::map<std::string, int> speedMap;
     int nodesCount = 0;
+    int cost = 0;
+    std::string maxSpeedStr;
+    bool oneWay = false;
+    std::string highway_t;
+    int maxSpeed;
+    generics::DeltaFieldConstForwardIterator<int64_t> it;
     speedMap.insert(std::pair<std::string, int>("motorway",  130));
     speedMap.insert(std::pair<std::string, int>("motorway_link",  70));
     speedMap.insert(std::pair<std::string, int>("primary" ,  100));
@@ -105,10 +113,6 @@ struct sort_operator
       if (pbi.waysSize()) {
         for (osmpbf::IWayStream way = pbi.getWayStream(); !way.isNull(); way.next())
           if(motorWayFilter.matches(way)){
-            std::string maxSpeedStr;
-            bool oneWay = false;
-            std::string highway_t;
-            int maxSpeed;
             {
               if (way.tagsSize())
                 {
@@ -132,50 +136,47 @@ struct sort_operator
               else
                 std::cout << " not found maxSpeed" << std::endl;
             }
-              if(oneWayFilter.matches(way)){
-                oneWay = true;
-              }
               if (verbose) std::cout << "[Way]" <<
                 "\nid = " << way.id() <<
                 "\nrefs_size = " << way.refsSize() <<
                 "\nrefs:" << std::endl;
               if (way.refsSize()) {
-                generics::DeltaFieldConstForwardIterator<int64_t> it;
-                std::vector<int> refsVector;
+                refCount= 0;
                 for(it = way.refBegin(); it != way.refEnd(); ++it) {
-                  //putting ref ids in a vector because the iterator does no reverse iteration
-                  refsVector.push_back(nodeMap[*it]);
-                }
 
-                for(size_t i = 0 ; i < refsVector.size(); i++){
-                  int prevRef = -1;
-                  int nextRef = -1;
-                  int currentRef = refsVector[i];
-                  Node currentNode = out->nodes[currentRef];
-                  if (i != 0){
-                      prevRef =refsVector[i-1] ;
+                  if(it == way.refBegin())
+                    {
+                    currentRef = nodeMap[*it];
+                    currentNode = out->nodes[currentRef];
                   }
-                  if (i != refsVector.size()-1){
-                      nextRef = refsVector[i+1];
+                  else
+                    {
+                      if (oneWayFilter.matches(way))
+                      {
+                      prevNode = out->nodes[prevRef];
+                      cost = calculateWeight(currentNode.lati, currentNode.loni, prevNode.lati, prevNode.loni, maxSpeed);
+                      out->edges.push_back(Edge(currentRef, prevRef, cost));
+                    }
                   }
-                  if(nextRef != -1){
-                    Node nextNode = out->nodes[nextRef];
-                    int cost = calculateWeight(currentNode.lati, currentNode.loni, nextNode.lati, nextNode.loni, maxSpeed);
+                  if(refCount < way.refsSize()-1)
+                    {
+                    nextRef = nodeMap[*(it + 1)];
+                    nextNode = out->nodes[nextRef];
+                    cost = calculateWeight(currentNode.lati, currentNode.loni, nextNode.lati, nextNode.loni, maxSpeed);
                     out->edges.push_back(Edge(currentRef, nextRef, cost));
                   }
-                    if (!oneWay){
-                      if (!(prevRef == -1)){
-                        Node prevNode = out->nodes[prevRef];
-                        int cost = calculateWeight(currentNode.lati, currentNode.loni, prevNode.lati, prevNode.loni, maxSpeed);
-                        out->edges.push_back(Edge(currentRef, prevRef, cost));
-                      }
-                    }
+                  prevRef = currentRef;
+                  currentRef = nextRef;
+                  currentNode = nextNode;
+                  refCount++;
                 }
+
                 if(verbose) std::cout << "Edgecount: " << out->edges.size() << std::endl;
               }
               else
                 if (verbose) std::cout << " <none>" << std::endl;
           }
+        std::cout << std::flush;
       }
     }
     std::cout << "finished importing " << std::endl;

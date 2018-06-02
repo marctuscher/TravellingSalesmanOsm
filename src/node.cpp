@@ -7,3 +7,4 @@ Node::Node(int64_t _nodeid, float _latitude, float _longitude)
   lati = _latitude;
   loni = _longitude;
 }
+Node:: Node(){}
