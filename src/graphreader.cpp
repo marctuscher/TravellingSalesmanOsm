@@ -164,7 +164,7 @@ struct sort_operatorNodes
                   }
                   else
                     {
-                      if (oneWayFilter.matches(way))
+                      if (!oneWayFilter.matches(way))
                       {
                       prevNode = out->nodes[prevRef];
                       cost = calculateWeight(currentNode.lati, currentNode.loni, prevNode.lati, prevNode.loni, maxSpeed);

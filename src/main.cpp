@@ -10,7 +10,7 @@
 int main (int argc, char* argv[]){
   GraphReader reader;
   Graph graph;
-  reader.read(&graph, argv[1], true);
+  reader.read(&graph, argv[1], false);
   std::cout << graph.nodes.size() << std::endl;
   Search search(&graph);
 
