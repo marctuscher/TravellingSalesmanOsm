@@ -2,7 +2,7 @@ CXXFLAGS=-O3 -std=c++11 -Wall
 
 
 LIB=-L ./../osmpbf/build/osmpbf/
-INC=-I ./include/ -I ../osmpbf/osmpbf/include -I ../osmpbf
+INC=-I ./include/ -I ../osmpbf/osmpbf/include -I ../osmpbf -I ./
 LIBS=-losmpbf -lprotobuf -lz -pthread
 
 src:

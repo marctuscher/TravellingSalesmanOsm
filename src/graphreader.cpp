@@ -16,6 +16,9 @@
 #include <chrono>
 #include <map>
 #include <algorithm>
+#include <sparsepp/spp.h>
+using spp::sparse_hash_map;
+
 
 //haversine functionality from RosettaCode
 const static double EarthRadiusKm = 6372.8;
@@ -54,13 +57,19 @@ struct sort_operator
     return (edge1.src < edge2.src);
   }
 };
+struct sort_operatorNodes
+{
+  inline bool operator() (const Node& node1, const Node& node2)
+  {
+    return (node1.id < node2.id);
+  }
+};
 
   int GraphReader::read(Graph* out, char * inputFileName, bool verbose){
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     Node currentNode, nextNode, prevNode;
     int currentRef, nextRef, prevRef;
     int refCount;
-    std::map<int64_t, int> nodeMap;
     std::map<std::string, int> speedMap;
     int nodesCount = 0;
     int cost = 0;
@@ -68,6 +77,7 @@ struct sort_operator
     bool oneWay = false;
     std::string highway_t;
     int maxSpeed;
+    bool sorted = false;
     generics::DeltaFieldConstForwardIterator<int64_t> it;
     speedMap.insert(std::pair<std::string, int>("motorway",  130));
     speedMap.insert(std::pair<std::string, int>("motorway_link",  70));
@@ -103,7 +113,6 @@ struct sort_operator
         for (osmpbf::INodeStream node = pbi.getNodeStream(); !node.isNull(); node.next())
           {
             out->nodes.push_back(Node(node.id(), node.latd(), node.lond()));
-            nodeMap.insert(std::pair<int64_t, int>(node.id(), nodesCount));
             nodesCount++;
           }
       }
@@ -111,6 +120,10 @@ struct sort_operator
         ;
 
       if (pbi.waysSize()) {
+        if (!sorted){
+          sorted = true;
+          std::sort(out->nodes.begin(), out->nodes.end(), sort_operatorNodes());
+        }
         for (osmpbf::IWayStream way = pbi.getWayStream(); !way.isNull(); way.next())
           if(motorWayFilter.matches(way)){
             {
@@ -146,7 +159,7 @@ struct sort_operator
 
                   if(it == way.refBegin())
                     {
-                    currentRef = nodeMap[*it];
+                      currentRef = out->getNodeId(*it, 0, (int) out->nodes.size());
                     currentNode = out->nodes[currentRef];
                   }
                   else
@@ -160,7 +173,7 @@ struct sort_operator
                   }
                   if(refCount < way.refsSize()-1)
                     {
-                    nextRef = nodeMap[*(it + 1)];
+                      nextRef = out->getNodeId(*(it + 1), 0, (int) out->nodes.size());
                     nextNode = out->nodes[nextRef];
                     cost = calculateWeight(currentNode.lati, currentNode.loni, nextNode.lati, nextNode.loni, maxSpeed);
                     out->edges.push_back(Edge(currentRef, nextRef, cost));

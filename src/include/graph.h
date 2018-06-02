@@ -15,7 +15,7 @@ class Graph
   std::vector<Edge> edges;
   std::vector<int> offset;
   void generateOffsetOut();
-
+  int getNodeId(int64_t globalId, int, int);
 };
 
 #endif// GRAPH_H
