@@ -10,3 +10,6 @@
 [submodule "sparsepp"]
 	path = sparsepp
 	url = git@github.com:marctuscher/sparsepp.git
+[submodule "Simple-Web-Server"]
+	path = Simple-Web-Server
+	url = git@github.com:marctuscher/Simple-Web-Server.git

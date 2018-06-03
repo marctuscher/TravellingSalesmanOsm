@@ -16,6 +16,7 @@ class Graph
   std::vector<int> offset;
   void generateOffsetOut();
   int getNodeId(int64_t globalId, int, int);
+  int findNode(double lat, double lon);
 };
 
 #endif// GRAPH_H
