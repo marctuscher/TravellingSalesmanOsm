@@ -2,6 +2,20 @@
 #include "search.h"
 #include "graphreader.h"
 #include "graph.h"
+#include "result.h"
+
+
+
+inline ptree path_to_ptree(Result res){
+  ptree path;
+  for (int i = 0; i < res.path.size(); i++){
+    ptree child;
+    child.put("lat", res.path[i].lati);
+    child.put("lon", res.path[i].loni);
+    path.push_back(std::make_pair("", child));
+  }
+  return path;
+}
 
 void Webserver::run_server(char* filename){
   GraphReader reader;
@@ -10,6 +24,7 @@ void Webserver::run_server(char* filename){
   static HttpServer server;
   static Search search(&g);
   server.config.port = 8080;
+
   server.default_resource["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
     try {
       auto web_root_path = boost::filesystem::canonical("static");
@@ -65,18 +80,17 @@ void Webserver::run_server(char* filename){
       read_json(request->content, pt);
 
       std::ostringstream oss;
-
-
       string resultJson;
       int srcIDX = pt.get<int>("srcNode");
       int trgIDX = pt.get<int>("trgNode");
-      search.dijkstra(srcIDX,trgIDX);
-      //pt.add_child("nodes", alg.getPath(trgIDX));
+      std::cout << "source node: " << srcIDX<< "traget: " << trgIDX <<std::endl;
+      Result searchResult = search.dijkstra(srcIDX,trgIDX);
+      pt.add_child("path", path_to_ptree(searchResult));
+      pt.put("distance", searchResult.distance);
 
-      write_json(std::cout,pt);
+      std::cout << "disctace: " << searchResult.distance <<std::endl;
       write_json(oss, pt);
       std::string jsonString = oss.str();
-      std::cout << jsonString << std::endl;
       *response << jsonString;
     }
     catch(const exception &e) {

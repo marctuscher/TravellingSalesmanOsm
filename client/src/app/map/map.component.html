@@ -1,1 +1,23 @@
-<div [ngBusy]="{busy:busy, message: 'Grap a Coffee. I am searching the best way for you...'}" (window:resize)="onResize($event)" id="mapid"></div>
+
+
+<div class="container-fluid">
+    <div class="row" style="height:auto">
+<div class="col-md-2">
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+    <a class="navbar-brand">Fapra</a>
+        <form >
+          <input [(ngModel)]="srcNode" class="form-control" type="text"
+                 placeholder="Enter startnode" name="StartNode">
+          <input [(ngModel)]="trgNode"class="form-control" type="text"
+                 placeholder="Enter targetnode" name="TargetNode">
+        </form>
+
+        <button class="btn btn-success" (click)="onClick()">Search</button>
+</nav>
+</div>
+<div class="col">
+    <div class="map" id="map"></div>
+</div>
+    </div>
+</div>
+

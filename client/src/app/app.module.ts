@@ -6,11 +6,9 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
-import { ControlComponent } from './control/control.component'
 
 // Services
-import { DataService } from './shared/data.service';
-import { MapService } from './shared/map.service';
+import { DataService } from './services/data.service';
 
 import {BusyModule} from 'angular2-busy';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -19,7 +17,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
   declarations: [
     AppComponent,
     MapComponent,
-    ControlComponent
   ],
   imports: [
       BrowserModule,
@@ -31,7 +28,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
   ],
     providers: [
         DataService,
-        MapService
     ],
   bootstrap: [AppComponent]
 })
