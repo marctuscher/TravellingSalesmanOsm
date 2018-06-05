@@ -12,6 +12,8 @@ Search::Search(Graph* graph){
 
 void Search::reset(){
   int stop = std::max(this->touch_parents.size(), this->touch_visited.size());
+
+  this-> pq = std::priority_queue<pair<int, int>, std::vector<pair<int, int>>, sort_operator>();
   for (int i = 0; i< stop; i++){
     if (this->touch_visited.size() < i){
       this->visited[this->touch_visited[i]] = false;
@@ -37,11 +39,12 @@ void Search::expand(int source, int costs){
 }
 
 Result Search::dijkstra(int source, int target){
-  this->reset();
+  // this->reset();
   pair<int,int> current;
   this->expand(source, 0);
   while(!this->pq.empty()){
     current = pq.top();
+    std::cout << get<1>(current) << std::endl;
     if (get<1>(current) == target){
       Result result;
       result.distance = get<0>(current);

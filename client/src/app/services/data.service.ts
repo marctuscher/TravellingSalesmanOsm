@@ -10,9 +10,9 @@ export class DataService {
 
     }
 
-   routeByNodeId(srcId, trgId){
-       this._http.post('routebynodeid', {"srcNode": srcId, "trgNode": trgId}, {responseType: 'text'}).subscribe((data) =>{
-           console.log(data);
+    routeByNodeId(srcId, trgId, callback){
+       this._http.post('/routebynodeid', {"srcNode": srcId, "trgNode": trgId}, {responseType: 'json'}).subscribe((data) =>{
+           callback(data);
        })
    }
 

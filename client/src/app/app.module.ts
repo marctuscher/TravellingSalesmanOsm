@@ -9,6 +9,7 @@ import { MapComponent } from './map/map.component';
 
 // Services
 import { DataService } from './services/data.service';
+import { MapService } from './services/map.service';
 
 import {BusyModule} from 'angular2-busy';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -28,6 +29,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
   ],
     providers: [
         DataService,
+        MapService
     ],
   bootstrap: [AppComponent]
 })

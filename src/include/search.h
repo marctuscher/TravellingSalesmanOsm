@@ -17,7 +17,7 @@ struct sort_operator
 {
   inline bool operator() (const pair<int, int>& t1, const pair<int, int> & t2)
   {
-    return (get<0>(t1) < get<0>(t2));
+    return (get<0>(t1) > get<0>(t2));
   }
 };
 class Search
