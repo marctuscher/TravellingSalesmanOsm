@@ -22,7 +22,7 @@ void Webserver::run_server(char* filename){
   static Graph g;
   reader.read(&g, filename, false);
   static HttpServer server;
-  static Search search(&g);
+  Search search(&g);
   server.config.port = 8080;
 
   server.default_resource["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
@@ -75,6 +75,7 @@ void Webserver::run_server(char* filename){
   };
   server.resource["^/routebynodeid$"]["POST"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
     try {
+      Search search(&g);
       std::cout << "Post json"<< std::endl;
       ptree pt;
       read_json(request->content, pt);
@@ -99,6 +100,7 @@ void Webserver::run_server(char* filename){
   };
   server.resource["^/routebycoordinate$"]["POST"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
     try {
+      Search search(&g);
       std::cout << "Post json"<< std::endl;
       ptree pt;
       read_json(request->content, pt);

@@ -32,11 +32,10 @@ module.exports = "            <app-map #MapComponent (PointChanged) =\"pointChan
 /***/ }),
 
 /***/ "./src/app/app.component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -46,7 +45,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
 var AppComponent = /** @class */ (function () {
     function AppComponent() {
         this.title = 'app';
@@ -58,15 +58,15 @@ var AppComponent = /** @class */ (function () {
         this.control.pointChanged();
     };
     __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewChild"])('MapComponent'),
+        core_1.ViewChild('MapComponent'),
         __metadata("design:type", Object)
     ], AppComponent.prototype, "map", void 0);
     __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewChild"])('ControlComponent'),
+        core_1.ViewChild('ControlComponent'),
         __metadata("design:type", Object)
     ], AppComponent.prototype, "control", void 0);
     AppComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
+        core_1.Component({
             selector: 'app-root',
             template: __webpack_require__("./src/app/app.component.html"),
             styles: [__webpack_require__("./src/app/app.component.css")]
@@ -74,73 +74,62 @@ var AppComponent = /** @class */ (function () {
     ], AppComponent);
     return AppComponent;
 }());
-
+exports.AppComponent = AppComponent;
 
 
 /***/ }),
 
 /***/ "./src/app/app.module.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppModule; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__ = __webpack_require__("./node_modules/@angular/platform-browser/esm5/platform-browser.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_http__ = __webpack_require__("./node_modules/@angular/http/esm5/http.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_common_http__ = __webpack_require__("./node_modules/@angular/common/esm5/http.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_forms__ = __webpack_require__("./node_modules/@angular/forms/esm5/forms.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__app_component__ = __webpack_require__("./src/app/app.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__map_map_component__ = __webpack_require__("./src/app/map/map.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__services_data_service__ = __webpack_require__("./src/app/services/data.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__services_map_service__ = __webpack_require__("./src/app/services/map.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_angular2_busy__ = __webpack_require__("./node_modules/angular2-busy/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_angular2_busy___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_angular2_busy__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_platform_browser_animations__ = __webpack_require__("./node_modules/@angular/platform-browser/esm5/animations.js");
+
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-
-
-
-
-
-
-
+Object.defineProperty(exports, "__esModule", { value: true });
+var platform_browser_1 = __webpack_require__("./node_modules/@angular/platform-browser/esm5/platform-browser.js");
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var http_1 = __webpack_require__("./node_modules/@angular/http/esm5/http.js");
+var http_2 = __webpack_require__("./node_modules/@angular/common/esm5/http.js");
+var forms_1 = __webpack_require__("./node_modules/@angular/forms/esm5/forms.js");
+var app_component_1 = __webpack_require__("./src/app/app.component.ts");
+var map_component_1 = __webpack_require__("./src/app/map/map.component.ts");
 // Services
-
-
-
-
+var data_service_1 = __webpack_require__("./src/app/services/data.service.ts");
+var map_service_1 = __webpack_require__("./src/app/services/map.service.ts");
+var angular2_busy_1 = __webpack_require__("./node_modules/angular2-busy/index.js");
+var animations_1 = __webpack_require__("./node_modules/@angular/platform-browser/esm5/animations.js");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
     AppModule = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["NgModule"])({
+        core_1.NgModule({
             declarations: [
-                __WEBPACK_IMPORTED_MODULE_5__app_component__["a" /* AppComponent */],
-                __WEBPACK_IMPORTED_MODULE_6__map_map_component__["a" /* MapComponent */],
+                app_component_1.AppComponent,
+                map_component_1.MapComponent,
             ],
             imports: [
-                __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
-                __WEBPACK_IMPORTED_MODULE_2__angular_http__["a" /* HttpModule */],
-                __WEBPACK_IMPORTED_MODULE_3__angular_common_http__["b" /* HttpClientModule */],
-                __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormsModule */],
-                __WEBPACK_IMPORTED_MODULE_10__angular_platform_browser_animations__["a" /* BrowserAnimationsModule */],
-                __WEBPACK_IMPORTED_MODULE_9_angular2_busy__["BusyModule"]
+                platform_browser_1.BrowserModule,
+                http_1.HttpModule,
+                http_2.HttpClientModule,
+                forms_1.FormsModule,
+                animations_1.BrowserAnimationsModule,
+                angular2_busy_1.BusyModule
             ],
             providers: [
-                __WEBPACK_IMPORTED_MODULE_7__services_data_service__["a" /* DataService */],
-                __WEBPACK_IMPORTED_MODULE_8__services_map_service__["a" /* MapService */]
+                data_service_1.DataService,
+                map_service_1.MapService
             ],
-            bootstrap: [__WEBPACK_IMPORTED_MODULE_5__app_component__["a" /* AppComponent */]]
+            bootstrap: [app_component_1.AppComponent]
         })
     ], AppModule);
     return AppModule;
 }());
-
+exports.AppModule = AppModule;
 
 
 /***/ }),
@@ -160,25 +149,10 @@ module.exports = "\n\n<div class=\"container-fluid\">\n    <div class=\"row\" st
 /***/ }),
 
 /***/ "./src/app/map/map.component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MapComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__services_data_service__ = __webpack_require__("./src/app/services/data.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__services_map_service__ = __webpack_require__("./src/app/services/map.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ol_map__ = __webpack_require__("./node_modules/ol/map.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ol_source_osm__ = __webpack_require__("./node_modules/ol/source/osm.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ol_layer_tile__ = __webpack_require__("./node_modules/ol/layer/tile.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_ol_layer_vector__ = __webpack_require__("./node_modules/ol/layer/vector.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_ol_view__ = __webpack_require__("./node_modules/ol/view.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_ol_proj__ = __webpack_require__("./node_modules/ol/proj.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_ol_feature__ = __webpack_require__("./node_modules/ol/feature.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_ol_source_vector__ = __webpack_require__("./node_modules/ol/source/vector.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_ol_geom_linestring__ = __webpack_require__("./node_modules/ol/geom/linestring.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_ol_style_style__ = __webpack_require__("./node_modules/ol/style/style.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_ol_style_fill__ = __webpack_require__("./node_modules/ol/style/fill.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_ol_style_stroke__ = __webpack_require__("./node_modules/ol/style/stroke.js");
+
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -188,70 +162,70 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var data_service_1 = __webpack_require__("./src/app/services/data.service.ts");
+var map_service_1 = __webpack_require__("./src/app/services/map.service.ts");
+var map_1 = __webpack_require__("./node_modules/ol/map.js");
+var osm_1 = __webpack_require__("./node_modules/ol/source/osm.js");
+var tile_1 = __webpack_require__("./node_modules/ol/layer/tile.js");
+var vector_1 = __webpack_require__("./node_modules/ol/layer/vector.js");
+var view_1 = __webpack_require__("./node_modules/ol/view.js");
+var proj_1 = __webpack_require__("./node_modules/ol/proj.js");
+var feature_1 = __webpack_require__("./node_modules/ol/feature.js");
+var vector_2 = __webpack_require__("./node_modules/ol/source/vector.js");
+var linestring_1 = __webpack_require__("./node_modules/ol/geom/linestring.js");
+var style_1 = __webpack_require__("./node_modules/ol/style/style.js");
+var fill_1 = __webpack_require__("./node_modules/ol/style/fill.js");
+var stroke_1 = __webpack_require__("./node_modules/ol/style/stroke.js");
 var MapComponent = /** @class */ (function () {
     function MapComponent(dataService, _mapService) {
         this.dataService = dataService;
         this._mapService = _mapService;
     }
     MapComponent.prototype.ngOnInit = function () {
-        this.source = new __WEBPACK_IMPORTED_MODULE_4_ol_source_osm__["a" /* default */]({
+        this.source = new osm_1.default({
             crossOrigin: null
         });
-        this.layer = new __WEBPACK_IMPORTED_MODULE_5_ol_layer_tile__["a" /* default */]({
+        this.layer = new tile_1.default({
             source: this.source
         });
-        this.view = new __WEBPACK_IMPORTED_MODULE_7_ol_view__["a" /* default */]({
-            center: __WEBPACK_IMPORTED_MODULE_8_ol_proj__["a" /* default */].fromLonLat([10.447, 51.165]),
+        this.view = new view_1.default({
+            center: proj_1.default.fromLonLat([10.447, 51.165]),
             zoom: 8
         });
-        this.vectorSource = new __WEBPACK_IMPORTED_MODULE_10_ol_source_vector__["a" /* default */]({});
-        this.vectorLineLayer = new __WEBPACK_IMPORTED_MODULE_6_ol_layer_vector__["a" /* default */]({
+        this.vectorSource = new vector_2.default({});
+        this.vectorLineLayer = new vector_1.default({
             source: this.vectorSource,
-            style: new __WEBPACK_IMPORTED_MODULE_12_ol_style_style__["a" /* default */]({
-                fill: new __WEBPACK_IMPORTED_MODULE_13_ol_style_fill__["a" /* default */]({
+            style: new style_1.default({
+                fill: new fill_1.default({
                     color: 'red',
                     width: 1.2
                 }),
-                stroke: new __WEBPACK_IMPORTED_MODULE_14_ol_style_stroke__["a" /* default */]({
+                stroke: new stroke_1.default({
                     color: 'red',
                     width: 3
                 })
             })
         });
-        this.map = new __WEBPACK_IMPORTED_MODULE_3_ol_map__["a" /* default */]({
+        this.map = new map_1.default({
             target: 'map',
             layers: [this.layer, this.vectorLineLayer],
             view: this.view
         });
-        // this.map = L.map('map').setView([51.163375,10.447683],5);
-        // this.map.addLayer(this._mapService.getLayer())
     };
     MapComponent.prototype.onClick = function () {
         var _this = this;
         this.dataService.routeByNodeId(this.srcNode, this.trgNode, function (res) {
+            _this.vectorSource.clear();
             console.log("test");
             var points = [];
             for (var _i = 0, _a = res.path; _i < _a.length; _i++) {
                 var elem = _a[_i];
-                points.push(__WEBPACK_IMPORTED_MODULE_8_ol_proj__["a" /* default */].fromLonLat([Number(elem.lon), Number(elem.lat)]));
+                points.push(proj_1.default.fromLonLat([Number(elem.lon), Number(elem.lat)]));
             }
-            var lineString = new __WEBPACK_IMPORTED_MODULE_11_ol_geom_linestring__["a" /* default */](points);
-            var featureLine = new __WEBPACK_IMPORTED_MODULE_9_ol_feature__["a" /* default */]({
+            var lineString = new linestring_1.default(points);
+            var featureLine = new feature_1.default({
                 geometry: lineString
             });
             console.log(featureLine);
@@ -259,27 +233,25 @@ var MapComponent = /** @class */ (function () {
         });
     };
     MapComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
+        core_1.Component({
             selector: 'app-map',
             template: __webpack_require__("./src/app/map/map.component.html"),
             styles: [__webpack_require__("./src/app/map/map.component.css")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__services_data_service__["a" /* DataService */], __WEBPACK_IMPORTED_MODULE_2__services_map_service__["a" /* MapService */]])
+        __metadata("design:paramtypes", [data_service_1.DataService, map_service_1.MapService])
     ], MapComponent);
     return MapComponent;
 }());
-
+exports.MapComponent = MapComponent;
 
 
 /***/ }),
 
 /***/ "./src/app/services/data.service.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DataService; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common_http__ = __webpack_require__("./node_modules/@angular/common/esm5/http.js");
+
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -289,8 +261,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-
-
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var http_1 = __webpack_require__("./node_modules/@angular/common/esm5/http.js");
 var DataService = /** @class */ (function () {
     function DataService(_http) {
         this._http = _http;
@@ -301,24 +274,21 @@ var DataService = /** @class */ (function () {
         });
     };
     DataService = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["a" /* HttpClient */]])
+        core_1.Injectable(),
+        __metadata("design:paramtypes", [http_1.HttpClient])
     ], DataService);
     return DataService;
 }());
-
+exports.DataService = DataService;
 
 
 /***/ }),
 
 /***/ "./src/app/services/map.service.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MapService; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_leaflet__ = __webpack_require__("./node_modules/leaflet/dist/leaflet-src.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_leaflet___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_leaflet__);
+
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -328,11 +298,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-
-
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var L = __webpack_require__("./node_modules/leaflet/dist/leaflet-src.js");
 var MapService = /** @class */ (function () {
     function MapService() {
-        this.Layer = __WEBPACK_IMPORTED_MODULE_1_leaflet__["tileLayer"]('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        this.Layer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         });
         this.lineStyle = {
@@ -348,26 +319,27 @@ var MapService = /** @class */ (function () {
         return this.lineStyle;
     };
     MapService = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
+        core_1.Injectable(),
         __metadata("design:paramtypes", [])
     ], MapService);
     return MapService;
 }());
-
+exports.MapService = MapService;
 
 
 /***/ }),
 
 /***/ "./src/environments/environment.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return environment; });
+
 // The file contents for the current environment will overwrite these during build.
 // The build system defaults to the dev environment which uses `environment.ts`, but if you do
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
-var environment = {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.environment = {
     production: false
 };
 
@@ -375,22 +347,19 @@ var environment = {
 /***/ }),
 
 /***/ "./src/main.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__("./node_modules/@angular/platform-browser-dynamic/esm5/platform-browser-dynamic.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_app_module__ = __webpack_require__("./src/app/app.module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__environments_environment__ = __webpack_require__("./src/environments/environment.ts");
 
-
-
-
-if (__WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment */].production) {
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["enableProdMode"])();
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var platform_browser_dynamic_1 = __webpack_require__("./node_modules/@angular/platform-browser-dynamic/esm5/platform-browser-dynamic.js");
+var app_module_1 = __webpack_require__("./src/app/app.module.ts");
+var environment_1 = __webpack_require__("./src/environments/environment.ts");
+if (environment_1.environment.production) {
+    core_1.enableProdMode();
 }
-Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_2__app_app_module__["a" /* AppModule */])
+platform_browser_dynamic_1.platformBrowserDynamic().bootstrapModule(app_module_1.AppModule)
     .catch(function (err) { return console.log(err); });
 
 

@@ -39,7 +39,7 @@ void Search::expand(int source, int costs){
 }
 
 Result Search::dijkstra(int source, int target){
-  this->reset();
+  // this->reset();
   Result result;
   pair<int,int> current;
   this->expand(source, 0);

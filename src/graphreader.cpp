@@ -45,10 +45,9 @@ struct sort_operatorNodes
 
   int GraphReader::read(Graph* out, char * inputFileName, bool verbose){
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-    std::map<int64_t, int> nodeMap;
+    std::map<long, int> nodeMap;
     std::map<std::string, int> speedMap;
     int nodesCount = 0;
-    generics::DeltaFieldConstForwardIterator<int64_t> it;
     speedMap.insert(std::pair<std::string, int>("motorway",  130));
     speedMap.insert(std::pair<std::string, int>("motorway_link",  70));
     speedMap.insert(std::pair<std::string, int>("primary" ,  100));
@@ -105,73 +104,53 @@ struct sort_operatorNodes
                     maxSpeed = std::stoi(maxSpeedStr);
                   }
                 }
-              else
-                std::cout << " not found maxSpeed" << std::endl;
-              if (verbose) std::cout << "[Way]" <<
-                "\nid = " << way.id() <<
-                "\nrefs_size = " << way.refsSize() <<
-                "\nrefs:" << std::endl;
               if (way.refsSize()) {
-                int refCount= 0;
                 int currentRef = -1;
-                int prevRef = -1;
                 int nextRef = -1;
-                for(it = way.refBegin(); it != way.refEnd(); ++it) {
-
-                  if(refCount == 0)
-                    {
-                      if (nodeMap.find(*it)==nodeMap.end()){
-                        nodeMap.insert(std::pair<long, int>(*it, nodesCount));
-                        out->nodes.push_back(Node(*it));
-                        currentRef = nodesCount;
-                        nodesCount++;
-                      }else{
-                        currentRef = nodeMap[*it];
-                      }
+                generics::DeltaFieldConstForwardIterator<int64_t> it_0 = way.refBegin();
+                generics::DeltaFieldConstForwardIterator<int64_t> it_1 = way.refBegin()+1;
+                std::pair<std::map<long, int>::iterator, bool> inserted;
+                while(it_1 != way.refEnd()){
+                  inserted = nodeMap.insert({(long)*it_0, nodesCount});
+                  if (inserted.second){
+                    out->nodes.push_back(Node((long)*it_0));
+                    currentRef = nodesCount;
+                    nodesCount++;
+                  }else{
+                    currentRef = inserted.first->second;
                   }
-                  else
-                    {
-                      if (!oneWayFilter.matches(way))
-                      {
-                      out->edges.push_back(Edge(currentRef, prevRef, maxSpeed));
-                    }
+                  inserted = nodeMap.insert({(long)*it_1, nodesCount});
+                  if (inserted.second){
+                    out->nodes.push_back(Node((long)*it_0));
+                    nextRef = nodesCount;
+                    nodesCount++;
+                  }else{
+                    nextRef = inserted.first->second;
                   }
-                  if(refCount < way.refsSize()-1)
-                    {
-                      if (nodeMap.find(*(it+1))==nodeMap.end()){
-                        nodeMap.insert(std::pair<long, int>( *(it+1), nodesCount ));
-                        out->nodes.push_back(Node(*(it+1)));
-                        nextRef = nodesCount;
-                        nodesCount++;
-                      }else{
-                        nextRef = nodeMap[*(it+1)];
-                      }
-                    out->edges.push_back(Edge(currentRef, nextRef, maxSpeed));
+                  if(!oneWayFilter.matches(way)){
+                    out->edges.push_back(Edge(nextRef, currentRef, maxSpeed));
                   }
-                  prevRef = currentRef;
-                  currentRef = nextRef;
-                  refCount++;
+                  out->edges.push_back(Edge(currentRef, nextRef, maxSpeed));
+                  ++it_0;
+                  ++it_1;
                 }
-
-                if(verbose) std::cout << "Edgecount: " << out->edges.size() << std::endl;
               }
-              else
-                if (verbose) std::cout << " <none>" << std::endl;
           }
         std::cout << std::flush;
+
       }
     }
     if (!inFile.open())
       return -1;
     while(inFile.parseNextBlock(pbi)){
       if (pbi.nodesSize()) {
-        if(verbose) std::cout << "found " << pbi.nodesSize() << " nodes:" << std::endl;
+        std::pair<std::map<long, int>::iterator, bool> inserted;
         for (osmpbf::INodeStream node = pbi.getNodeStream(); !node.isNull(); node.next())
           {
-            if (nodeMap.find(node.id())==nodeMap.end()){
-              int index = nodeMap[node.id()];
-              out->nodes[index].lati = node.latd();
-              out->nodes[index].loni = node.lond();
+            if (nodeMap.count(node.id())){
+              inserted = nodeMap.insert({node.id(), 0});
+              out->nodes[inserted.first->second].lati = node.latd();
+              out->nodes[inserted.first->second].loni = node.lond();
             }else{
               ;
             }

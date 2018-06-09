@@ -6,13 +6,13 @@
 class Node
 {
  public:
-  int64_t id;
+  long id;
   float lati;
   float loni;
   int dist;
   Node();
-  Node(int64_t _nodeid, float _latitude, float _longitude);
-  Node(int64_t _nodeid);
+  Node(long _nodeid, float _latitude, float _longitude);
+  Node(long _nodeid);
 };
 
 #endif
