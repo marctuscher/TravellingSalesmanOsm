@@ -8,7 +8,7 @@
 class Result
 {
  public:
-  int distance;
+  int distance = -1;
   std::vector<Node> path;
 };
 

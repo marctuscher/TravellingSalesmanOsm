@@ -11,10 +11,10 @@ Search::Search(Graph* graph){
 }
 
 void Search::reset(){
-  int stop = std::max(this->touch_parents.size(), this->touch_visited.size());
+  u_int stop = std::max(this->touch_parents.size(), this->touch_visited.size());
 
   this-> pq = std::priority_queue<pair<int, int>, std::vector<pair<int, int>>, sort_operator>();
-  for (int i = 0; i< stop; i++){
+  for (u_int i = 0; i< stop; i++){
     if (this->touch_visited.size() < i){
       this->visited[this->touch_visited[i]] = false;
     }
@@ -39,26 +39,28 @@ void Search::expand(int source, int costs){
 }
 
 Result Search::dijkstra(int source, int target){
-  // this->reset();
+  this->reset();
+  Result result;
   pair<int,int> current;
   this->expand(source, 0);
   while(!this->pq.empty()){
     current = pq.top();
-    std::cout << get<1>(current) << std::endl;
     if (get<1>(current) == target){
-      Result result;
       result.distance = get<0>(current);
+      std::cout << result.distance << std::endl;
       int currNode = target;
       result.path.insert(result.path.begin(), this->g->nodes[currNode]);
       while (currNode != source){
         currNode = this->g->edges[this->parents[currNode]].src;
         result.path.insert(result.path.begin(), this->g->nodes[currNode]);
       }
-      return result;
+      break;
     }
     pq.pop();
     if(!this->visited[get<1>(current)])
       this->expand(get<1>(current), get<0>(current));
- 
   }
+  return result;
 }
+
+

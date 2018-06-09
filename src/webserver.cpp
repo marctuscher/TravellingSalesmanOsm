@@ -8,7 +8,7 @@
 
 inline ptree path_to_ptree(Result res){
   ptree path;
-  for (int i = 0; i < res.path.size(); i++){
+  for (u_int i = 0; i < res.path.size(); i++){
     ptree child;
     child.put("lat", res.path[i].lati);
     child.put("lon", res.path[i].loni);
@@ -87,8 +87,6 @@ void Webserver::run_server(char* filename){
       Result searchResult = search.dijkstra(srcIDX,trgIDX);
       pt.add_child("path", path_to_ptree(searchResult));
       pt.put("distance", searchResult.distance);
-
-      std::cout << "disctace: " << searchResult.distance <<std::endl;
       write_json(oss, pt);
       std::string jsonString = oss.str();
       std::cout << jsonString << std::endl;

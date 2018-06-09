@@ -1,8 +1,8 @@
 #include "edge.h"
 
-Edge::Edge(int _src, int _trg, int _cost)
+Edge::Edge(int _src, int _trg, int _maxSpeed)
 {
   src = _src;
   trg = _trg;
-  cost = _cost;
+  maxSpeed = _maxSpeed;
 }

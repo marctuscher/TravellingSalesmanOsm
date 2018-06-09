@@ -7,7 +7,8 @@ class Edge
   int src;
   int trg;
   int cost;
-  Edge(int _src, int _trg, int _cost);
+  int maxSpeed;
+  Edge(int _src, int _trg, int _maxSpeed);
 };
 
 #endif

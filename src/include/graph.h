@@ -14,7 +14,7 @@ class Graph
   int edgecount;
   std::vector<Edge> edges;
   std::vector<int> offset;
-  void generateOffsetOut();
+  void generateOffsetOutAndCosts();
   int getNodeId(int64_t globalId, int, int);
   int findNode(double lat, double lon);
 };

@@ -16,31 +16,9 @@
 #include <chrono>
 #include <map>
 #include <algorithm>
-#include <sparsepp/spp.h>
-using spp::sparse_hash_map;
 
 
 //haversine functionality from RosettaCode
-const static double EarthRadiusKm = 6372.8;
-inline double DegreeToRadian(double angle)
-{
-	return M_PI * angle / 180.0;
-}
-inline double haversine(double lat1,double lon1, double lat2, double lon2)
-{
-  double latRad1 = DegreeToRadian(lat1);
-	double latRad2 = DegreeToRadian(lat2);
-	double lonRad1 = DegreeToRadian(lon1);
-	double lonRad2 = DegreeToRadian(lon2);
-	double diffLa = latRad2 - latRad1;
-	double doffLo = lonRad2 - lonRad1;
-	double computation = asin(sqrt(sin(diffLa / 2) * sin(diffLa / 2) + cos(latRad1) * cos(latRad2) * sin(doffLo / 2) * sin(doffLo / 2)));
-	return 2 * EarthRadiusKm * computation;
-}
-inline int calculateWeight(double lat1, double lon1, double lat2, double lon2, int maxSpeed){
-  double distance = haversine(lat1, lon1, lat2, lon2);
-  return (int) ((100 * distance * 3600)/maxSpeed);
-}
 
 inline bool isNumber(const std::string& s)
 {
@@ -67,17 +45,9 @@ struct sort_operatorNodes
 
   int GraphReader::read(Graph* out, char * inputFileName, bool verbose){
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-    Node currentNode, nextNode, prevNode;
-    int currentRef, nextRef, prevRef;
-    int refCount;
+    std::map<int64_t, int> nodeMap;
     std::map<std::string, int> speedMap;
     int nodesCount = 0;
-    int cost = 0;
-    std::string maxSpeedStr;
-    bool oneWay = false;
-    std::string highway_t;
-    int maxSpeed;
-    bool sorted = false;
     generics::DeltaFieldConstForwardIterator<int64_t> it;
     speedMap.insert(std::pair<std::string, int>("motorway",  130));
     speedMap.insert(std::pair<std::string, int>("motorway_link",  70));
@@ -104,29 +74,18 @@ struct sort_operatorNodes
     if (!inFile.open())
       return -1;
 
-
     while (inFile.parseNextBlock(pbi)) {
       if (pbi.isNull())
         continue;
-      if (pbi.nodesSize()) {
-        if(verbose) std::cout << "found " << pbi.nodesSize() << " nodes:" << std::endl;
-        for (osmpbf::INodeStream node = pbi.getNodeStream(); !node.isNull(); node.next())
-          {
-            out->nodes.push_back(Node(node.id(), node.latd(), node.lond()));
-            nodesCount++;
-          }
-      }
       if(!motorWayFilter.rebuildCache())
         ;
 
       if (pbi.waysSize()) {
-        if (!sorted){
-          sorted = true;
-          std::sort(out->nodes.begin(), out->nodes.end(), sort_operatorNodes());
-        }
         for (osmpbf::IWayStream way = pbi.getWayStream(); !way.isNull(); way.next())
           if(motorWayFilter.matches(way)){
-            {
+              std::string maxSpeedStr = "";
+              std::string highway_t = "";
+              int maxSpeed = 0;
               if (way.tagsSize())
                 {
                   for (int i = 0; i < way.tagsSize(); i++)
@@ -148,39 +107,49 @@ struct sort_operatorNodes
                 }
               else
                 std::cout << " not found maxSpeed" << std::endl;
-            }
               if (verbose) std::cout << "[Way]" <<
                 "\nid = " << way.id() <<
                 "\nrefs_size = " << way.refsSize() <<
                 "\nrefs:" << std::endl;
               if (way.refsSize()) {
-                refCount= 0;
+                int refCount= 0;
+                int currentRef = -1;
+                int prevRef = -1;
+                int nextRef = -1;
                 for(it = way.refBegin(); it != way.refEnd(); ++it) {
 
-                  if(it == way.refBegin())
+                  if(refCount == 0)
                     {
-                      currentRef = out->getNodeId(*it, 0, (int) out->nodes.size());
-                    currentNode = out->nodes[currentRef];
+                      if (nodeMap.find(*it)==nodeMap.end()){
+                        nodeMap.insert(std::pair<long, int>(*it, nodesCount));
+                        out->nodes.push_back(Node(*it));
+                        currentRef = nodesCount;
+                        nodesCount++;
+                      }else{
+                        currentRef = nodeMap[*it];
+                      }
                   }
                   else
                     {
                       if (!oneWayFilter.matches(way))
                       {
-                      prevNode = out->nodes[prevRef];
-                      cost = calculateWeight(currentNode.lati, currentNode.loni, prevNode.lati, prevNode.loni, maxSpeed);
-                      out->edges.push_back(Edge(currentRef, prevRef, cost));
+                      out->edges.push_back(Edge(currentRef, prevRef, maxSpeed));
                     }
                   }
                   if(refCount < way.refsSize()-1)
                     {
-                      nextRef = out->getNodeId(*(it + 1), 0, (int) out->nodes.size());
-                    nextNode = out->nodes[nextRef];
-                    cost = calculateWeight(currentNode.lati, currentNode.loni, nextNode.lati, nextNode.loni, maxSpeed);
-                    out->edges.push_back(Edge(currentRef, nextRef, cost));
+                      if (nodeMap.find(*(it+1))==nodeMap.end()){
+                        nodeMap.insert(std::pair<long, int>( *(it+1), nodesCount ));
+                        out->nodes.push_back(Node(*(it+1)));
+                        nextRef = nodesCount;
+                        nodesCount++;
+                      }else{
+                        nextRef = nodeMap[*(it+1)];
+                      }
+                    out->edges.push_back(Edge(currentRef, nextRef, maxSpeed));
                   }
                   prevRef = currentRef;
                   currentRef = nextRef;
-                  currentNode = nextNode;
                   refCount++;
                 }
 
@@ -192,13 +161,30 @@ struct sort_operatorNodes
         std::cout << std::flush;
       }
     }
+    if (!inFile.open())
+      return -1;
+    while(inFile.parseNextBlock(pbi)){
+      if (pbi.nodesSize()) {
+        if(verbose) std::cout << "found " << pbi.nodesSize() << " nodes:" << std::endl;
+        for (osmpbf::INodeStream node = pbi.getNodeStream(); !node.isNull(); node.next())
+          {
+            if (nodeMap.find(node.id())==nodeMap.end()){
+              int index = nodeMap[node.id()];
+              out->nodes[index].lati = node.latd();
+              out->nodes[index].loni = node.lond();
+            }else{
+              ;
+            }
+          }
+      }
+    }
     std::cout << "finished importing " << std::endl;
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
     std::cout << "time needed for graph import: " << durationEdge << " microseconds" << std::endl;
     inFile.close();
     std::sort(out->edges.begin(), out->edges.end(), sort_operator());
-    out->generateOffsetOut();
+    out->generateOffsetOutAndCosts();
     return 0;
   }
 
