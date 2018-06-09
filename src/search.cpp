@@ -27,13 +27,11 @@ void Search::reset(){
 
 void Search::expand(int source, int costs){
   this->visited[source] = true;
-  this->touch_visited.push_back(source);
   for(int i = this->g->offset[source]; i < this->g->offset[source+1] ; i++){
     pq.push(make_pair((this->g->edges[i].cost + costs), this->g->edges[i].trg));
     if(this->distances[this->g->edges[i].trg]> this->g->edges[i].cost + costs){
       this->parents[this->g->edges[i].trg] = i;
       this->distances[this->g->edges[i].trg] = this->g->edges[i].cost + costs;
-      this->touch_parents.push_back(this->g->edges[i].trg);
     }
   }
 }
