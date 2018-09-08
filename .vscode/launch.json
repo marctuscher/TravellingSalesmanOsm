@@ -8,7 +8,7 @@
             "name": "lldb Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/src/test",
+            "program": "${workspaceFolder}/src/debug.out",
             "args": ["/Users/marc/Seafile/data/osm/hamburg-latest.osm.pbf", "50", "2", "400", "800", "2014", "4039"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/src/",
