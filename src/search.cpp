@@ -36,8 +36,7 @@ void Search::expand(int source, int costs){
   }
 }
 
-Result Search::dijkstra(int source, int target){
-  // this->reset();
+Result Search::oneToOne(int source, int target){
   Result result;
   pair<int,int> current;
   this->expand(source, 0);
@@ -53,6 +52,29 @@ Result Search::dijkstra(int source, int target){
         result.path.insert(result.path.begin(), this->g->nodes[currNode]);
       }
       break;
+    }
+    pq.pop();
+    if(!this->visited[get<1>(current)])
+      this->expand(get<1>(current), get<0>(current));
+  }
+  return result;
+}
+
+std::map<int, int> Search::oneToMany(int source, std::vector<int> targets){
+  std::map<int, int> result;
+  pair<int,int> current;
+  this->expand(source, 0);
+  while(!this->pq.empty()){
+    current = pq.top();
+    for (auto it = targets.begin(); it != targets.end(); ++it ){
+      if(current.second == *it){
+        cout << "found " << current.second << endl;
+        result.insert(current);
+        targets.erase(it);
+        if(targets.size() == 0){
+          return result;
+        }
+      }
     }
     pq.pop();
     if(!this->visited[get<1>(current)])

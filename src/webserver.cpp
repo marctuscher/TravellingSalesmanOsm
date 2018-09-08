@@ -85,7 +85,7 @@ void Webserver::run_server(char* filename){
       int srcIDX = pt.get<int>("srcNode");
       int trgIDX = pt.get<int>("trgNode");
       std::cout << "source node: " << srcIDX<< "traget: " << trgIDX <<std::endl;
-      Result searchResult = search.dijkstra(srcIDX,trgIDX);
+      Result searchResult = search.oneToOne(srcIDX,trgIDX);
       pt.add_child("path", path_to_ptree(searchResult));
       pt.put("distance", searchResult.distance);
       write_json(oss, pt);
@@ -104,15 +104,12 @@ void Webserver::run_server(char* filename){
       std::cout << "Post json"<< std::endl;
       ptree pt;
       read_json(request->content, pt);
-
       std::ostringstream oss;
-
-
       string resultJson;
       int srcIDX = g.findNode(pt.get<double>("srcLongitude"), pt.get<double>("srcLatitude"));
       int trgIDX = g.findNode(pt.get<double>("trgLongitude"), pt.get<double>("trgLatitude"));
       if ( srcIDX != -1 && trgIDX !=-1){
-        search.dijkstra(srcIDX,trgIDX);
+        search.oneToOne(srcIDX,trgIDX);
         pt.put("error", false);
       } else{
         pt.put("error", true);

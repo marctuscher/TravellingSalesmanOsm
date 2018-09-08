@@ -11,6 +11,7 @@
 #include <queue>
 #include <cstdint>
 #include <utility>
+#include <map>
 using namespace std;
 
 struct sort_operator
@@ -31,7 +32,8 @@ class Search
   std::vector<int> touch_parents;
   Search(Graph* g);
   std::priority_queue<pair<int, int>, std::vector<pair<int, int>>, sort_operator> pq;
-  Result dijkstra(int source, int target);
+  Result oneToOne(int source, int target);
+  map<int, int> oneToMany(int source, std::vector<int> targets);
   void expand(int source, int costs);
   void reset();
 };
