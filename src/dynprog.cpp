@@ -130,6 +130,18 @@ vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
         v = v & ~(1 << (min));
         local_opt = numeric_limits<double>::max();
     }
+    int source = indexToNodeId[0];
+    for (auto it = intermediate_path.begin(); it != intermediate_path.end(); ++it){
+        int target = indexToNodeId[*it];
+        for (auto node: distances[source][target].path){
+            path.push_back(node);
+        }
+        source = target;
+    }
+    for (auto node: distances[source][indexToNodeId[0]].path){
+        path.push_back(node);
+    }
+    cout << endl;
     cout << "optimal path:" << opt << endl;
     return path;
 }

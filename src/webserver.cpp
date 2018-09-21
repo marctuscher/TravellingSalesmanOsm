@@ -3,18 +3,27 @@
 #include "graphreader.h"
 #include "graph.h"
 #include "result.h"
+#include "dynprog.h"
 
 
 
-inline ptree path_to_ptree(Result res){
-  ptree path;
-  for (u_int i = 0; i < res.path.size(); i++){
+inline ptree path_to_ptree(vector<Node> path){
+  ptree path_tree;
+  for (u_int i = 0; i < path.size(); i++){
     ptree child;
-    child.put("lat", res.path[i].lati);
-    child.put("lon", res.path[i].loni);
-    path.push_back(std::make_pair("", child));
+    child.put("lat", path[i].lati);
+    child.put("lon", path[i].loni);
+    path_tree.push_back(std::make_pair("", child));
   }
-  return path;
+  return path_tree;
+}
+template <typename T>
+std::vector<T> as_vector(ptree const& pt, ptree::key_type const& key)
+{
+    std::vector<T> r;
+    for (auto& item : pt.get_child(key))
+        r.push_back(item.second.get_value<T>());
+    return r;
 }
 
 void Webserver::run_server(char* filename){
@@ -22,6 +31,7 @@ void Webserver::run_server(char* filename){
   static Graph g;
   reader.read(&g, filename, false);
   static HttpServer server;
+  static DynProg dyn(&g);
   Search search(&g);
   server.config.port = 8080;
 
@@ -86,7 +96,7 @@ void Webserver::run_server(char* filename){
       int trgIDX = pt.get<int>("trgNode");
       std::cout << "source node: " << srcIDX<< "traget: " << trgIDX <<std::endl;
       Result searchResult = search.oneToOne(srcIDX,trgIDX);
-      pt.add_child("path", path_to_ptree(searchResult));
+      pt.add_child("path", path_to_ptree(searchResult.path));
       pt.put("distance", searchResult.distance);
       write_json(oss, pt);
       std::string jsonString = oss.str();
@@ -98,6 +108,7 @@ void Webserver::run_server(char* filename){
       << e.what();
     }
   };
+
   server.resource["^/routebycoordinate$"]["POST"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
     try {
       Search search(&g);
@@ -131,6 +142,27 @@ void Webserver::run_server(char* filename){
     }
   };
   server.on_error = [](shared_ptr<HttpServer::Request> /*request*/, const SimpleWeb::error_code & /*ec*/) {
+  };
+  server.resource["^/tspheldkarp$"]["POST"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+    try {
+      std::cout << "Post json"<< std::endl;
+      ptree pt;
+      read_json(request->content, pt);
+      std::ostringstream oss;
+      string resultJson;
+      vector <int> targets = as_vector<int>(pt, "targets");
+      map<int, map<int, Result>> distances = dyn.calcDistances(targets);
+      vector<Node> path = dyn.heldKarp(distances);
+      pt.add_child("path", path_to_ptree(path));
+      write_json(std::cout,pt);
+      write_json(oss, pt);
+      std::string jsonString = oss.str();
+      *response << jsonString;
+    }
+    catch(const exception &e) {
+      *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << strlen(e.what()) << "\r\n\r\n"
+                << e.what();
+    }
   };
   thread server_thread([]() {
       // Start server

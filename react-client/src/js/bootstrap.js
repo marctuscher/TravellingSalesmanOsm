@@ -1,9 +1,11 @@
 import {createStore, applyMiddleware, combineReducers, compose} from 'redux';
 import * as helpers from './helpers'
 import thunk from 'redux-thunk'
+import coreMiddleware from './services/core/middleware';
+import core from './services/core/reducer';
 
 let reducers = combineReducers({
-
+    core
 });
 
 
@@ -20,7 +22,7 @@ console.log(initialState)
 let store = createStore(
     reducers,
     initialState,
-    applyMiddleware(thunk)
+    applyMiddleware(thunk, coreMiddleware)
 )
 
 export default store;

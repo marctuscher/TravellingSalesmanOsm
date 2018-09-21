@@ -3,6 +3,7 @@ import logo from '../assets/logo.svg';
 import '../css/App.css';
 import Sidebar from "react-sidebar";
 import MapView from './components/MapView'
+import SidebarContent from './components/SidebarContent'
 
 const mql = window.matchMedia(`(min-width: 800px)`);
 
@@ -85,7 +86,7 @@ class App extends Component {
   render() {
     return (
       <Sidebar
-      sidebar={<b>Sidebar content</b>}
+      sidebar={<SidebarContent/>}
       styles={this.sidebarStyle}
       open={this.state.sidebarOpen}
       docked={this.state.sidebarDocked}
