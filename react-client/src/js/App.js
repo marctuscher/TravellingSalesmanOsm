@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import logo from '../assets/logo.svg';
+import '../css/App.css';
 import Sidebar from "react-sidebar";
 import MapView from './components/MapView'
 
