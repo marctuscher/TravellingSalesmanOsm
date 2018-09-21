@@ -13,14 +13,15 @@
 using namespace std;
 
 int main (int argc, char* argv[]){
-  GraphReader reader; 
+  GraphReader reader;
   Graph g;
   reader.read(&g, argv[1], false);
   DynProg dyn(&g);
-  std::vector<int> vec; 
+  std::vector<int> vec;
   for (int i = 2; i < argc; i++){
     vec.push_back(std::stoi(argv[i]));
   }
   cout << "starting search on " << vec.size() << " elements" << endl;
-  dyn.createDistanceTable(vec);
+  map<int, map<int, Result>> distances = dyn.calcDistances(vec);
+  dyn.heldKarp(distances);
 }

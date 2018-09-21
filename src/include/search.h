@@ -33,7 +33,8 @@ class Search
   Search(Graph* g);
   std::priority_queue<pair<int, int>, std::vector<pair<int, int>>, sort_operator> pq;
   Result oneToOne(int source, int target);
-  map<int, int> oneToMany(int source, std::vector<int> targets);
+  map<int, Result> oneToMany(int source, std::vector<int> targets);
+  vector<Node> getPath(int source,int currNode);
   void expand(int source, int costs);
   void reset();
 };
