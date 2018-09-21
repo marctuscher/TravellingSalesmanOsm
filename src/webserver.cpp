@@ -132,9 +132,9 @@ void Webserver::run_server(char* filename){
   };
   server.on_error = [](shared_ptr<HttpServer::Request> /*request*/, const SimpleWeb::error_code & /*ec*/) {
   };
-  thread server_thread([&server]() {
+  thread server_thread([]() {
       // Start server
-      std::cout<<"Start Webserver" << std::endl;
+      std::cout<<"Start Webserver on port " << server.config.port << std::endl;
       server.start();
     });
   server_thread.join();

@@ -16,6 +16,14 @@
                 "cwd": "${workspaceFolder}/src/"
             },
             "command": "make debug"
+        },
+        {
+            "label": "make webserver",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/src/"
+            },
+            "command": "make"
         }
     ]
 }

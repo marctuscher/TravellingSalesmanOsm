@@ -18,5 +18,19 @@
 		"osx": {
 			"MIMode": "lldb",
 		}
+	}, {
+		"name": "lldb webserver",
+		"type": "cppdbg",
+		"request": "launch",
+		"program": "${workspaceFolder}/src/main.out",
+		"args": ["${env:OSM_DATA_DIR}/hamburg-latest.osm.pbf"],
+		"stopAtEntry": false,
+		"cwd": "${workspaceFolder}/src/",
+		"environment": [],
+		"externalConsole": false,
+		"preLaunchTask": "make webserver",
+		"osx": {
+			"MIMode": "lldb",
+		}
 	}]
 }
