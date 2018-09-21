@@ -134,6 +134,10 @@ vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
     return path;
 }
 
+inline pair<int, Result> getMinimum(map<int, Result> oneToManyDistances){
+
+}
+
 
 
 vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
@@ -141,23 +145,27 @@ vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
     int n = distances.size();
     int table[n][n];
     int i = 0;
-    map<int, int> indexToNodeId;
-    for (auto it = distances.begin(); it != distances.end(); ++it){
-        indexToNodeId.insert(pair<int, int>(i, it->first));
-        int j = 0;
-        for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2){
-            if (i == j){
-                table[i][j] = 0;
-            }else{
-                table[i][j] = it2->second.distance;
-            }
-            ++j;
-        }
-        ++i;
+    map<int, map<int, Result>> copyOfDistances(distances);
+    map<int, Result> added;
+    
+    Graph c_graph;
+    // First generate a minimum spanning tree
+    // Get random element from map
+    auto it = distances.begin();
+    advance(it, rand() % distances.size());
+    while(!copyOfDistances.empty()){
+//        added.insert(it->second);
+ //       copyOfDistances.erase(it);
+
     }
 
 
+
+
     
+
+
+
 
 
     
