@@ -50,25 +50,17 @@ void Graph::generateOffsetOutAndCosts() {
     }
 }
 
-int Graph::getNodeId(int64_t globalId, int low, int high){
-  if (high < low){
-    return -1;
-  }
-  auto mid = (low + high) /2;
-  if (globalId < nodes[mid].id){
-    return getNodeId(globalId, low, mid-1);
-  }else if (globalId > nodes[mid].id){
-    return getNodeId(globalId, mid+1, high);
-  }
-  return mid;
-}
 
 
 int Graph::findNode(double lat, double lon){
   int node = -1;
+  double epsilon = 0.1;
   double shortest = std::numeric_limits<int>::max();
-  for (u_int i = 0; i < this->nodes.size(); i++){
+  for (auto i: grid[(int)floor(lat)][(int) floor(lon)]) {
     double current = haversine(lat, lon, this->nodes[i].lati, this->nodes[i].loni);
+    if (current < epsilon){
+      return i;
+    }
     if (current < shortest){
       shortest = current;
       node = i;

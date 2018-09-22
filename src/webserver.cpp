@@ -157,7 +157,7 @@ void Webserver::run_server(char* filename){
       write_json(std::cout,pt);
       write_json(oss, pt);
       std::string jsonString = oss.str();
-      *response << jsonString;
+      *response << "HTTP/1.1 200 OK\r\nContent-Length: " << jsonString.length() << "\r\n\r\n" << jsonString;
     }
     catch(const exception &e) {
       *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << strlen(e.what()) << "\r\n\r\n"

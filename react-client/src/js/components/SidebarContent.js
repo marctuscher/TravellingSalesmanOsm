@@ -12,9 +12,6 @@ class SidebarContent extends React.Component {
     }
 
 
-
-
-
     render(){
         return (
             <div> 

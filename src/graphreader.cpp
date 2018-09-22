@@ -16,6 +16,7 @@
 #include <chrono>
 #include <map>
 #include <algorithm>
+#include <string>
 
 
 //haversine functionality from RosettaCode
@@ -148,9 +149,16 @@ struct sort_operatorNodes
         for (osmpbf::INodeStream node = pbi.getNodeStream(); !node.isNull(); node.next())
           {
             if (nodeMap.count(node.id())){
+              double latitude = node.latd();
+              double longitude = node.lond();
               inserted = nodeMap.insert({node.id(), 0});
-              out->nodes[inserted.first->second].lati = node.latd();
-              out->nodes[inserted.first->second].loni = node.lond();
+              out->grid[(int)floor(latitude)][(int)floor(longitude)].push_back(inserted.first->second);
+              out->nodes[inserted.first->second].tags = map<string, string>();
+              for(uint32_t i = 0, s = node.tagsSize();  i < s; ++i) {
+                out->nodes[inserted.first->second].tags.insert({node.key(i), node.value(i)});
+              }
+              out->nodes[inserted.first->second].lati = latitude;
+              out->nodes[inserted.first->second].loni = longitude;
             }else{
               ;
             }

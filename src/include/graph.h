@@ -14,6 +14,8 @@ class Graph
   int edgecount;
   std::vector<Edge> edges;
   std::vector<int> offset;
+  // lat lon grid for storing nodes (this only works for nodes in Europe)
+  vector<int> grid[60][40];
   void generateOffsetOutAndCosts();
   int getNodeId(int64_t globalId, int, int);
   int findNode(double lat, double lon);
