@@ -26,11 +26,11 @@ class MapView extends React.Component {
 		super(props)
 			this.props.coreActions.get_current_geolocation();
 	}
-		mapRef = createRef()
+	mapRef = createRef()
 
-		handleMapClick = e => {
+	handleMapClick = e => {
 			this.props.coreActions.addMarker(e.latlng, "standard")
-		}
+	}
 		
 
 	componentWillReceiveProps(nextProps){
@@ -42,7 +42,12 @@ class MapView extends React.Component {
 	renderClickMarkers(){
 		return this.props.markers.map((marker, i) => {
 				return (
-				<MarkerComponent key={i} coord={marker.latlng} type={marker.type} index={i}/>
+				<MarkerComponent key={i} coord={marker.latlng} type={marker.type} 
+				dijkstraTarget={marker.dijkstra_target}
+				dijkstraSource={marker.dijkstra_source}
+				tspSource={marker.tsp_source}
+				tspTarget={marker.tsp_target}
+				index={i}/>
 				)
 		})
 	}

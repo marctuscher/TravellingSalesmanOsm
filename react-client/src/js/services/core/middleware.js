@@ -32,6 +32,33 @@ const coreMiddleware = (function () {
             case "DELETE_MARKER":
                 next(action)
             break;
+            case "SET_TSP":
+                next(action)
+            break;
+            case "SET_TSP_TARGET":
+                next(action)
+            break;
+            case "UNSET_TSP_TARGET":
+                next(action)
+            break;
+            case "SET_DJIKSTRA_TARGET":
+                next(action)
+            break;
+            case "UNSET_DIJKSTRA_TARGET":
+                next(action)
+            break;
+            case "SET_DIJSKTRA_SOURCE":
+                next(action)
+            break;
+            case "UNSET_DIJKSTRA_SOURCE":
+                next(action)
+            break;
+            case "SET_TSP_SOURCE":
+                next(action)
+            break;
+            case "UNSET_TSP_SOURCE":
+                next(action)
+            break;
             default:
                 break;
         }

@@ -12,26 +12,23 @@ import TSPComponent from './TSPComponent'
 class SidebarContent extends React.Component {
     constructor(props){
         super(props);
-        this.state = {
-            tsp: true
-        }
         this.setTSP = this.setTSP.bind(this)
         this.unsetTSP = this.unsetTSP.bind(this)
     }
 
     setTSP(){
-        this.setState({tsp: true})
+        this.props.coreActions.setTsp(true);
     }
     unsetTSP(){
-        this.setState({tsp: false})
+        this.props.coreActions.setTsp(false);
     }
 
     render(){
         return (
             <div>
-                <Tab name="TSP" active={this.state.tsp} onClick={this.setTSP}/>
-                <Tab name="Routing" active={!this.state.tsp} onClick={this.unsetTSP}/>
-                {this.state.tsp ? <TSPComponent/>: <RoutingComponent/>}
+                <Tab name="TSP" active={this.props.tsp} onClick={this.setTSP}/>
+                <Tab name="Routing" active={!this.props.tsp} onClick={this.unsetTSP}/>
+                { this.props.tsp ? <TSPComponent/>: <RoutingComponent/>}
            </div>
         )
     }
@@ -40,7 +37,7 @@ class SidebarContent extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-
+        tsp: state.core.tsp
     }
 }
 

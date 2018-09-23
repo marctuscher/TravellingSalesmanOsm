@@ -5,22 +5,98 @@ import '../../css/components/MarkerComponent.css'
 import {Marker, Popup} from 'react-leaflet'
 import { connect } from 'react-redux';
 import {bindActionCreators} from 'redux';
-class MarkerComponent extends React.PureComponent {
+class MarkerComponent extends React.Component {
 
     constructor(props){
         super(props);
         this.deleteMarker = this.deleteMarker.bind(this);
+        this.setTarget = this.setTarget.bind(this);
+        this.setSource = this.setSource.bind(this);
+        this.unsetTarget = this.unsetTarget.bind(this);
+        this.unsetSource = this.unsetSource.bind(this);
+        
     }
 
     deleteMarker(){
         this.props.coreActions.deleteMarker(this.props.index);
     }
+
+    setTarget(){
+        if (this.props.tsp){
+            this.props.coreActions.setTspTarget(this.props.index);
+        }else {
+            this.props.coreActions.setDijkstraTarget(this.props.index);
+        }
+    }
+    setSource(){
+        if (this.props.tsp){
+            this.props.coreActions.setTspSource(this.props.index);
+        }else {
+            this.props.coreActions.setDijkstraSource(this.props.index);
+        }
+    }
+
+    unsetTarget(){
+        if (this.props.tsp){
+            this.props.coreActions.unsetTspTarget(this.props.index);
+        }else{
+            this.props.coreActions.unsetDijkstraTarget(this.props.index);
+        }
+    }
+
+    unsetSource(){
+        if (this.props.tsp){
+            this.props.coreActions.unsetTspSource(this.props.index);
+        }else{
+            this.props.coreActions.unsetDijkstraSource(this.props.index);
+        }
+    }
+
+    renderSourceTargetButton(){
+        if (this.props.tsp){
+            if (this.props.tspTarget){
+                return (
+                    <button onClick={this.unsetTarget}>Remove as target</button>
+                )
+            }else if(this.props.tspSource){
+                return (
+                    <button onClick={this.unsetSource}>Remove as source</button>
+                )
+            }else{
+                return (
+                    <div>
+                    <button onClick={this.setTarget}>Add as target</button>
+                    <button onClick={this.setSource}>Set as source</button>
+                    </div>
+                )
+            }
+        } else {
+            if (this.props.dijkstraTarget){
+                return (
+                    <button onClick={this.unsetTarget}>Remove as target</button>
+                )
+            }else if(this.props.dijkstraSource){
+                return (
+                    <button onClick={this.unsetSource}>Remove as source</button>
+                )
+            }else{
+                return (
+                    <div>
+                    <button onClick={this.setTarget}>Add as target</button>
+                    <button onClick={this.setSource}>Set as source</button>
+                    </div>
+                )
+            }
+        }
+    }
+
     renderPopup(){
         return (
             <div>
-                <Popup
-                >
-                <button>Set as Target for Routing</button>
+                <Popup>
+                    {
+                        this.renderSourceTargetButton()
+                    }
                 <button onClick={this.deleteMarker}>deleteMarker</button>
                 </Popup>
             </div>
@@ -41,6 +117,7 @@ class MarkerComponent extends React.PureComponent {
 
 const mapStateToProps = (state) => {
     return {
+        tsp: state.core.tsp
     }
 }
 

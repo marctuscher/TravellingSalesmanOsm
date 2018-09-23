@@ -9,14 +9,19 @@ class RoutingComponent extends React.Component {
 
     render(){
         return (
-            <div>My Routing COmpoentn</div>
+            <div>{this.props.source ? this.props.source.latlng.lat: null}</div>
         )
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-
+        source: state.core.markers.filter((elem, id)=> {
+            elem.dijkstra_source
+        })[0],
+        target: state.core.markers.filter((elem, id)=> {
+            elem.dijkstra_target
+        })[0]
     }
 }
 

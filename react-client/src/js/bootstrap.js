@@ -16,7 +16,8 @@ let initialState = {
             longitude: -0.09
         },
         zoom: 13,
-        markers: []
+        markers: [],
+        tsp: true
     }
 }
 
