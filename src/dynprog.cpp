@@ -131,6 +131,7 @@ vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
         local_opt = numeric_limits<double>::max();
     }
     int source = indexToNodeId[0];
+    reverse(intermediate_path.begin(), intermediate_path.end());
     for (auto it = intermediate_path.begin(); it != intermediate_path.end(); ++it){
         int target = indexToNodeId[*it];
         for (auto node: distances[source][target].path){

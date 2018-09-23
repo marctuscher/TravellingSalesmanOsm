@@ -17,7 +17,7 @@ let initialState = {
         },
         zoom: 13,
         markers: [],
-        tsp: true
+        tsp: true,
     }
 }
 

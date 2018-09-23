@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css';
 import '../../css/components/MapView.css'
 
 import RoutingMap from './RoutingMap'
+import TspMap from './TspMap'
 import MarkerComponent from './MarkerComponent'
 
 // Making markers work without having to use the google CDN
@@ -67,7 +68,7 @@ class MapView extends React.Component {
 				<TileLayer
 			  	attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
 			  	url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-				<RoutingMap/>
+			{this.props.tsp? <TspMap/>: <RoutingMap/>}
 		  </Map>
 		)
 	}
@@ -75,6 +76,7 @@ class MapView extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+		tsp: state.core.tsp,
 		position: state.core.position,
 		path: state.core.path,
 		zoom: state.core.zoom, 

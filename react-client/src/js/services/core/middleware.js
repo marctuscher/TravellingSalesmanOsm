@@ -11,10 +11,12 @@ const coreMiddleware = (function () {
                 url: '/tspheldkarp',
                 data: {
                     targets: [
-                    50, 4000, 100, 80000, 20000
+                    50, 4000, 1000, 20000
                 ]}
             }).then(res => {
-                action.path = res.data.path;
+                action.path = res.data.path.map((elem, id)=> {
+                    return [Number(elem.lat), Number(elem.lon)]
+                });
                 next(action)
             }).catch(err => {
                 console.error(err)

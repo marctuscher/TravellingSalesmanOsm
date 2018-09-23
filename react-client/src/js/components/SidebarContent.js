@@ -25,7 +25,7 @@ class SidebarContent extends React.Component {
 
     render(){
         return (
-            <div>
+            <div className="sidebar-container">
                 <Tab name="TSP" active={this.props.tsp} onClick={this.setTSP}/>
                 <Tab name="Routing" active={!this.props.tsp} onClick={this.unsetTSP}/>
                 { this.props.tsp ? <TSPComponent/>: <RoutingComponent/>}

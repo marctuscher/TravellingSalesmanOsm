@@ -50,7 +50,7 @@ class App extends Component {
       top: 0,
       bottom: 0,
       // TODO dont hardcode this stuff
-      right: 1000,
+      right: 0,
       transition: "transform .3s ease-out",
       WebkitTransition: "-webkit-transform .3s ease-out",
       willChange: "transform",
@@ -90,7 +90,6 @@ class App extends Component {
     return (
       <Sidebar
       sidebar={<SidebarContent/>}
-      styles={this.sidebarStyle}
       open={this.state.sidebarOpen}
       docked={this.state.sidebarDocked}
       onSetOpen={this.onSetSidebarOpen}

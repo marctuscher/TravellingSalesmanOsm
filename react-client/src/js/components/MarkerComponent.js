@@ -82,7 +82,7 @@ class MarkerComponent extends React.Component {
             }else{
                 return (
                     <div>
-                    <button onClick={this.setTarget}>Add as target</button>
+                    <button onClick={this.setTarget}>Set as target</button>
                     <button onClick={this.setSource}>Set as source</button>
                     </div>
                 )

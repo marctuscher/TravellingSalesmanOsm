@@ -7,16 +7,28 @@ import '../../css/components/TSPComponent.css'
 
 class TSPComponent extends React.Component {
 
+
+    constructor(props){
+        super(props)
+        this.search = this.search.bind(this)
+    }
+    
+    search(){
+        this.props.coreActions.tsp_held_karp();
+    }
+
+
     render(){
         return (
-            <div>My TSP COmpoentn</div>
+            <div>My TSP COmpoentn
+                <button onClick={this.search}></button>
+            </div>
         )
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-
     }
 }
 
