@@ -5,9 +5,22 @@ export function tsp_held_karp(targets){
     }
 }
 
-export function set_current_geolocation(position){
+export function get_current_geolocation(){
     return {
-        type: "SET_CURRENT_GEOLOCATION",
-        geolocation: position
+        type: "GET_CURRENT_GEOLOCATION"
+    }
+}
+
+export function addMarker(latlng, type){
+    return {
+        type: "ADD_MARKER",
+        payload: {latlng: latlng, markerType: type}
+    }
+}
+
+export function deleteMarker(index){
+    return {
+        type: "DELETE_MARKER",
+        payload: index
     }
 }

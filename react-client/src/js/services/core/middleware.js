@@ -20,6 +20,18 @@ const coreMiddleware = (function () {
                 console.error(err)
             })
                 break;
+            case "GET_CURRENT_GEOLOCATION":
+                navigator.geolocation.getCurrentPosition(position=> {
+                    action.position = position;
+                    next(action);
+                });
+            break;
+            case "ADD_MARKER":
+                next(action)
+            break;
+            case "DELETE_MARKER":
+                next(action)
+            break;
             default:
                 break;
         }

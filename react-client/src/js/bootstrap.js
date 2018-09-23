@@ -11,7 +11,12 @@ let reducers = combineReducers({
 
 let initialState = {
     core: {
-
+        position: {
+            latitude: 51.505,
+            longitude: -0.09
+        },
+        zoom: 13,
+        markers: []
     }
 }
 

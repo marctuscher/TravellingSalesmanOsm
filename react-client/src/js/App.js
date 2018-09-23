@@ -4,6 +4,7 @@ import '../css/App.css';
 import Sidebar from "react-sidebar";
 import MapView from './components/MapView'
 import SidebarContent from './components/SidebarContent'
+import 'skeleton-css/css/skeleton.css'
 
 const mql = window.matchMedia(`(min-width: 800px)`);
 
@@ -23,7 +24,7 @@ class App extends Component {
   }
  
   componentWillUnmount() {
-    this.state.mql.removeListener(this.mediaQueryChanged);
+    mql.removeListener(this.mediaQueryChanged);
   }
  
   onSetSidebarOpen(open) {
@@ -48,6 +49,8 @@ class App extends Component {
       position: "absolute",
       top: 0,
       bottom: 0,
+      // TODO dont hardcode this stuff
+      right: 1000,
       transition: "transform .3s ease-out",
       WebkitTransition: "-webkit-transform .3s ease-out",
       willChange: "transform",

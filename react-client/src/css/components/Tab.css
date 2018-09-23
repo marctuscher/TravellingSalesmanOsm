@@ -3,5 +3,9 @@
     outline: none;
     background-color: #f1f1f1;
     cursor: pointer;
-    width: 100%;
-  }
+    width: 50%;
+}
+
+.active {
+    background-color: #aec6cf
+}
