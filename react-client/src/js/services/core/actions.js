@@ -5,6 +5,14 @@ export function tsp_held_karp(targets){
     }
 }
 
+export function calcRoute(source, target){
+    return {
+        type: "CALC_ROUTE",
+        source: source, 
+        target: target
+    }
+}
+
 export function get_current_geolocation(){
     return {
         type: "GET_CURRENT_GEOLOCATION"
@@ -48,13 +56,13 @@ export function unsetTspTarget(index){
 
 export function unsetDijkstraTarget(index){
     return {
-        type: "SET_DIJKSTRA_TARGET", 
+        type: "UNSET_DIJKSTRA_TARGET", 
         payload: index
     }
 }
 export function setDijkstraTarget(index){
     return {
-        type: "UNSET_DIJKSTRA_TARGET", 
+        type: "SET_ROUTING_TARGET", 
         payload: index
     }
 }
@@ -73,13 +81,13 @@ export function unsetTspSource(index){
 }
 export function setDijkstraSource(index){
     return {
-        type: "SET_DIJSKTRA_SOURCE",
+        type: "SET_DIJKSTRA_SOURCE",
         payload: index
     }
 }
 export function unsetDijkstraSource(index){
     return {
-        type: "UNSET_DIJSKTRA_SOURCE",
+        type: "UNSET_DIJKSTRA_SOURCE",
         payload: index
     }
 }

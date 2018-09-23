@@ -109,7 +109,7 @@ void Webserver::run_server(char* filename){
     }
   };
 
-  server.resource["^/routebycoordinate$"]["POST"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+  server.resource["^/routebycoordinates$"]["POST"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
     try {
       Search search(&g);
       std::cout << "Post json"<< std::endl;
@@ -117,24 +117,16 @@ void Webserver::run_server(char* filename){
       read_json(request->content, pt);
       std::ostringstream oss;
       string resultJson;
-      int srcIDX = g.findNode(pt.get<double>("srcLongitude"), pt.get<double>("srcLatitude"));
-      int trgIDX = g.findNode(pt.get<double>("trgLongitude"), pt.get<double>("trgLatitude"));
-      if ( srcIDX != -1 && trgIDX !=-1){
-        search.oneToOne(srcIDX,trgIDX);
-        pt.put("error", false);
-      } else{
-        pt.put("error", true);
-        pt.put("errorMessage", "could not find a nodeid");
-      }
-      //pt.add_child("nodes", alg.getPath(trgIDX));
-
-      write_json(std::cout,pt);
-
+      int srcIDX = g.findNode(pt.get<double>("sourceLat"), pt.get<double>("sourceLon"));
+      int trgIDX = g.findNode(pt.get<double>("targetLat"), pt.get<double>("targetLon"));
+      // TODO error handling
+      Result searchResult = search.oneToOne(srcIDX,trgIDX);
+      pt.add_child("path", path_to_ptree(searchResult.path));
+      pt.put("distance", searchResult.distance);
       write_json(oss, pt);
-
       std::string jsonString = oss.str();
       std::cout << jsonString << std::endl;
-      *response << jsonString;
+      *response << "HTTP/1.1 200 OK\r\nContent-Length: " << jsonString.length() << "\r\n\r\n" << jsonString;
     }
     catch(const exception &e) {
       *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << strlen(e.what()) << "\r\n\r\n"

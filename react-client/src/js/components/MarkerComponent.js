@@ -52,51 +52,14 @@ class MarkerComponent extends React.Component {
         }
     }
 
-    renderSourceTargetButton(){
-        if (this.props.tsp){
-            if (this.props.tspTarget){
-                return (
-                    <button onClick={this.unsetTarget}>Remove as target</button>
-                )
-            }else if(this.props.tspSource){
-                return (
-                    <button onClick={this.unsetSource}>Remove as source</button>
-                )
-            }else{
-                return (
-                    <div>
-                    <button onClick={this.setTarget}>Add as target</button>
-                    <button onClick={this.setSource}>Set as source</button>
-                    </div>
-                )
-            }
-        } else {
-            if (this.props.dijkstraTarget){
-                return (
-                    <button onClick={this.unsetTarget}>Remove as target</button>
-                )
-            }else if(this.props.dijkstraSource){
-                return (
-                    <button onClick={this.unsetSource}>Remove as source</button>
-                )
-            }else{
-                return (
-                    <div>
-                    <button onClick={this.setTarget}>Set as target</button>
-                    <button onClick={this.setSource}>Set as source</button>
-                    </div>
-                )
-            }
-        }
-    }
+
 
     renderPopup(){
         return (
             <div>
                 <Popup>
-                    {
-                        this.renderSourceTargetButton()
-                    }
+                <button onClick={this.setSource}>Set source</button>
+                <button onClick={this.setTarget}>Set target</button>
                 <button onClick={this.deleteMarker}>deleteMarker</button>
                 </Popup>
             </div>

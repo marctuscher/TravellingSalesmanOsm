@@ -3,20 +3,14 @@ import * as coreActions from '../services/core/actions';
 import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
 import '../../css/components/RoutingMap.css'
-import {Marker} from 'react-leaflet'
+import {Polyline} from 'react-leaflet'
 
 class RoutingMap extends React.Component {
-
-
-    getPositionArray(node){
-        return [node.latitude, node.longitude]
-    }
 
     render(){
         return (
             <div>
-			    {this.props.source ? <Marker position={this.getPositionArray(this.props.source)}/> : null }
-			    {this.props.target ? <Marker position={this.getPositionArray(this.props.source)}/> : null }
+                {this.props.path ? <Polyline positions={this.props.path}/>: null}
             </div>
         )
     }
@@ -24,8 +18,7 @@ class RoutingMap extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        source: state.core.routingSource,
-        target: state.core.routingTarget
+        path: state.core.routePath
     }
 }
 

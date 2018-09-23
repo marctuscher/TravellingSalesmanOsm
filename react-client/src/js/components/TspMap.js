@@ -7,10 +7,6 @@ import {Marker, Polyline} from 'react-leaflet'
 
 class TspMap extends React.Component {
 
-    componentWillReceiveProps(nextProps){
-        console.log(nextProps);
-    }
-
     render(){
         return (
             <div>

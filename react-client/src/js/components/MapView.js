@@ -43,11 +43,10 @@ class MapView extends React.Component {
 	renderClickMarkers(){
 		return this.props.markers.map((marker, i) => {
 				return (
-				<MarkerComponent key={i} coord={marker.latlng} type={marker.type} 
-				dijkstraTarget={marker.dijkstra_target}
-				dijkstraSource={marker.dijkstra_source}
-				tspSource={marker.tsp_source}
-				tspTarget={marker.tsp_target}
+				<MarkerComponent
+				key={i} 
+				coord={marker.latlng} 
+				type={marker.type}
 				index={i}/>
 				)
 		})

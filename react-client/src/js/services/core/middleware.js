@@ -22,6 +22,25 @@ const coreMiddleware = (function () {
                 console.error(err)
             })
                 break;
+            case "CALC_ROUTE":
+            axios({
+                method: 'POST',
+                url: '/routebycoordinates',
+                data: {
+                    sourceLat: action.source.lat,
+                    sourceLon: action.source.lng,
+                    targetLat: action.target.lat,
+                    targetLon: action.target.lng
+                }
+            }).then(res => {
+                action.path = res.data.path.map((elem, id)=> {
+                    return [Number(elem.lat), Number(elem.lon)]
+                })
+                next(action);
+            }).catch(err => {
+                console.error(err)
+            })
+            break;
             case "GET_CURRENT_GEOLOCATION":
                 navigator.geolocation.getCurrentPosition(position=> {
                     action.position = position;
@@ -43,13 +62,13 @@ const coreMiddleware = (function () {
             case "UNSET_TSP_TARGET":
                 next(action)
             break;
-            case "SET_DJIKSTRA_TARGET":
+            case "SET_ROUTING_TARGET":
                 next(action)
             break;
             case "UNSET_DIJKSTRA_TARGET":
                 next(action)
             break;
-            case "SET_DIJSKTRA_SOURCE":
+            case "SET_DIJKSTRA_SOURCE":
                 next(action)
             break;
             case "UNSET_DIJKSTRA_SOURCE":
