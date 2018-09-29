@@ -54,19 +54,7 @@ export function setTspTarget(index){
     }
 }
 
-export function unsetTspTarget(index){
-    return {
-        type: "UNSET_TSP_TARGET",
-        payload: index
-    }
-}
 
-export function setRoutingTarget(mode){
-    return {
-        type: "SET_ROUTING_TARGET", 
-        mode: mode
-    }
-}
 
 export function setTspSource(index){
     return {
@@ -74,22 +62,62 @@ export function setTspSource(index){
         payload: index
     }
 }
-export function unsetTspSource(index){
+
+export function setRoutingSourceCurrent(){
     return {
-        type: "UNSET_TSP_SOURCE",
-        payload: index
+        type: "SET_ROUTING_SOURCE_CURRENT"
     }
 }
-export function setRoutingSource(index){
+export function setRoutingTargetCurrent(){
     return {
-        type: "SET_DIJKSTRA_SOURCE",
-        payload: index
-    }
-}
-export function unsetDijkstraSource(index){
-    return {
-        type: "UNSET_DIJKSTRA_SOURCE",
-        payload: index
+        type: "SET_ROUTING_TARGET_CURRENT"
     }
 }
 
+export function setRoutingSourceMarker(index){
+    return {
+        type: "SET_ROUTING_SOURCE_MARKER",
+        payload: index
+    }
+}
+export function setRoutingSourceCategory(){
+    return {
+        type: "SET_ROUTING_SOURCE_CATEGORY"
+    }
+}
+export function setRoutingTargetMarker(index){
+    return {
+        type: "SET_ROUTING_TARGET_MARKER",
+        payload: index
+    }
+}
+export function setRoutingTargetCategory(){
+    return {
+        type: "SET_ROUTING_TARGET_CATEGORY"
+    }
+}
+
+export function changeCategoryRoutingSource(cat){
+    return {
+        type: "CHANGE_CATEGORY_ROUTING_SOURCE",
+        payload:cat
+    }
+}
+
+export function changeCategoryRoutingTarget(cat){
+    return {
+        type: "CHANGE_CATEGORY_ROUTING_TARGET",
+        payload:cat
+    }
+}
+
+export function deleteRoutingTarget(){
+    return {
+        type: "DELETE_ROUTING_TARGET"
+    }
+}
+export function deleteRoutingSource(){
+    return {
+        type: "DELETE_ROUTING_SOURCE"
+    }
+}

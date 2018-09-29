@@ -75,7 +75,7 @@ int Graph::findNode(double lat, double lon){
   double shortest = std::numeric_limits<int>::max();
   for (auto i: grid[(int)floor(currentLat)][(int) floor(currentLon)]) {
     if (this->nodes[i].tags.find(group) == this->nodes[i].tags.end()) continue;
-    if (!this->nodes[i].tags[group].compare(category)) continue;
+    if (!(this->nodes[i].tags[group] == category)) continue;
     double current = haversine(currentLat, currentLon, this->nodes[i].lati, this->nodes[i].loni);
     if (current < epsilon){
       return i;
@@ -85,4 +85,5 @@ int Graph::findNode(double lat, double lon){
       node = i;
     }
   }
-  }
+  return node;
+ }

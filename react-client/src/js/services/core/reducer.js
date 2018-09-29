@@ -14,26 +14,30 @@ export default function reducer(core = {}, action){
             return {...core, markers: core.markers.filter((item, index)=> index !== action.payload)}
         case 'SET_TSP':
             return {...core, tsp: action.payload}
-        case 'UNSET_TSP_TARGET':
-            core.markers[action.payload].tsp_target = false
-            return {...core}
         case 'SET_TSP_TARGET':
             return {...core, tspTargets: [...core.tspTargets,core.markers[action.payload].latlng ]}
-        case 'SET_ROUTING_TARGET':
-            return {...core, dijkstraTarget : core.markers[action.payload].latlng}
-        case 'UNSET_DIJKSTRA_TARGET':
-            core.markers[action.payload].dijsktra_target = true
-            return {...core}
         case 'SET_TSP_SOURCE':
             return {...core, tspSource: core.markers[action.payload].latlng}
-        case 'UNSET_TSP_SOURCE':
-            core.markers[action.payload].tsp_source = false
-            return {...core}
-        case 'SET_DIJKSTRA_SOURCE':
-            return {...core, dijkstraSource: core.markers[action.payload].latlng}
-        case 'UNSET_DIJKSTRA_SOURCE':
-            core.markers[action.payload].dijkstra_source = false
-            return {...core}
+        case 'SET_ROUTING_SOURCE_MARKER':
+            return {...core, dijkstraSource: {latlng: core.markers[action.payload].latlng, mode: "marker"}}
+        case 'SET_ROUTING_SOURCE_CATEGORY':
+            return {...core, dijkstraSource: {group: null, category: null, mode:"category"}}
+        case 'SET_ROUTING_TARGET_MARKER':
+            return {...core, dijkstraSource: {latlng: core.markers[action.payload].latlng, mode: "marker"}}
+        case 'SET_ROUTING_TARGET_CATEGORY':
+            return {...core, dijkstraTarget: {group: null, category: null, mode:"category"}}
+        case 'CHANGE_CATEGORY_ROUTING_SOURCE':
+            return {...core, dijkstraSource: {...core.dijkstraSource, group: action.group, category: action.category}}
+        case 'CHANGE_CATEGORY_ROUTING_TARGET':
+            return {...core, dijkstraTarget: {...core.dijkstraTarget, group: action.group, category: action.category}}
+        case 'DELETE_ROUTING_SOURCE':
+            return {...core, dijkstraSource: null}
+        case 'DELETE_ROUTING_TARGET':
+            return {...core, dijkstraTarget: null}
+        case 'SET_ROUTING_SOURCE_CURRENT':
+            return {...core, dijkstraSource: {latlng: core.position, mode: "current"}}
+        case 'SET_ROUTING_TARGET_CURRENT':
+            return {...core, dijkstraTarget: {latlng: core.position, mode: "current"}}
         default:
             return core;
     }

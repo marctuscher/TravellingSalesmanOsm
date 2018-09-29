@@ -3,6 +3,7 @@ import * as coreActions from '../services/core/actions';
 import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
 import '../../css/components/RoutingComponent.css'
+import CategoryComponent from './CategoryComponent';
 
 
 class RoutingComponent extends React.Component {
@@ -14,67 +15,87 @@ class RoutingComponent extends React.Component {
         this.setCategoryTarget = this.setCategoryTarget.bind(this);
         this.changeCategorySource = this.changeCategorySource.bind(this);
         this.changeCategoryTarget = this.changeCategoryTarget.bind(this);
+        this.deleteSource = this.deleteSource.bind(this);
+        this.deleteTarget = this.deleteTarget.bind(this);
     }
 
     setCategorySource(){
-        this.props.coreActions.setCategoryRoutingSource();
+        this.props.coreActions.setRoutingSourceCategory();
     }
     setCategoryTarget(){
-        this.props.coreActions.setCategoryRoutingSource();
+        this.props.coreActions.setRoutingTargetCategory();
+    }
+    setCurrentSource(){
+        this.props.coreActions.setRoutingSourceCurrent();
+    }
+    setCurrentTarget(){
+        this.props.coreActions.setRoutingTargetCurrent();
     }
 
     changeCategorySource(e){
+        this.props.coreActions.changeCategoryRoutingSource(e);
+    }
 
+    deleteSource(){
+        this.props.coreActions.deleteRoutingSource();
+    }
+
+    deleteTarget(){
+        this.props.coreActions.deleteRoutingTarget();
     }
 
     changeCategoryTarget(e){
-
+        this.props.coreActions.changeCategoryRoutingTarget(e);
     }
 
-    renderAddButton(name, setFunction){
+    renderAddButton(name, setFunctionCategory, setFunctionLocation){
         return (
             <div>
-                <button onClick={setFunction}>Add category {name}</button>
+                <button onClick={setFunctionCategory}>Add category {name}</button>
+                <button onClick={setFunctionLocation}>Add current location {name}</button>
             </div>
         )
-    }
-
-    renderSource(){
-        if (this.props.source.type === "category"){
-        return (
-            <div>
-                <h4>Source</h4>
-                <form>
-                    <label>lat:</label>
-                    {this.props.source.lat}
-                </form>
-                <form>
-                    <label>lon:</label>
-                    {this.props.source.lng}
-                </form>
-            </div>
-        )
-        }
     }
 
     calcRoute(){
         this.props.coreActions.calcRoute(this.props.source, this.props.target)
     }
 
+    renderSource(){
+        if (this.props.source.mode === "category"){
+            return (
+                <div>
+                    <h4>Source</h4><button onClick={this.deleteSource}>Delete this source</button>
+                    <CategoryComponent onChange={this.changeCategorySource}/>
+                </div>
+            )
+        }else if (this.props.source.mode === "marker"){
+            return (
+                <div>
+                    <h4>Source</h4><button onClick={this.deleteSource}>Delete this source</button>
+                    Marker Set!
+                </div>
+            )
+        }
+    }
+
     renderTarget(){
-        return (
-            <div>
-                <h4>Target</h4>
-                <form>
-                    <label>lat:</label>
-                    {this.props.target.lat}
-                </form>
-                <form>
-                    <label>lon:</label>
-                    {this.props.target.lng}
-                </form>
-            </div>
-        )
+        if (this.props.target.mode === "category"){
+            return (
+                <div>
+                    <h4>Target</h4><button onClick={this.deleteTarget}>Delete this target</button>
+                    <CategoryComponent onChange={this.changeCategoryTarget}/>
+                </div>
+            )
+        }else if (this.props.target.mode === "marker"){
+            return (
+                <div>
+                    <h4>Source</h4><button onClick={this.deleteTarget}>Delete this target</button>
+                    Marker Set!
+                </div>
+            )
+        }
+
     }
 
     render(){

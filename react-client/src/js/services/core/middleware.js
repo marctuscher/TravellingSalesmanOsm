@@ -24,15 +24,31 @@ const coreMiddleware = (function () {
             })
                 break;
             case "CALC_ROUTE":
+            action.data = {}
+            action.data.sourceMode = action.source.mode;
+            action.data.targetMode = action.target.mode;
+            if (action.source.mode === "category"){
+                action.data.sourceOriginLat =  store.getState().core.position.latitude;
+                action.data.sourceOriginLon =  store.getState().core.position.longitude;
+                action.data.sourceGroup = action.source.group;
+                action.data.sourceCat = action.source.category;
+            }else{
+                action.data.sourceLat = action.source.lat;
+                action.data.sourceLon = action.source.lng;
+            }
+            if (action.source.mode === "category"){
+                action.data.targetOriginLat =  store.getState().core.position.latitude;
+                action.data.targetOriginLon =  store.getState().core.position.longitude;
+                action.data.targetGroup = action.target.group;
+                action.data.targetCat = action.target.category;
+            }else{
+                action.data.targetLat = action.target.lat;
+                action.data.targetLon = action.target.lng;
+            }
             axios({
                 method: 'POST',
                 url: '/routebycoordinates',
-                data: {
-                    sourceLat: action.source.lat,
-                    sourceLon: action.source.lng,
-                    targetLat: action.target.lat,
-                    targetLon: action.target.lng
-                }
+                data : action.data
             }).then(res => {
                 action.path = res.data.path.map((elem, id)=> {
                     return [Number(elem.lat), Number(elem.lon)]
@@ -56,8 +72,8 @@ const coreMiddleware = (function () {
                         };
                         for (let item of res.data[key]){
                             obj.items.push({
-                                value: item, 
-                                label: item
+                                value: key +":"+item, 
+                                label: item, 
                             });
                         }
                     action.categories.push(obj);
@@ -83,27 +99,46 @@ const coreMiddleware = (function () {
             case "SET_TSP_TARGET":
                 next(action)
             break;
-            case "UNSET_TSP_TARGET":
-                next(action)
-            break;
             case "SET_ROUTING_TARGET":
-                next(action)
-            break;
-            case "UNSET_DIJKSTRA_TARGET":
-                next(action)
-            break;
-            case "SET_DIJKSTRA_SOURCE":
-                next(action)
-            break;
-            case "UNSET_DIJKSTRA_SOURCE":
                 next(action)
             break;
             case "SET_TSP_SOURCE":
                 next(action)
             break;
-            case "UNSET_TSP_SOURCE":
+            case "SET_ROUTING_SOURCE_MARKER":
                 next(action)
             break;
+            case "SET_ROUTING_SOURCE_CATEGORY":
+                next(action)
+            break;
+            case "SET_ROUTING_TARGET_MARKER":
+                next(action)
+            break;
+            case "SET_ROUTING_TARGET_CATEGORY":
+                next(action)
+            break;
+            case "CHANGE_CATEGORY_ROUTING_SOURCE":
+                action.group = action.payload.value.split(':')[0];
+                action.category =action.payload.value.split(':')[1];
+                next(action)
+            break;
+            case "CHANGE_CATEGORY_ROUTING_TARGET":
+                action.group = action.payload.value.split(':')[0];
+                action.category =action.payload.value.split(':')[1];
+                next(action)
+            break;
+            case "DELETE_ROUTING_SOURCE":
+                next(action);
+            break;
+            case "DELETE_ROUTING_TARGET":
+                next(action);
+            break;
+            case "SET_ROUTING_SOURCE_CURRENT":
+                next(action);
+            break
+            case "SET_ROUTING_TARGET_CURRENT":
+                next(action);
+            break
             default:
                 break;
         }

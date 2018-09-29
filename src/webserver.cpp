@@ -52,12 +52,10 @@ std::vector<int> getTargets(ptree const& pt, Graph* g){
 }
 
 map<string, vector<string>> read_json_config(ptree pt){
-  cout << "start reading file" << endl;
   map<string, vector<string>> categories; 
   for (auto it: pt){
     categories.insert(pair<string, vector<string>>(it.first, as_vector<string>(pt, it.first)));
   }
-  for (auto it: categories) cout << it.first << endl;
   return categories;
 } 
 
@@ -172,10 +170,33 @@ void Webserver::run_server(char* filename, char* config_file){
       read_json(request->content, pt);
       std::ostringstream oss;
       string resultJson;
-      int srcIDX = g.findNode(pt.get<double>("sourceLat"), pt.get<double>("sourceLon"));
-      int trgIDX = g.findNode(pt.get<double>("targetLat"), pt.get<double>("targetLon"));
+      string sourceMode = pt.get<string>("sourceMode");
+      string targetMode = pt.get<string>("targetMode");
+      vector<Node> markers;
+      int trgIDX = -1;
+      int srcIDX = -1;
+      int internalSourceIDX;
+      int internalTargetIDX;
+      if (sourceMode == "category"){
+        srcIDX = g.findNodeByCategory(pt.get<string>("sourceGroup"), pt.get<string>("sourceCat"), pt.get<double>("sourceOriginLat"), pt.get<double>("sourceOriginLon"));
+        internalSourceIDX = g.findNode(g.nodes[srcIDX].lati, g.nodes[srcIDX].loni);
+        markers.push_back(g.nodes[srcIDX]);
+      }else{
+        internalSourceIDX = g.findNode(pt.get<double>("sourceLat"), pt.get<double>("sourceLon"));
+      }
+      if (targetMode == "category"){
+        string targetGroup = pt.get<string>("targetGroup");
+        string targetCat = pt.get<string>("targetCat");
+        double targetOriginLat = pt.get<double>("targetOriginLat");
+        double targetOriginLon = pt.get<double>("targetOriginLon");
+        trgIDX = g.findNodeByCategory(targetGroup, targetCat, targetOriginLat, targetOriginLon);
+        internalTargetIDX = g.findNode(g.nodes[trgIDX].lati, g.nodes[trgIDX].loni);
+        markers.push_back(g.nodes[trgIDX]);
+      }else{
+        internalTargetIDX = g.findNode(pt.get<double>("targetLat"), pt.get<double>("targetLon"));
+      }
       // TODO error handling
-      Result searchResult = search.oneToOne(srcIDX,trgIDX);
+      Result searchResult = search.oneToOne(internalSourceIDX, internalTargetIDX);
       pt.add_child("path", path_to_ptree(searchResult.path));
       pt.put("distance", searchResult.distance);
       write_json(oss, pt);
