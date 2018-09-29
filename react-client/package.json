@@ -38,6 +38,7 @@
     "react": "^16.5.2",
     "react-dev-utils": "^5.0.2",
     "react-dom": "^16.5.2",
+    "react-dropdown": "^1.6.2",
     "react-leaflet": "^2.0.1",
     "react-redux": "^5.0.7",
     "react-sidebar": "^3.0.2",

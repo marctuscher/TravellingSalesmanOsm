@@ -40,12 +40,19 @@ DynProg::DynProg(Graph* graph){
     return distances;
 }
 
+
+/**
+ * Held-Karp algorithm for solving asymmetric TSP. This implementation
+ * is using bitmasking to indicate subsets
+ **/
+
 vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
     vector<Node> path;
     int n = distances.size();
     int table[n][n];
     int i = 0;
     map<int, int> indexToNodeId;
+    // Generate actual distance table and remember which index belongs to which vertex
     for (auto it = distances.begin(); it != distances.end(); ++it){
         indexToNodeId.insert(pair<int, int>(i, it->first));
         int j = 0;
@@ -67,38 +74,48 @@ vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
         costs.push_back(vector<double>(1<<n, numeric_limits<double>::max()));
     }
     for (int i = 0; i < n; ++i){
+        // Fill in the initial distances
         costs[i][1<<i]=table[0][i];
     }
 
+    // all subsets with size are the individual distances from one node to all others
+    // -> subsets with size 1 have already been calcualated. Starting at size 2
     for (int subset_size = 2; subset_size < n; ++subset_size){
         int v = 0;
+        // calculating all possible combinations with subset_size over n
         long binom = binomial(n, subset_size);
-
-        for (int i=0; i < binom; i++){
-            if (i == 0){
-                for (int s = 0; s < subset_size; s++){
-                    v += (1 << s);
-                }
-            }else {
-                int t = (v | (v - 1))+1;
-                v = t | ((((t & -t)/(v & -v))>> 1)-1);
-            }
-            for (int k= 0; k <n ; k++){
+        // generate first permutation for permutation formula to start
+        for (int s = 0; s < subset_size; s++){
+            v += (1 << s);
+        }
+        for (int i=1; i < binom; i++){
+            // iterate all possible permutations of #subset_size bits
+            // https://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation
+            int t = (v | (v - 1))+1;
+            v = t | ((((t & -t)/(v & -v))>> 1)-1);
+            
+            for (int k= 0; k < n ; k++){
+                // only look at nodes which are in the subset
                 if((v & (1 << k )) == 0){
                     continue;
                 }
 
                 double minimum = numeric_limits<double>::max();
                 for (int m = 0; m < n; m++){
+                    // if m in subset and  m == k: skip
+                    // https://en.wikipedia.org/wiki/Held%E2%80%93Karp_algorithm
                     if (m == k || (v & (1 << m)) == 0){
                         continue;
                     }
+                    // calculate the the value of using this node in this subset
+                    // and check if it is smaller than minimum
                     double value = costs[m][v & ~(1 << k)] + table[m][k];
                     if (value < minimum){
                         minimum = value;
                     }
 
                 }
+                //insert the costs of this subset
                 costs[k][v] = minimum;
             }
         }
@@ -114,23 +131,27 @@ vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
     int ck = 0;
     vector<int> intermediate_path;
 
+    // search for the best path in the table
+    // get the n-1 nodes which build the path starting from source node [0][0]
     for (int i = 1; i <n; i++){
         for (int k = 1; k <n; k++){
             double value = costs[k][v] + table[k][ck];
             if (value < local_opt){
                 local_opt = value;
-                if (i== 1){
+                if (i == 1){
                     opt = local_opt;
                 }
                 min = k;
             }
         }
+        // insert the best
         intermediate_path.push_back(min);
         ck = min;
         v = v & ~(1 << (min));
         local_opt = numeric_limits<double>::max();
     }
     int source = indexToNodeId[0];
+    cout << "size of intermediate path: " << intermediate_path.size() << endl;
     reverse(intermediate_path.begin(), intermediate_path.end());
     for (auto it = intermediate_path.begin(); it != intermediate_path.end(); ++it){
         int target = indexToNodeId[*it];
@@ -147,6 +168,8 @@ vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
     return path;
 }
 
+
+
 inline pair<int, Result> getMinimum(map<int, Result> oneToManyDistances){
 
 }
@@ -156,32 +179,41 @@ inline pair<int, Result> getMinimum(map<int, Result> oneToManyDistances){
 vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
     vector<Node> path;
     int n = distances.size();
-    int table[n][n];
     int i = 0;
-    map<int, map<int, Result>> copyOfDistances(distances);
-    map<int, Result> added;
-    
-    Graph c_graph;
-    // First generate a minimum spanning tree
-    // Get random element from map
-    auto it = distances.begin();
-    advance(it, rand() % distances.size());
-    while(!copyOfDistances.empty()){
-//        added.insert(it->second);
- //       copyOfDistances.erase(it);
 
+    Graph graph_c;
+    vector<int> queue;
+    vector<int> inserted;
+    for (auto distancePair: distances) queue.push_back(distancePair.first);
+    
+    int randomIndex = rand() % n;
+    graph_c.nodes.push_back(Node(queue[randomIndex]));
+    int nodeCount = 0;
+    inserted.push_back(queue[randomIndex]);
+    queue.erase(queue.begin() + randomIndex);
+    while(!queue.empty()){
+        int minimum = numeric_limits<int>::max();
+        int source = -1;
+        int insertedIndex = -1;
+        for (auto insertedNode : inserted){
+            for (int i = 0; i < queue.size(); i++){
+                if (distances[insertedNode][queue[i]].distance < minimum){
+                    minimum = distances[insertedNode][queue[i]].distance;
+                    insertedIndex = i;
+                    source = insertedNode;
+                }
+            }
+        }
+        inserted.push_back(queue[insertedIndex]);
+        graph_c.nodes.push_back(Node(queue[insertedIndex]));
+        Edge e; 
+        e.src = nodeCount;
+        nodeCount++;
+        e.trg = nodeCount;
+        e.cost = minimum;
+        graph_c.edges.push_back(e);
+        queue.erase(queue.begin() + insertedIndex);
     }
-
-
-
-
-    
-
-
-
-
-
-    
 
     return path;
 }

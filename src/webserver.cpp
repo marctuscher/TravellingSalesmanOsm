@@ -4,6 +4,9 @@
 #include "graph.h"
 #include "result.h"
 #include "dynprog.h"
+#include <boost/foreach.hpp>
+
+
 
 
 
@@ -26,10 +29,46 @@ std::vector<T> as_vector(ptree const& pt, ptree::key_type const& key)
     return r;
 }
 
-void Webserver::run_server(char* filename){
+std::vector<int> getTargets(ptree const& pt, Graph* g){
+  vector<int> targets;
+  for (const ptree::value_type& item: pt.get_child("targets")){
+    int type = item.second.get<int>("type");
+    int nodeId = -1;
+    if (type == 0){
+      string group = item.second.get<string>("group");
+      string cat = item.second.get<string>("cat");
+      double currentLat = item.second.get<double>("currentLat");
+      double currentLon = item.second.get<double>("currentLon");
+      nodeId = g->findNodeByCategory(group, cat, currentLat, currentLon);
+    }else{
+      double lat = item.second.get<double>("lat");
+      double lon = item.second.get<double>("lng");
+      nodeId = g->findNode(lat, lon);
+    }
+    cout << "found node by coordinate: " << nodeId << endl;
+    targets.push_back(nodeId);
+  }
+  return targets;
+}
+
+map<string, vector<string>> read_json_config(ptree pt){
+  cout << "start reading file" << endl;
+  map<string, vector<string>> categories; 
+  for (auto it: pt){
+    categories.insert(pair<string, vector<string>>(it.first, as_vector<string>(pt, it.first)));
+  }
+  for (auto it: categories) cout << it.first << endl;
+  return categories;
+} 
+
+void Webserver::run_server(char* filename, char* config_file){
   GraphReader reader;
   static Graph g;
-  reader.read(&g, filename, false);
+  static ptree cat_pt;
+  ifstream file(config_file);
+  read_json(file, cat_pt);
+  map<string, vector<string>> categories = read_json_config(cat_pt);
+  reader.read(&g, filename, false, categories);
   static HttpServer server;
   static DynProg dyn(&g);
   Search search(&g);
@@ -83,6 +122,8 @@ void Webserver::run_server(char* filename){
       response->write(SimpleWeb::StatusCode::client_error_bad_request, "Could not open path " + request->path + ": " + e.what());
     }
   };
+
+  
   server.resource["^/routebynodeid$"]["POST"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
     try {
       Search search(&g);
@@ -99,6 +140,20 @@ void Webserver::run_server(char* filename){
       pt.add_child("path", path_to_ptree(searchResult.path));
       pt.put("distance", searchResult.distance);
       write_json(oss, pt);
+      std::string jsonString = oss.str();
+      std::cout << jsonString << std::endl;
+      *response << "HTTP/1.1 200 OK\r\nContent-Length: " << jsonString.length() << "\r\n\r\n" << jsonString;
+    }
+    catch(const exception &e) {
+      *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << strlen(e.what()) << "\r\n\r\n"
+      << e.what();
+    }
+  };
+  server.resource["^/categories$"]["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+    try {
+
+      std::ostringstream oss;
+      write_json(oss, cat_pt);
       std::string jsonString = oss.str();
       std::cout << jsonString << std::endl;
       *response << "HTTP/1.1 200 OK\r\nContent-Length: " << jsonString.length() << "\r\n\r\n" << jsonString;
@@ -142,7 +197,7 @@ void Webserver::run_server(char* filename){
       read_json(request->content, pt);
       std::ostringstream oss;
       string resultJson;
-      vector <int> targets = as_vector<int>(pt, "targets");
+      vector <int> targets = getTargets(pt, &g);
       map<int, map<int, Result>> distances = dyn.calcDistances(targets);
       vector<Node> path = dyn.heldKarp(distances);
       pt.add_child("path", path_to_ptree(path));

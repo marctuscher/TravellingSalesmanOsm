@@ -68,3 +68,21 @@ int Graph::findNode(double lat, double lon){
   }
   return node;
 }
+
+  int Graph::findNodeByCategory(string group, string category, double currentLat, double currentLon){
+  int node = -1;
+  double epsilon = 0.1;
+  double shortest = std::numeric_limits<int>::max();
+  for (auto i: grid[(int)floor(currentLat)][(int) floor(currentLon)]) {
+    if (this->nodes[i].tags.find(group) == this->nodes[i].tags.end()) continue;
+    if (!this->nodes[i].tags[group].compare(category)) continue;
+    double current = haversine(currentLat, currentLon, this->nodes[i].lati, this->nodes[i].loni);
+    if (current < epsilon){
+      return i;
+    }
+    if (current < shortest){
+      shortest = current;
+      node = i;
+    }
+  }
+  }

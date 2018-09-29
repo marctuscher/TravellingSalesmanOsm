@@ -9,6 +9,7 @@ class Edge
   int cost;
   int maxSpeed;
   Edge(int _src, int _trg, int _maxSpeed);
+  Edge();
 };
 
 #endif

@@ -23,7 +23,7 @@ using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 class Webserver
 {
  public:
-  static void run_server(char * filename);
+  static void run_server(char * filename, char* config_file);
 };
 
 #endif// WEBSERVER_H

@@ -19,6 +19,7 @@ class Graph
   void generateOffsetOutAndCosts();
   int getNodeId(int64_t globalId, int, int);
   int findNode(double lat, double lon);
+  int findNodeByCategory(string group, string category, double currentLat, double currentLon);
 };
 
 #endif// GRAPH_H

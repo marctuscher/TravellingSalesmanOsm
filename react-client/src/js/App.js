@@ -4,9 +4,8 @@ import '../css/App.css';
 import Sidebar from "react-sidebar";
 import MapView from './components/MapView'
 import SidebarContent from './components/SidebarContent'
-import 'skeleton-css/css/skeleton.css'
 
-const mql = window.matchMedia(`(min-width: 800px)`);
+const mql = window.matchMedia(`(min-width: 600px)`);
 
 
 class App extends Component {
@@ -45,12 +44,11 @@ class App extends Component {
       overflow: "hidden"
     },
     sidebar: {
+      width: "20%",
       zIndex: 2,
       position: "absolute",
       top: 0,
       bottom: 0,
-      // TODO dont hardcode this stuff
-      right: 0,
       transition: "transform .3s ease-out",
       WebkitTransition: "-webkit-transform .3s ease-out",
       willChange: "transform",
@@ -93,6 +91,7 @@ class App extends Component {
       open={this.state.sidebarOpen}
       docked={this.state.sidebarDocked}
       onSetOpen={this.onSetSidebarOpen}
+      styles={this.sidebarStyle}
     >
       <MapView/>
     </Sidebar>

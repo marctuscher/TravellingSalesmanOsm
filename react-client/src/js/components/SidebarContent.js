@@ -16,6 +16,10 @@ class SidebarContent extends React.Component {
         this.unsetTSP = this.unsetTSP.bind(this)
     }
 
+    componentWillMount(props){
+        this.props.coreActions.getCategories();
+    }
+
     setTSP(){
         this.props.coreActions.setTsp(true);
     }

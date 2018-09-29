@@ -4,6 +4,8 @@ export default function reducer(core = {}, action){
             return {...core, tspPath: action.path}
         case 'CALC_ROUTE':
             return {...core, routePath: action.path}
+        case 'GET_CATEGORIES':
+            return {...core, categories: action.categories}
         case 'GET_CURRENT_GEOLOCATION':
             return {...core, position: {latitude: action.position.coords.latitude, longitude: action.position.coords.longitude}}
         case 'ADD_MARKER':
@@ -12,11 +14,11 @@ export default function reducer(core = {}, action){
             return {...core, markers: core.markers.filter((item, index)=> index !== action.payload)}
         case 'SET_TSP':
             return {...core, tsp: action.payload}
-        case 'SET_TSP_TARGET':
-            return {...core, tspTargets : [...core.tspTargets, core.markers[action.payload].latlng]}
         case 'UNSET_TSP_TARGET':
             core.markers[action.payload].tsp_target = false
             return {...core}
+        case 'SET_TSP_TARGET':
+            return {...core, tspTargets: [...core.tspTargets,core.markers[action.payload].latlng ]}
         case 'SET_ROUTING_TARGET':
             return {...core, dijkstraTarget : core.markers[action.payload].latlng}
         case 'UNSET_DIJKSTRA_TARGET':

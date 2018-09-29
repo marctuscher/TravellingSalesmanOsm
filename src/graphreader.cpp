@@ -44,7 +44,7 @@ struct sort_operatorNodes
   }
 };
 
-  int GraphReader::read(Graph* out, char * inputFileName, bool verbose){
+  int GraphReader::read(Graph* out, char * inputFileName, bool verbose, map<string, vector<string>> categories){
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     std::map<long, int> nodeMap;
     std::map<std::string, int> speedMap;
@@ -71,6 +71,10 @@ struct sort_operatorNodes
           "secondary_link", "tertiary", "tertiary_link", "trunk", "trunk_link", "unclassified", "residential", "living_street", "road", "service", "turning_circle"});
     osmpbf::KeyMultiValueTagFilter oneWayFilter("oneway", {"yes"});
     osmpbf::KeyMultiValueTagFilter maxSpeedFilter("maxspeed", {"none", "signals"});
+    osmpbf::OrTagFilter category_filter;
+    for (auto cat: categories){
+      category_filter.addChild(new osmpbf::KeyMultiValueTagFilter(cat.first, cat.second.begin(), cat.second.end()));
+    }
     if (!inFile.open())
       return -1;
 
@@ -159,6 +163,18 @@ struct sort_operatorNodes
               }
               out->nodes[inserted.first->second].lati = latitude;
               out->nodes[inserted.first->second].loni = longitude;
+            }else if(category_filter.matches(node)){
+              double latitude = node.latd();
+              double longitude = node.lond();
+              out->grid[(int)floor(latitude)][(int)floor(longitude)].push_back(nodesCount);
+              Node internNode(node.id());
+              internNode.lati = latitude;
+              internNode.loni = longitude;
+              for(uint32_t i = 0, s = node.tagsSize();  i < s; ++i) {
+                internNode.tags.insert({node.key(i), node.value(i)});
+              }
+              out->nodes.push_back(internNode);
+              nodesCount++;
             }else{
               ;
             }

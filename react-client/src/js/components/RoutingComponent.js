@@ -9,10 +9,38 @@ class RoutingComponent extends React.Component {
 
     constructor(props){
         super(props)
-        this.calcRoute = this.calcRoute.bind(this)
+        this.calcRoute = this.calcRoute.bind(this);
+        this.setCategorySource = this.setCategorySource.bind(this);
+        this.setCategoryTarget = this.setCategoryTarget.bind(this);
+        this.changeCategorySource = this.changeCategorySource.bind(this);
+        this.changeCategoryTarget = this.changeCategoryTarget.bind(this);
+    }
+
+    setCategorySource(){
+        this.props.coreActions.setCategoryRoutingSource();
+    }
+    setCategoryTarget(){
+        this.props.coreActions.setCategoryRoutingSource();
+    }
+
+    changeCategorySource(e){
+
+    }
+
+    changeCategoryTarget(e){
+
+    }
+
+    renderAddButton(name, setFunction){
+        return (
+            <div>
+                <button onClick={setFunction}>Add category {name}</button>
+            </div>
+        )
     }
 
     renderSource(){
+        if (this.props.source.type === "category"){
         return (
             <div>
                 <h4>Source</h4>
@@ -26,6 +54,7 @@ class RoutingComponent extends React.Component {
                 </form>
             </div>
         )
+        }
     }
 
     calcRoute(){
@@ -51,8 +80,8 @@ class RoutingComponent extends React.Component {
     render(){
         return (
             <div>
-            {this.props.source ? this.renderSource(): null}
-            {this.props.target ? this.renderTarget(): null}
+            {this.props.source ? this.renderSource(): this.renderAddButton("source", this.setCategorySource)}
+            {this.props.target ? this.renderTarget(): this.renderAddButton("target", this.setCategoryTarget)}
             <button onClick={this.calcRoute}>Calc</button>
             </div>
         )

@@ -69,7 +69,7 @@ map<int, Result> Search::oneToMany(int source, vector<int> targets){
   this->expand(source, 0);
   while(!this->pq.empty()){
     current = pq.top();
-    auto it =find(targets.begin(), targets.end(), current.second); 
+    auto it = find(targets.begin(), targets.end(), current.second); 
       if (it != targets.end()){
         cout << "found " << current.second << endl;
         Result res;

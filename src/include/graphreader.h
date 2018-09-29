@@ -11,7 +11,7 @@
 
 class GraphReader{
 public:
-  int read(Graph* out, char * inputFileName, bool verbose);
+  int read(Graph* out, char * inputFileName, bool verbose, std::map<string, vector<string>> categories);
 };
 
 #endif // GRAPHREADER_H

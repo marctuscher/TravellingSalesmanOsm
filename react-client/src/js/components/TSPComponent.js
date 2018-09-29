@@ -10,18 +10,57 @@ class TSPComponent extends React.Component {
 
     constructor(props){
         super(props)
-        this.search = this.search.bind(this)
+        this.heldKarp = this.heldKarp.bind(this)
     }
     
-    search(){
-        this.props.coreActions.tsp_held_karp();
+    heldKarp(){
+        this.props.coreActions.tsp_held_karp(this.props.source, this.props.targets);
     }
 
+    renderSource(){
+        return (
+            <div>
+                <h4>Source</h4>
+                <form>
+                    <label>lat:</label>
+                    {this.props.source.lat}
+                </form>
+                <form>
+                    <label>lon:</label>
+                    {this.props.source.lng}
+                </form>
+            </div>
+        )
+    }
+
+    calcRoute(){
+        this.props.coreActions.calcRoute(this.props.source, this.props.target)
+    }
+
+    renderTarget(){
+        return this.props.targets.map(elem => {
+        return (
+            <div>
+                <h4>Target</h4>
+                <form>
+                    <label>lat:</label>
+                    {elem.lat}
+                </form>
+                <form>
+                    <label>lon:</label>
+                    {elem.lng}
+                </form>
+            </div>
+        )
+        })
+    }
 
     render(){
         return (
-            <div>My TSP COmpoentn
-                <button onClick={this.search}></button>
+            <div>
+            {this.props.source ? this.renderSource(): null}
+            {this.props.targets ? this.renderTarget(): null}
+            <button onClick={this.heldKarp}>Calc</button>
             </div>
         )
     }
@@ -29,6 +68,8 @@ class TSPComponent extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        source: state.core.tspSource,
+        targets: state.core.tspTargets
     }
 }
 

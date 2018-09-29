@@ -24,6 +24,22 @@
         "unordered_set": "cpp",
         "utility": "cpp",
         "vector": "cpp",
-        "hashtable": "cpp"
+        "hashtable": "cpp",
+        "__locale": "cpp",
+        "*.ipp": "cpp",
+        "__bit_reference": "cpp",
+        "__functional_base": "cpp",
+        "algorithm": "cpp",
+        "atomic": "cpp",
+        "chrono": "cpp",
+        "optional": "cpp",
+        "functional": "cpp",
+        "limits": "cpp",
+        "locale": "cpp",
+        "memory": "cpp",
+        "ratio": "cpp",
+        "system_error": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp"
     }
 }

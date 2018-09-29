@@ -1,7 +1,8 @@
-export function tsp_held_karp(targets){
+export function tsp_held_karp(source,targets){
     return {
         type: "TSP_HELD_KARP",
-        payload: targets
+        source: source, 
+        targets: targets
     }
 }
 
@@ -10,6 +11,12 @@ export function calcRoute(source, target){
         type: "CALC_ROUTE",
         source: source, 
         target: target
+    }
+}
+
+export function getCategories(){
+    return {
+        type:"GET_CATEGORIES"
     }
 }
 
@@ -54,16 +61,10 @@ export function unsetTspTarget(index){
     }
 }
 
-export function unsetDijkstraTarget(index){
-    return {
-        type: "UNSET_DIJKSTRA_TARGET", 
-        payload: index
-    }
-}
-export function setDijkstraTarget(index){
+export function setRoutingTarget(mode){
     return {
         type: "SET_ROUTING_TARGET", 
-        payload: index
+        mode: mode
     }
 }
 
@@ -79,7 +80,7 @@ export function unsetTspSource(index){
         payload: index
     }
 }
-export function setDijkstraSource(index){
+export function setRoutingSource(index){
     return {
         type: "SET_DIJKSTRA_SOURCE",
         payload: index
@@ -91,3 +92,4 @@ export function unsetDijkstraSource(index){
         payload: index
     }
 }
+
