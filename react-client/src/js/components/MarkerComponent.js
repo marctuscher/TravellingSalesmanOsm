@@ -12,9 +12,6 @@ class MarkerComponent extends React.Component {
         this.deleteMarker = this.deleteMarker.bind(this);
         this.setTarget = this.setTarget.bind(this);
         this.setSource = this.setSource.bind(this);
-        this.unsetTarget = this.unsetTarget.bind(this);
-        this.unsetSource = this.unsetSource.bind(this);
-        
     }
 
     deleteMarker(){
@@ -23,32 +20,16 @@ class MarkerComponent extends React.Component {
 
     setTarget(){
         if (this.props.tsp){
-            this.props.coreActions.setTspTarget(this.props.index);
+            this.props.coreActions.addTspMarkerTarget(this.props.index);
         }else {
-            this.props.coreActions.setDijkstraTarget(this.props.index);
+            this.props.coreActions.setRoutingTargetMarker(this.props.index)
         }
     }
     setSource(){
         if (this.props.tsp){
             this.props.coreActions.setTspSource(this.props.index);
         }else {
-            this.props.coreActions.setDijkstraSource(this.props.index);
-        }
-    }
-
-    unsetTarget(){
-        if (this.props.tsp){
-            this.props.coreActions.unsetTspTarget(this.props.index);
-        }else{
-            this.props.coreActions.unsetDijkstraTarget(this.props.index);
-        }
-    }
-
-    unsetSource(){
-        if (this.props.tsp){
-            this.props.coreActions.unsetTspSource(this.props.index);
-        }else{
-            this.props.coreActions.unsetDijkstraSource(this.props.index);
+            this.props.coreActions.setRoutingSourceMarker(this.props.index);
         }
     }
 
@@ -61,6 +42,7 @@ class MarkerComponent extends React.Component {
                 <button onClick={this.setSource}>Set source</button>
                 <button onClick={this.setTarget}>Set target</button>
                 <button onClick={this.deleteMarker}>deleteMarker</button>
+                {this.props.markerText}
                 </Popup>
             </div>
         )

@@ -47,6 +47,7 @@ class MapView extends React.Component {
 				key={i} 
 				coord={marker.latlng} 
 				type={marker.type}
+				markerText={marker.text}
 				index={i}/>
 				)
 		})

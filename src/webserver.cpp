@@ -29,17 +29,21 @@ std::vector<T> as_vector(ptree const& pt, ptree::key_type const& key)
     return r;
 }
 
-std::vector<int> getTargets(ptree const& pt, Graph* g){
+pair<vector<int>, vector<Node>> getTargets(ptree const& pt, Graph* g){
   vector<int> targets;
+  vector<Node> markers;
   for (const ptree::value_type& item: pt.get_child("targets")){
-    int type = item.second.get<int>("type");
+    string mode = item.second.get<string>("mode");
     int nodeId = -1;
-    if (type == 0){
+    int markerNodeId = -1;
+    if(mode == "category"){
       string group = item.second.get<string>("group");
-      string cat = item.second.get<string>("cat");
-      double currentLat = item.second.get<double>("currentLat");
-      double currentLon = item.second.get<double>("currentLon");
-      nodeId = g->findNodeByCategory(group, cat, currentLat, currentLon);
+      string cat = item.second.get<string>("category");
+      double currentLat = item.second.get<double>("originLat");
+      double currentLon = item.second.get<double>("originLon");
+      markerNodeId = g->findNodeByCategory(group, cat, currentLat, currentLon);
+      markers.push_back(g->nodes[markerNodeId]);
+      nodeId = g->findNode(g->nodes[markerNodeId].lati, g->nodes[markerNodeId].loni);
     }else{
       double lat = item.second.get<double>("lat");
       double lon = item.second.get<double>("lng");
@@ -48,7 +52,7 @@ std::vector<int> getTargets(ptree const& pt, Graph* g){
     cout << "found node by coordinate: " << nodeId << endl;
     targets.push_back(nodeId);
   }
-  return targets;
+  return pair<vector<int>, vector<Node>>(targets, markers);
 }
 
 map<string, vector<string>> read_json_config(ptree pt){
@@ -218,8 +222,8 @@ void Webserver::run_server(char* filename, char* config_file){
       read_json(request->content, pt);
       std::ostringstream oss;
       string resultJson;
-      vector <int> targets = getTargets(pt, &g);
-      map<int, map<int, Result>> distances = dyn.calcDistances(targets);
+      pair<vector <int>, vector<Node>> targetsAndMarkers = getTargets(pt, &g);
+      map<int, map<int, Result>> distances = dyn.calcDistances(targetsAndMarkers.first);
       vector<Node> path = dyn.heldKarp(distances);
       pt.add_child("path", path_to_ptree(path));
       write_json(std::cout,pt);

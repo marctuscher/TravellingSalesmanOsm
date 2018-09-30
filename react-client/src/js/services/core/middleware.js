@@ -1,13 +1,37 @@
 const axios = require('axios')
 
 
+function addMarkerAtCurrentLocation(store){
+                store.dispatch({
+                    type: "ADD_MARKER",
+                    payload: {
+                        latlng: {
+                            lat: store.getState().core.position.latitude,
+                            lng: store.getState().core.position.longitude
+                        },
+                        markerType: "normal",
+                        text: "Your current location"
+                    }
+                })
+}
+function prepareDataTsp(targets, store){
+       targets.forEach((elem, index) => {
+           if(elem.mode === "category"){
+               elem.originLat = store.getState().core.position.latitude;
+               elem.originLon = store.getState().core.position.longitude
+           }
+       });
+       return targets;
+}
+
 
 const coreMiddleware = (function () {
     return store => next => action => {
         switch (action.type){
             case "TSP_HELD_KARP":
-            let targets = action.targets;
+            let targets = action.targets.slice();
             targets.unshift(action.source);
+            targets = prepareDataTsp(targets, store)
             axios({
                 method: 'POST', 
                 url: '/tspheldkarp',
@@ -33,17 +57,17 @@ const coreMiddleware = (function () {
                 action.data.sourceGroup = action.source.group;
                 action.data.sourceCat = action.source.category;
             }else{
-                action.data.sourceLat = action.source.lat;
-                action.data.sourceLon = action.source.lng;
+                action.data.sourceLat = action.source.latlng.lat;
+                action.data.sourceLon = action.source.latlng.lng;
             }
-            if (action.source.mode === "category"){
+            if (action.target.mode === "category"){
                 action.data.targetOriginLat =  store.getState().core.position.latitude;
                 action.data.targetOriginLon =  store.getState().core.position.longitude;
                 action.data.targetGroup = action.target.group;
                 action.data.targetCat = action.target.category;
             }else{
-                action.data.targetLat = action.target.lat;
-                action.data.targetLon = action.target.lng;
+                action.data.targetLat = action.target.latlng.lat;
+                action.data.targetLon = action.target.latlng.lng;
             }
             axios({
                 method: 'POST',
@@ -88,6 +112,7 @@ const coreMiddleware = (function () {
                 });
             break;
             case "ADD_MARKER":
+                if (action.payload in store.getState().core.markers) break;
                 next(action)
             break;
             case "DELETE_MARKER":
@@ -96,15 +121,41 @@ const coreMiddleware = (function () {
             case "SET_TSP":
                 next(action)
             break;
-            case "SET_TSP_TARGET":
+            case "SET_TSP_SOURCE_CATEGORY":
                 next(action)
             break;
-            case "SET_ROUTING_TARGET":
+            case "SET_TSP_SOURCE_CURRENT":
+                addMarkerAtCurrentLocation(store);
                 next(action)
             break;
-            case "SET_TSP_SOURCE":
+            case "DELETE_TSP_SOURCE":
+                next(action);
+            break;
+            case "CHANGE_CATEGORY_TSP_SOURCE":
+                action.group = action.payload.value.split(':')[0];
+                action.category =action.payload.value.split(':')[1];
                 next(action)
             break;
+            case "ADD_CATEGORY_TSP_TARGET":
+                next(action)
+            break;
+            case "ADD_CURRENT_TSP_TARGET":
+                addMarkerAtCurrentLocation(store);
+                next(action)
+            break;
+            case "CHANGE_CATEGORY_TSP_TARGET":
+                action.group = action.payload.value.split(':')[0];
+                action.category =action.payload.value.split(':')[1];
+                next(action)
+            break;
+            case "DELETE_TSP_TARGET":
+                next(action);
+            break;
+            case "ADD_TSP_MARKER_TARGET":
+                next(action)
+            break;
+
+            /** Routing stuff**/
             case "SET_ROUTING_SOURCE_MARKER":
                 next(action)
             break;
@@ -134,9 +185,11 @@ const coreMiddleware = (function () {
                 next(action);
             break;
             case "SET_ROUTING_SOURCE_CURRENT":
+                addMarkerAtCurrentLocation(store);
                 next(action);
             break
             case "SET_ROUTING_TARGET_CURRENT":
+                addMarkerAtCurrentLocation(store);
                 next(action);
             break
             default:

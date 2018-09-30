@@ -17,6 +17,8 @@ class RoutingComponent extends React.Component {
         this.changeCategoryTarget = this.changeCategoryTarget.bind(this);
         this.deleteSource = this.deleteSource.bind(this);
         this.deleteTarget = this.deleteTarget.bind(this);
+        this.setCurrentSource = this.setCurrentSource.bind(this);
+        this.setCurrentTarget = this.setCurrentTarget.bind(this);
     }
 
     setCategorySource(){
@@ -48,7 +50,7 @@ class RoutingComponent extends React.Component {
         this.props.coreActions.changeCategoryRoutingTarget(e);
     }
 
-    renderAddButton(name, setFunctionCategory, setFunctionLocation){
+    renderAddButtons(name, setFunctionCategory, setFunctionLocation){
         return (
             <div>
                 <button onClick={setFunctionCategory}>Add category {name}</button>
@@ -63,10 +65,11 @@ class RoutingComponent extends React.Component {
 
     renderSource(){
         if (this.props.source.mode === "category"){
+            var defaultValue = this.props.source.group?this.props.source.group + ":" + this.props.source.category:null;
             return (
                 <div>
                     <h4>Source</h4><button onClick={this.deleteSource}>Delete this source</button>
-                    <CategoryComponent onChange={this.changeCategorySource}/>
+                    <CategoryComponent defaultValue={defaultValue} onChange={this.changeCategorySource}/>
                 </div>
             )
         }else if (this.props.source.mode === "marker"){
@@ -76,15 +79,23 @@ class RoutingComponent extends React.Component {
                     Marker Set!
                 </div>
             )
+        }else if (this.props.source.mode === "current"){
+            return (
+                <div>
+                    <h4>Source</h4><button onClick={this.deleteSource}>Delete this source</button>
+                    Your current location is used!
+                </div>
+            )
         }
     }
 
     renderTarget(){
         if (this.props.target.mode === "category"){
+            var defaultValue = this.props.target.group?this.props.target.source.group + ":" + this.props.target.category:null;
             return (
                 <div>
                     <h4>Target</h4><button onClick={this.deleteTarget}>Delete this target</button>
-                    <CategoryComponent onChange={this.changeCategoryTarget}/>
+                    <CategoryComponent defaultValue={defaultValue} onChange={this.changeCategoryTarget}/>
                 </div>
             )
         }else if (this.props.target.mode === "marker"){
@@ -94,6 +105,13 @@ class RoutingComponent extends React.Component {
                     Marker Set!
                 </div>
             )
+        }else if (this.props.target.mode === "current"){
+            return (
+                <div>
+                    <h4>Target</h4><button onClick={this.deleteTarget}>Delete this target</button>
+                    Your current location is used!
+                </div>
+            )
         }
 
     }
@@ -101,8 +119,8 @@ class RoutingComponent extends React.Component {
     render(){
         return (
             <div>
-            {this.props.source ? this.renderSource(): this.renderAddButton("source", this.setCategorySource)}
-            {this.props.target ? this.renderTarget(): this.renderAddButton("target", this.setCategoryTarget)}
+            {this.props.source ? this.renderSource(): this.renderAddButtons("source", this.setCategorySource, this.setCurrentSource)}
+            {this.props.target ? this.renderTarget(): this.renderAddButtons("target", this.setCategoryTarget, this.setCurrentTarget)}
             <button onClick={this.calcRoute}>Calc</button>
             </div>
         )

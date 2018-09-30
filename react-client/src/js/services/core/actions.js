@@ -26,10 +26,10 @@ export function get_current_geolocation(){
     }
 }
 
-export function addMarker(latlng, type){
+export function addMarker(latlng, type, text){
     return {
         type: "ADD_MARKER",
-        payload: {latlng: latlng, markerType: type}
+        payload: {latlng: latlng, markerType: type, text: text}
     }
 }
 
@@ -47,22 +47,66 @@ export function setTsp(value){
     }
 }
 
-export function setTspTarget(index){
+
+
+export function setTspSourceCategory(){
     return {
-        type: "SET_TSP_TARGET",
-        payload: index
+        type: "SET_TSP_SOURCE_CATEGORY"
+    }
+}
+export function setTspSourceCurrent(){
+    return {
+        type: "SET_TSP_SOURCE_CURRENT"
+    }
+}
+export function deleteTspSource(){
+    return {
+        type: "DELETE_TSP_SOURCE"
+    }
+}
+export function changeCategoryTspSource(cat){
+    return {
+        type: "CHANGE_CATEGORY_TSP_SOURCE",
+        payload:cat
+    }
+}
+
+export function addCategoryTspTarget(){
+    return {
+        type: "ADD_CATEGORY_TSP_TARGET"
+    }
+}
+export function addCurrentTspTarget(){
+    return {
+        type: "ADD_CURRENT_TSP_TARGET"
+    }
+}
+
+export function changeCategoryTspTarget(cat, index){
+    return {
+        type: "CHANGE_CATEGORY_TSP_TARGET",
+        payload: cat, 
+        index: index
+    }
+}
+
+export function deleteTspTarget(index){
+    return {
+        type: "DELETE_TSP_TARGET",
+        index: index
+    }
+}
+export function addTspMarkerTarget(index){
+    return {
+        type:"ADD_TSP_MARKER_TARGET",
+        index: index
     }
 }
 
 
 
-export function setTspSource(index){
-    return {
-        type: "SET_TSP_SOURCE",
-        payload: index
-    }
-}
 
+/** Routing stuff */
 export function setRoutingSourceCurrent(){
     return {
         type: "SET_ROUTING_SOURCE_CURRENT"
