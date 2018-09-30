@@ -236,6 +236,27 @@ void Webserver::run_server(char* filename, char* config_file){
                 << e.what();
     }
   };
+  server.resource["^/apx$"]["POST"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+    try {
+      std::cout << "Post json"<< std::endl;
+      ptree pt;
+      read_json(request->content, pt);
+      std::ostringstream oss;
+      string resultJson;
+      pair<vector <int>, vector<Node>> targetsAndMarkers = getTargets(pt, &g);
+      map<int, map<int, Result>> distances = dyn.calcDistances(targetsAndMarkers.first);
+      vector<Node> path = dyn.christofides(distances);
+      pt.add_child("path", path_to_ptree(path));
+      write_json(std::cout,pt);
+      write_json(oss, pt);
+      std::string jsonString = oss.str();
+      *response << "HTTP/1.1 200 OK\r\nContent-Length: " << jsonString.length() << "\r\n\r\n" << jsonString;
+    }
+    catch(const exception &e) {
+      *response << "HTTP/1.1 400 Bad Request\r\nContent-Length: " << strlen(e.what()) << "\r\n\r\n"
+                << e.what();
+    }
+  };
   thread server_thread([]() {
       // Start server
       std::cout<<"Start Webserver on port " << server.config.port << std::endl;

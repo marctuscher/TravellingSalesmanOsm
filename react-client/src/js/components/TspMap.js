@@ -11,6 +11,7 @@ class TspMap extends React.Component {
         return (
             <div>
                 {this.props.path ? <Polyline positions={this.props.path}/>: null}
+                {this.props.apxPath ? <Polyline positions={this.props.apxPath} color="red" />: null}
             </div>
         )
     }
@@ -18,7 +19,8 @@ class TspMap extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        path: state.core.tspPath
+        path: state.core.tspPath,
+        apxPath: state.core.apxPath
     }
 }
 

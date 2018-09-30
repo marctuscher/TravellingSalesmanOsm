@@ -33,6 +33,22 @@ struct sort_operatorNodes
   }
 };
 
+void Graph::generateOffsetOut(){
+  offset.push_back(0);
+  int v = 0;
+  for (u_int i = 0; i < edges.size(); i++){
+    if(edges[i].src != v){
+      while(v < edges[i].src){
+        v++;
+        offset.push_back(i);
+      }
+    }
+  }
+  for (uint k = v +1; k < nodes.size()+1; k++){
+    offset.push_back(edges.size());
+  }
+}
+
 void Graph::generateOffsetOutAndCosts() {
     offset.push_back(0);
     int v = 0;
@@ -49,6 +65,7 @@ void Graph::generateOffsetOutAndCosts() {
         offset.push_back(edges.size());
     }
 }
+
 
 
 

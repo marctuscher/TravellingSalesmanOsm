@@ -6,6 +6,14 @@ export function tsp_held_karp(source,targets){
     }
 }
 
+export function apx(source, targets){
+    return {
+        type: "APX",
+        source: source, 
+        targets: targets
+    }
+}
+
 export function calcRoute(source, target){
     return {
         type: "CALC_ROUTE",

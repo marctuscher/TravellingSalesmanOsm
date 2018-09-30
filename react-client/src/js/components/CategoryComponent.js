@@ -11,7 +11,7 @@ class CategoryComponent extends React.Component{
     render(){
         return (
             <div className="bordered">
-                <Dropdown onChange={this.props.onChange} value={this.props.defaultValue} options={this.props.categories}/>
+                <Dropdown onChange={this.props.onChange} value={this.props.defaultValue} options={this.props.categories} />
             </div>
         )
     }

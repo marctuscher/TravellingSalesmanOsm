@@ -47,6 +47,27 @@ const coreMiddleware = (function () {
                 console.error(err)
             })
                 break;
+            case "APX":
+            targets = action.targets.slice();
+            targets.unshift(action.source);
+            targets = prepareDataTsp(targets, store)
+            axios({
+                method: 'POST', 
+                url: '/apx',
+                data: {
+                    targets: targets
+                }
+            }).then(res => {
+                action.path = res.data.path.map((elem, id)=> {
+                    return [Number(elem.lat), Number(elem.lon)]
+                });
+                next(action)
+            }).catch(err => {
+                console.error(err)
+            })
+                break;
+            
+            
             case "CALC_ROUTE":
             action.data = {}
             action.data.sourceMode = action.source.mode;

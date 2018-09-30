@@ -17,6 +17,7 @@ class Graph
   // lat lon grid for storing nodes (this only works for nodes in Europe)
   vector<int> grid[60][40];
   void generateOffsetOutAndCosts();
+  void generateOffsetOut();
   int getNodeId(int64_t globalId, int, int);
   int findNode(double lat, double lon);
   int findNodeByCategory(string group, string category, double currentLat, double currentLon);

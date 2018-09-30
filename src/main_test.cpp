@@ -15,7 +15,8 @@ using namespace std;
 int main (int argc, char* argv[]){
   GraphReader reader;
   Graph g;
-  reader.read(&g, argv[1], false);
+  map<string, vector<string>> categories;
+  reader.read(&g, argv[1], false, categories);
   DynProg dyn(&g);
   std::vector<int> vec;
   for (int i = 2; i < argc; i++){

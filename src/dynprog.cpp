@@ -170,10 +170,13 @@ vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
 
 
 
-inline pair<int, Result> getMinimum(map<int, Result> oneToManyDistances){
-
+void visit(Graph* g, vector<int>* visited, int current){
+    visited->push_back(current);
+    if(visited->size() == g->nodes.size()) return;
+    for (int i = g->offset[current]; i < g->offset[current+1] ; i++){
+        visit(g, visited, g->edges[i].trg);
+    }
 }
-
 
 
 vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
@@ -214,6 +217,20 @@ vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
         graph_c.edges.push_back(e);
         queue.erase(queue.begin() + insertedIndex);
     }
-
+    cout << "generated MST" << endl;
+    graph_c.generateOffsetOut();
+    vector<int> visited;
+    int current = 0;
+    visit(&graph_c, &visited, current);
+    int source = graph_c.nodes[0].id;
+    int target = -1;
+    for (int i = 1; i < visited.size(); i++){
+        target = graph_c.nodes[visited[i]].id;
+        for (auto node: distances[source][target].path){
+            path.push_back(node);
+        }
+        source = target;
+    }
+    for (auto node: distances[target][graph_c.nodes[0].id].path) path.push_back(node);
     return path;
 }

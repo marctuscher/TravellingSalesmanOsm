@@ -18,10 +18,14 @@ class TSPComponent extends React.Component {
         this.changeCategorySource = this.changeCategorySource.bind(this)
         this.addCategoryTarget = this.addCategoryTarget.bind(this)
         this.addCurrentTarget = this.addCurrentTarget.bind(this)
+        this.apx = this.apx.bind(this)
     }
     
     heldKarp(){
         this.props.coreActions.tsp_held_karp(this.props.source, this.props.targets);
+    }
+    apx(){
+        this.props.coreActions.apx(this.props.source, this.props.targets);
     }
 
     setCategorySource(){
@@ -93,9 +97,6 @@ class TSPComponent extends React.Component {
         }
     }
 
-    calcRoute(){
-        this.props.coreActions.calcRoute(this.props.source, this.props.target)
-    }
 
     renderTarget(){
         return this.props.targets.map((elem, index) => {
@@ -132,6 +133,7 @@ class TSPComponent extends React.Component {
             {this.props.targets ? this.renderTarget(): null}
             {this.renderAddTarget()}
             <button onClick={this.heldKarp}>Calc</button>
+            <button onClick={this.apx}>Calc APX</button>
             </div>
         )
     }

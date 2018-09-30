@@ -2,6 +2,8 @@ export default function reducer(core = {}, action){
     switch (action.type){
         case 'TSP_HELD_KARP':
             return {...core, tspPath: action.path}
+        case "APX":
+            return {...core, apxPath: action.path}
         case 'CALC_ROUTE':
             return {...core, routePath: action.path}
         case 'GET_CATEGORIES':
