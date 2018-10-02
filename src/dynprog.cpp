@@ -219,10 +219,13 @@ vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
     }
     cout << "generated MST" << endl;
     graph_c.generateOffsetOut();
-    vector<int> visited;
+    vector<int> visited_tmp;
     int current = 0;
-    visit(&graph_c, &visited, current);
-    int source = graph_c.nodes[0].id;
+    visit(&graph_c, &visited_tmp, current);
+    auto it = find(visited_tmp.begin(), visited_tmp.end(),distances.begin()->first);
+    vector<int> visited(it, visited_tmp.end());
+    for (auto it2 = visited_tmp.begin(); it2 != it; ++it) visited.push_back(*it2);
+    int source = graph_c.nodes[visited[0]].id;
     int target = -1;
     for (int i = 1; i < visited.size(); i++){
         target = graph_c.nodes[visited[i]].id;
@@ -231,6 +234,6 @@ vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
         }
         source = target;
     }
-    for (auto node: distances[target][graph_c.nodes[0].id].path) path.push_back(node);
+    for (auto node: distances[target][graph_c.nodes[visited[0]].id].path) path.push_back(node);
     return path;
 }

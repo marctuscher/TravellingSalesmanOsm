@@ -4,6 +4,10 @@ import '../css/App.css';
 import Sidebar from "react-sidebar";
 import MapView from './components/MapView'
 import SidebarContent from './components/SidebarContent'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCheckSquare, faCoffee, faMinus } from '@fortawesome/free-solid-svg-icons'
+
+library.add( faCheckSquare, faCoffee, )
 
 const mql = window.matchMedia(`(min-width: 600px)`);
 

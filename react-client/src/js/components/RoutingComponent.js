@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
 import '../../css/components/RoutingComponent.css'
 import CategoryComponent from './CategoryComponent';
+import SourceTargetComponent from './SourceTargetComponent'
 
 
 class RoutingComponent extends React.Component {
@@ -64,55 +65,13 @@ class RoutingComponent extends React.Component {
     }
 
     renderSource(){
-        if (this.props.source.mode === "category"){
-            var defaultValue = this.props.source.group?this.props.source.group + ":" + this.props.source.category:null;
-            return (
-                <div>
-                    <h4>Source</h4><button onClick={this.deleteSource}>Delete this source</button>
-                    <CategoryComponent defaultValue={defaultValue} onChange={this.changeCategorySource}/>
-                </div>
-            )
-        }else if (this.props.source.mode === "marker"){
-            return (
-                <div>
-                    <h4>Source</h4><button onClick={this.deleteSource}>Delete this source</button>
-                    Marker Set!
-                </div>
-            )
-        }else if (this.props.source.mode === "current"){
-            return (
-                <div>
-                    <h4>Source</h4><button onClick={this.deleteSource}>Delete this source</button>
-                    Your current location is used!
-                </div>
-            )
-        }
+        return (<SourceTargetComponent type={"source"} elem={this.props.source} delete={this.deleteSource} changeCategory={this.changeCategorySource}/>)
     }
 
     renderTarget(){
-        if (this.props.target.mode === "category"){
-            var defaultValue = this.props.target.group?this.props.target.source.group + ":" + this.props.target.category:null;
-            return (
-                <div>
-                    <h4>Target</h4><button onClick={this.deleteTarget}>Delete this target</button>
-                    <CategoryComponent defaultValue={defaultValue} onChange={this.changeCategoryTarget}/>
-                </div>
-            )
-        }else if (this.props.target.mode === "marker"){
-            return (
-                <div>
-                    <h4>Source</h4><button onClick={this.deleteTarget}>Delete this target</button>
-                    Marker Set!
-                </div>
-            )
-        }else if (this.props.target.mode === "current"){
-            return (
-                <div>
-                    <h4>Target</h4><button onClick={this.deleteTarget}>Delete this target</button>
-                    Your current location is used!
-                </div>
-            )
-        }
+        return (
+            <SourceTargetComponent type={"target"} elem={this.props.target} delete={this.deleteTarget} changeCategory={this.changeCategoryTarget}/>
+        )
 
     }
 

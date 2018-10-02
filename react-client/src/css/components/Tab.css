@@ -1,12 +1,12 @@
 .btn {
     border: none;
     outline: none;
-    background-color: #add8e6;
+    background-color: #d1d8e0;
     cursor: pointer;
     width: 50%;
     height: 40px;
 }
 
 .active {
-    background-color: #87cefa
+    background-color: #fa8231;
 }

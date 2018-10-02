@@ -4,6 +4,7 @@ import {bindActionCreators} from 'redux';
 import { connect } from 'react-redux';
 import '../../css/components/TSPComponent.css'
 import CategoryComponent from './CategoryComponent';
+import SourceTargetComponent from './SourceTargetComponent';
 
 
 class TSPComponent extends React.Component {
@@ -72,57 +73,15 @@ class TSPComponent extends React.Component {
     }
 
     renderSource(){
-        if (this.props.source.mode === "category"){
-            var defaultValue = this.props.source.group?this.props.source.group + ":" + this.props.source.category:null;
-            return (
-                <div>
-                    <h4>Source</h4><button onClick={this.deleteSource}>Delete this source</button>
-                    <CategoryComponent onChange={this.changeCategorySource} defaultValue={defaultValue}/>
-                </div>
-            )
-        }else if (this.props.source.mode === "marker"){
-            return (
-                <div>
-                    <h4>Source</h4><button onClick={this.deleteSource}>Delete this source</button>
-                    Marker Set!
-                </div>
-            )
-        }else if (this.props.source.mode === "current"){
-            return (
-                <div>
-                    <h4>Source</h4><button onClick={this.deleteSource}>Delete this source</button>
-                    Your current location is used!
-                </div>
-            )
-        }
+        return (<SourceTargetComponent type={"source"} elem={this.props.source} delete={this.deleteSource} changeCategory={this.changeCategorySource}/>)
     }
 
 
     renderTarget(){
         return this.props.targets.map((elem, index) => {
-        if (elem.mode === "category"){
-            var defaultValue = elem.group ? elem.group + ":" + elem.category: null;
             return (
-                <div>
-                    <h4>Target</h4><button onClick={()=> this.deleteTarget(index)}>Delete this target</button>
-                    <CategoryComponent defaultValue={defaultValue} onChange={(e)=> this.changeCategoryTarget(e,index)}/>
-                </div>
+                <SourceTargetComponent key={index} type={"target"} elem={elem} delete={()=> this.deleteTarget(index)} changeCategory={(e)=> this.changeCategoryTarget(e, index)}/>
             )
-        }else if (elem.mode === "marker"){
-            return (
-                <div>
-                    <h4>Target</h4><button onClick={()=>this.deleteTarget(index)}>Delete this target</button>
-                    Marker Set!
-                </div>
-            )
-        }else if (elem.mode === "current"){
-            return (
-                <div>
-                    <h4>Target</h4><button onClick={()=> this.deleteTarget(index)}>Delete this target</button>
-                    Your current location is used!
-                </div>
-            )
-        }
         })
     }
 
