@@ -24,6 +24,13 @@ function prepareDataTsp(targets, store){
        return targets;
 }
 
+function processResult(res, action){
+                action.path = res.data.path.map((elem, id)=> {
+                    return [Number(elem.lat), Number(elem.lon)]
+                });
+    return action;
+}
+
 
 const coreMiddleware = (function () {
     return store => next => action => {
@@ -39,10 +46,7 @@ const coreMiddleware = (function () {
                     targets: targets
                 }
             }).then(res => {
-                action.path = res.data.path.map((elem, id)=> {
-                    return [Number(elem.lat), Number(elem.lon)]
-                });
-                next(action)
+                next(processResult(res, action))
             }).catch(err => {
                 console.error(err)
             })
@@ -58,10 +62,7 @@ const coreMiddleware = (function () {
                     targets: targets
                 }
             }).then(res => {
-                action.path = res.data.path.map((elem, id)=> {
-                    return [Number(elem.lat), Number(elem.lon)]
-                });
-                next(action)
+                next(processResult(res, action))
             }).catch(err => {
                 console.error(err)
             })
@@ -95,10 +96,7 @@ const coreMiddleware = (function () {
                 url: '/routebycoordinates',
                 data : action.data
             }).then(res => {
-                action.path = res.data.path.map((elem, id)=> {
-                    return [Number(elem.lat), Number(elem.lon)]
-                })
-                next(action);
+                next(processResult(res, action));
             }).catch(err => {
                 console.error(err)
             })

@@ -189,11 +189,10 @@ vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
     vector<int> inserted;
     for (auto distancePair: distances) queue.push_back(distancePair.first);
     
-    int randomIndex = rand() % n;
-    graph_c.nodes.push_back(Node(queue[randomIndex]));
+    graph_c.nodes.push_back(Node(queue[0]));
     int nodeCount = 0;
-    inserted.push_back(queue[randomIndex]);
-    queue.erase(queue.begin() + randomIndex);
+    inserted.push_back(queue[0]);
+    queue.erase(queue.begin());
     while(!queue.empty()){
         int minimum = numeric_limits<int>::max();
         int source = -1;
@@ -219,12 +218,9 @@ vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
     }
     cout << "generated MST" << endl;
     graph_c.generateOffsetOut();
-    vector<int> visited_tmp;
+    vector<int> visited;
     int current = 0;
-    visit(&graph_c, &visited_tmp, current);
-    auto it = find(visited_tmp.begin(), visited_tmp.end(),distances.begin()->first);
-    vector<int> visited(it, visited_tmp.end());
-    for (auto it2 = visited_tmp.begin(); it2 != it; ++it) visited.push_back(*it2);
+    visit(&graph_c, &visited, current);
     int source = graph_c.nodes[visited[0]].id;
     int target = -1;
     for (int i = 1; i < visited.size(); i++){
