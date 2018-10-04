@@ -247,18 +247,24 @@ void Webserver::run_server(char* filename, char* config_file){
       read_json(request->content, pt);
       std::ostringstream oss;
       string resultJson;
-      std::chrono::high_resolution_clock::time_point localization_t1 = std::chrono::high_resolution_clock::now();
-      pair<vector <int>, vector<Node>> targetsAndMarkers = getTargets(pt, &g);
-      std::chrono::high_resolution_clock::time_point localization_t2 = std::chrono::high_resolution_clock::now();
-      auto durationLocalization = std::chrono::duration_cast<std::chrono::microseconds>( localization_t2 - localization_t1 ).count();
-      pt.put("duration:localization", durationLocalization);
       std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-      map<int, map<int, Result>> distances = dyn.calcDistances(targetsAndMarkers.first);
-      pair<int, vector<Node>> costsAndPath = dyn.heldKarp(distances);
+      pair<vector <int>, vector<Node>> targetsAndMarkers = getTargets(pt, &g);
       std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-      auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-      pt.put("costs", costsAndPath.first);
+      auto durationLocalization = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+      pt.put("duration:localization", durationLocalization);
+
+      map<int, map<int, Result>> distances = dyn.calcDistances(targetsAndMarkers.first);
+      std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
+      auto durationDijkstra = std::chrono::duration_cast<std::chrono::microseconds>( t3 -t2 ).count();
+      pt.put("duration:dijkstra", durationDijkstra);
+
+      pair<int, vector<Node>> costsAndPath = dyn.heldKarp(distances);
+      std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
+      auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
       pt.put("duration:compute", durationEdge);
+
+
+      pt.put("costs", costsAndPath.first);
       pt.add_child("markers", markers_to_ptree(targetsAndMarkers.second));
       pt.add_child("path", path_to_ptree(costsAndPath.second));
       write_json(oss, pt);
@@ -278,20 +284,24 @@ void Webserver::run_server(char* filename, char* config_file){
       std::ostringstream oss;
       string resultJson;
 
-      std::chrono::high_resolution_clock::time_point localization_t1 = std::chrono::high_resolution_clock::now();
+      std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
       pair<vector <int>, vector<Node>> targetsAndMarkers = getTargets(pt, &g);
-      std::chrono::high_resolution_clock::time_point localization_t2 = std::chrono::high_resolution_clock::now();
-      auto durationLocalization = std::chrono::duration_cast<std::chrono::microseconds>( localization_t2 - localization_t1 ).count();
+      std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+      auto durationLocalization = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
       pt.put("duration:localization", durationLocalization);
 
-      std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
       map<int, map<int, Result>> distances = dyn.calcDistances(targetsAndMarkers.first);
+      dyn.printDistances(distances);
+      std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
+      auto durationDijkstra = std::chrono::duration_cast<std::chrono::microseconds>( t3 - t2 ).count();
+      pt.put("duration:dijkstra", durationDijkstra);
+
       pair<int, vector<Node>> costsAndPath = dyn.apx(distances);
-      std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-      auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
+      std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
+      auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
+      pt.put("duration:compute", durationEdge);
 
       pt.put("costs", costsAndPath.first);
-      pt.put("duration:compute", durationEdge);
       pt.add_child("markers", markers_to_ptree(targetsAndMarkers.second));
       pt.add_child("path", path_to_ptree(costsAndPath.second));
       write_json(oss, pt);

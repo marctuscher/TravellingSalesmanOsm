@@ -23,7 +23,7 @@ DynProg::DynProg(Graph* graph){
  map<int, map<int, Result>> DynProg::calcDistances(vector<int> nodes){
     map<int, map<int, Result>> distances;
     int i = 0;
-    for (auto it = nodes.begin();it != nodes.end(); ++it){
+    for (auto it = nodes.begin(); it != nodes.end(); ++it){
         // TODO clean up search and use multiple times
         Search s(this->g);
         vector<int> targets;
@@ -75,8 +75,9 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     }
     for (int i = 0; i < n; ++i){
         // Fill in the initial distances
-        costs[i][1<<i]=table[0][i];
+        costs[i][1<<i] = table[0][i];
     }
+
 
     // all subsets with size are the individual distances from one node to all others
     // -> subsets with size 1 have already been calcualated. Starting at size 2
@@ -84,15 +85,17 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
         int v = 0;
         // calculating the number of possible combinations
         long binom = binomial(n, subset_size);
-        // generate first permutation for permutation formula to start
-        for (int s = 0; s < subset_size; s++){
-            v += (1 << s);
-        }
-        for (int i=1; i < binom; i++){
+        for (int i= 0; i < binom; i++){
             // iterate all possible permutations of #subset_size bits
             // https://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation
+            if(i == 0){
+                for (int s = 0; s < subset_size; s++){
+                    v += (1 << s);
+                }
+            }else {
             int t = (v | (v - 1))+1;
             v = t | ((((t & -t)/(v & -v))>> 1)-1);
+            }
             
             for (int k= 0; k < n ; k++){
                 // only look at nodes which are in the subset
@@ -152,8 +155,10 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     }
     int tspcosts = 0;
     int source = indexToNodeId[0];
+    cout << "Path: ";
+    for (auto nodeId: intermediate_path) cout << "->" << nodeId;
+    cout << endl;
     cout << "size of intermediate path: " << intermediate_path.size() << endl;
-    reverse(intermediate_path.begin(), intermediate_path.end());
     for (auto it = intermediate_path.begin(); it != intermediate_path.end(); ++it){
         int target = indexToNodeId[*it];
         for (auto node: distances[source][target].path){
@@ -195,6 +200,16 @@ int getCosts (map<int, map<int, Result>> distances, vector<int> visited, Graph g
     return currentCosts;
 }
 
+void DynProg::printDistances(map<int, map<int, Result>> distances){
+    for (auto source: distances){
+        cout << "Source: " << source.first << " targets: ";
+        for (auto target: source.second){
+            cout << "<" << target.first << " : " << target.second.distance << "> ";
+        }
+        cout << endl;
+    }
+}
+
 
 pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
     vector<Node> path;
@@ -221,6 +236,7 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
                 }
             }
         }
+        cout << "insert node: " << queue[insertedIndex] << endl;
         inserted.push_back(queue[insertedIndex]);
         graph_c.nodes.push_back(Node(queue[insertedIndex]));
         Edge e; 

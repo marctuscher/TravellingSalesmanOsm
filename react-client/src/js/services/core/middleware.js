@@ -97,7 +97,8 @@ const coreMiddleware = (function () {
 						sticky: true,
 						content: '<h6 style="color:#44bd32">Calculation Times:</h6></br>' +
 							'Finding Nodes: ' + getSecondsString(res.data["duration:localization"]) + '</br>' +
-							'Computation: ' + getSecondsString(res.data["duration:compute"]) + '</br>' +
+							'Dijkstra: ' + getSecondsString(res.data["duration:dijkstra"]) + '</br>' +
+							'TSP: ' + getSecondsString(res.data["duration:compute"]) + '</br>' +
                             'Costs:' + res.data.costs
 					}));
 					action = processResult(res, action, store);
@@ -122,7 +123,8 @@ const coreMiddleware = (function () {
 						sticky: true,
 						content: '<h6 style="color:#44bd32">Calculation Times:</h6></br>' +
 							'Finding Nodes: ' + getSecondsString(res.data["duration:localization"]) + '</br>' +
-							'Computation: ' + getSecondsString(res.data["duration:compute"]) + '</br>' +
+							'Dijkstra: ' + getSecondsString(res.data["duration:dijkstra"]) + '</br>' +
+							'TSP: ' + getSecondsString(res.data["duration:compute"]) + '</br>' +
                             'Costs:' + res.data.costs
 					}));
 					action = processResult(res, action, store);
