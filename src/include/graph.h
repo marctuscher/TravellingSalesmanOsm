@@ -20,7 +20,7 @@ class Graph
   void generateOffsetOut();
   int getNodeId(int64_t globalId, int, int);
   int findNode(double lat, double lon);
-  int findNodeByCategory(string group, string category, double currentLat, double currentLon);
+  int findNodeByCategory(string group, string category, double currentLat, double currentLon, vector<int> alreadyFound);
 };
 
 #endif// GRAPH_H

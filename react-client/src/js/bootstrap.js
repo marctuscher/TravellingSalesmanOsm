@@ -17,8 +17,10 @@ let initialState = {
         },
         zoom: 13,
         markers: [],
-        tsp: true,
-        tspTargets: []
+        appState: "tsp",
+        tspTargets: [], 
+        poiTargets: [],
+        notifications: {}
     }
 }
 

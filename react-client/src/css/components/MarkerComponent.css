@@ -1,0 +1,48 @@
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background-color: rgba(0,0,0, 0.9);
+}
+
+
+.popup {
+    margin-top: 25px;
+  fill: rgba(0,0,0, 0.7);
+  position: relative;
+  color: white;
+}
+.p {
+    color:white
+}
+
+
+.delete-marker-btn {
+    position: absolute;
+    height: 4px;
+    width: 4px;
+    top: 5px;
+    left: 15px;
+}
+.content-box{
+    width: 90%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.btn-box {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.btn-set-marker {
+    vertical-align: top;
+    border: none;
+    outline: none;
+    background-color: rgba(0,0,0, 1);
+    cursor: pointer;
+    width: 50%;
+    height: 40px;
+    color: white
+}
+
+.opening {
+color: #44bd32
+}

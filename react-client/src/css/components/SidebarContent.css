@@ -1,3 +1,21 @@
-.sidebar-container {
-  width: 20%
+
+.sidebar {
+  width: 20%;
+  z-index: 10000;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.containerbox {
+  position: relative;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  margin-right: auto;
+  margin-left: 5px;
+  padding: 10px 10px 10px 10px;
+  width: 95%;
+  background-color: rgba(0,0,0, 0.7);
+  border-radius: 10px;
+  color: white;
 }

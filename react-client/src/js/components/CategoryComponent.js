@@ -10,8 +10,11 @@ class CategoryComponent extends React.Component{
 
     render(){
         return (
-            <div className="bordered">
-                <Dropdown onChange={this.props.onChange} value={this.props.defaultValue} options={this.props.categories} />
+            <div className="category-pick">
+                <Dropdown 
+                onChange={this.props.onChange} 
+                value={this.props.defaultValue} 
+                options={this.props.categories} />
             </div>
         )
     }

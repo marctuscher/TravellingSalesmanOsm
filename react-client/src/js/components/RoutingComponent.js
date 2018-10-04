@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import '../../css/components/RoutingComponent.css'
 import CategoryComponent from './CategoryComponent';
 import SourceTargetComponent from './SourceTargetComponent'
+import AddButtons from './AddButtons';
+import '../../css/components/SidebarContent.css'
 
 
 class RoutingComponent extends React.Component {
@@ -53,10 +55,7 @@ class RoutingComponent extends React.Component {
 
     renderAddButtons(name, setFunctionCategory, setFunctionLocation){
         return (
-            <div>
-                <button onClick={setFunctionCategory}>Add category {name}</button>
-                <button onClick={setFunctionLocation}>Add current location {name}</button>
-            </div>
+            <AddButtons addCategory={setFunctionCategory} addCurrent={setFunctionLocation}/>
         )
     }
 
@@ -80,7 +79,9 @@ class RoutingComponent extends React.Component {
             <div>
             {this.props.source ? this.renderSource(): this.renderAddButtons("source", this.setCategorySource, this.setCurrentSource)}
             {this.props.target ? this.renderTarget(): this.renderAddButtons("target", this.setCategoryTarget, this.setCurrentTarget)}
-            <button onClick={this.calcRoute}>Calc</button>
+            <div className="containerbox">
+             <button className="btn-calc" style={{width: "100%"}} onClick={this.calcRoute}>Calc</button>
+            </div>
             </div>
         )
     }

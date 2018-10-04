@@ -46,7 +46,7 @@ DynProg::DynProg(Graph* graph){
  * is using bitmasking to indicate subsets
  **/
 
-vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
+pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances){
     vector<Node> path;
     int n = distances.size();
     int table[n][n];
@@ -82,7 +82,7 @@ vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
     // -> subsets with size 1 have already been calcualated. Starting at size 2
     for (int subset_size = 2; subset_size < n; ++subset_size){
         int v = 0;
-        // calculating all possible combinations with subset_size over n
+        // calculating the number of possible combinations
         long binom = binomial(n, subset_size);
         // generate first permutation for permutation formula to start
         for (int s = 0; s < subset_size; s++){
@@ -150,6 +150,7 @@ vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
         v = v & ~(1 << (min));
         local_opt = numeric_limits<double>::max();
     }
+    int tspcosts = 0;
     int source = indexToNodeId[0];
     cout << "size of intermediate path: " << intermediate_path.size() << endl;
     reverse(intermediate_path.begin(), intermediate_path.end());
@@ -158,14 +159,16 @@ vector<Node> DynProg::heldKarp(map<int, map<int, Result>>  distances){
         for (auto node: distances[source][target].path){
             path.push_back(node);
         }
+        tspcosts += distances[source][target].distance;
         source = target;
     }
     for (auto node: distances[source][indexToNodeId[0]].path){
         path.push_back(node);
     }
+    tspcosts += distances[source][indexToNodeId[0]].distance;
     cout << endl;
     cout << "optimal path:" << opt << endl;
-    return path;
+    return make_pair(tspcosts, path);
 }
 
 
@@ -178,11 +181,23 @@ void visit(Graph* g, vector<int>* visited, int current){
     }
 }
 
+int getCosts (map<int, map<int, Result>> distances, vector<int> visited, Graph graph_c){
+    int source = graph_c.nodes[visited[0]].id;
+    int currentCosts = 0;
+    int target = -1;
+    // get costs of calculated path
+    for (int i = 1; i < visited.size(); i++){
+        target = graph_c.nodes[visited[i]].id;
+        currentCosts += distances[source][target].distance;
+        source = target;
+    }
+    currentCosts += distances[target][graph_c.nodes[visited[0]].id].distance;
+    return currentCosts;
+}
 
-vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
+
+pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
     vector<Node> path;
-    int n = distances.size();
-    int i = 0;
 
     Graph graph_c;
     vector<int> queue;
@@ -221,15 +236,39 @@ vector<Node> DynProg::christofides(map<int, map<int, Result>>  distances){
     vector<int> visited;
     int current = 0;
     visit(&graph_c, &visited, current);
+    // get costs of calculated path
+    int currentCosts = getCosts(distances, visited, graph_c);
+    // check for all node pairs of swapping them 
+    vector<int> tmpVisited(visited);
+    for (int i = 1; i < visited.size(); i++){
+        for (int j = 1; i < visited.size(); i++){
+            if(i == j) continue;
+            int swap_i = visited[i];
+            tmpVisited[i] = visited[j];
+            int swap_j = visited[j];
+            tmpVisited[j] = visited[i];
+            int costs = getCosts(distances, tmpVisited, graph_c);
+            if (costs < currentCosts){
+                currentCosts = costs;
+            }else {
+                tmpVisited[i] = swap_i;
+                tmpVisited[j] = swap_j;
+            }
+        }
+    }
+    visited = tmpVisited;
     int source = graph_c.nodes[visited[0]].id;
+    int costs = 0;
     int target = -1;
     for (int i = 1; i < visited.size(); i++){
         target = graph_c.nodes[visited[i]].id;
         for (auto node: distances[source][target].path){
             path.push_back(node);
         }
+        costs += distances[source][target].distance;
         source = target;
     }
+    costs += distances[target][graph_c.nodes[visited[0]].id].distance;
     for (auto node: distances[target][graph_c.nodes[visited[0]].id].path) path.push_back(node);
-    return path;
+    return make_pair(costs, path);
 }

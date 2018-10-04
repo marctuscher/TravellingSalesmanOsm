@@ -1,0 +1,10 @@
+
+.btn-calc {
+    border: none;
+    outline: none;
+    background-color: rgba(0,0,0, 1);
+    cursor: pointer;
+    width: 50%;
+    height: 40px;
+    color: #44bd32;
+}
