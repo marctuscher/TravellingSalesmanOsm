@@ -3,6 +3,8 @@
 #include <iostream>
 #include <limits>
 #include <bitset>
+#include "treeNode.h"
+#include <deque>
 
 inline int binomial(int n, int k){
     if(k> n -k ){
@@ -71,6 +73,7 @@ DynProg::DynProg(Graph* graph){
 
 
 pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances){
+    bool verbose = false;
     vector<Node> path;
     int n = distances.size();
     int table[n][n];
@@ -119,7 +122,7 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
             if (bitset<32>(mask).count() != s){
                 continue;
             }
-            cout << "Subset: " << s << " Mask: " << bitset<8>(mask) << endl;
+            if(verbose) cout << "Subset: " << s << " Mask: " << bitset<8>(mask) << endl;
             for (int k = 0; k < n; k++){
                 if ((mask & (1 << k)) == 0){
                     continue;
@@ -135,14 +138,14 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
                     }
 
                 }
-                cout << " k: " << k << " mask: " << bitset<8>(mask) << " value: " << minimum << endl;
+               if(verbose) cout << " k: " << k << " mask: " << bitset<8>(mask) << " value: " << minimum << endl;
                 costs[k][mask] = minimum;
             }
         }
     }
 
     int opt = numeric_limits<int>::max();
-    int local_opt = numeric_limits<int>::max();
+    int cost = 0;
     int minimumNode = -1; 
 
     vector<int> intermediatePath;
@@ -161,6 +164,8 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
             if (value < opt){
                 opt = value;
                 minimumNode = k;
+                if (k == 1)
+                    cost = value;
             }
         }
         intermediatePath.push_back(minimumNode);
@@ -176,7 +181,7 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
 
     // search for the best path in the table
     // get the n-1 nodes which build the path starting from source node [0][0]
-    cout << "Path: ";
+    cout << "Costs: "<< cost <<"Path: ";
     for (auto nodeId: intermediatePath) cout << "->" << nodeId;
     cout << endl;
     cout << "size of intermediate path: " << intermediatePath.size() << endl;
@@ -189,6 +194,7 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
         for (auto node: distances[source][target].path){
             path.push_back(node);
         }
+        tspcosts += distances[source][target].distance;
         source = target;
     }
 
@@ -203,25 +209,25 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
 
 
 
-void visit(Graph* g, vector<int>* visited, int current){
+void visit(vector<TreeNode> *tree, vector<int> *visited, int current){
     visited->push_back(current);
-    if(visited->size() == g->nodes.size()) return;
-    for (int i = g->offset[current]; i < g->offset[current+1] ; i++){
-        visit(g, visited, g->edges[i].trg);
+    if(visited->size() == tree->size()) return;
+    for (auto child: tree->operator[](current).children){
+        visit(tree, visited, child);
     }
 }
 
-int getCosts (map<int, map<int, Result>> distances, vector<int> visited, Graph graph_c){
-    int source = graph_c.nodes[visited[0]].id;
+int getCosts (map<int, map<int, Result>> distances, vector<int> visited, vector<TreeNode> tree, map<int, int> indexToNodeId){
+    int source = indexToNodeId[visited[0]];
     int currentCosts = 0;
     int target = -1;
     // get costs of calculated path
     for (int i = 1; i < visited.size(); i++){
-        target = graph_c.nodes[visited[i]].id;
+        target = indexToNodeId[visited[i]];
         currentCosts += distances[source][target].distance;
         source = target;
     }
-    currentCosts += distances[target][graph_c.nodes[visited[0]].id].distance;
+    currentCosts += distances[target][indexToNodeId[0]].distance;
     return currentCosts;
 }
 
@@ -240,68 +246,90 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
     cout << "Starting calculation of APX" << endl;
     vector<Node> path;
 
-    Graph graph_c;
-    vector<int> queue;
-    vector<int> inserted;
-    for (auto distancePair: distances) queue.push_back(distancePair.first);
-
-    cout << "Length of queue: " << queue.size() << endl;
-    if (queue.size() == 0){
-        cout << "No Node has been found" << endl;
-        return make_pair(-1, path);
+    int n = distances.size();
+    int table[n][n];
+    map<int, int> indexToNodeId;
+    // Generate actual distance table and remember which index belongs to which vertex
+    int i = 0;
+    for (auto it = distances.begin(); it != distances.end(); ++it){
+        indexToNodeId.insert(pair<int, int>(i, it->first));
+        i++;
+    }
+    printDistances(distances);
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            if (i == j)
+                table[i][j] = 0;
+            else{
+                int source = indexToNodeId[i];
+                int target = indexToNodeId[j];
+                table[i][j] = distances[source][target].distance;
+            }
+        }
     }
 
-    printDistances(distances);
-    graph_c.nodes.push_back(Node(queue[0]));
-    int nodeCount = 0;
-    inserted.push_back(queue[0]);
-    queue.erase(queue.begin());
-    bool insertedTrue = false;
-    while(!queue.empty()){
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            cout << table[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    vector<TreeNode> tree(n);
+    vector<int> added;
+    added.push_back(0);
+    int treeCosts = 0;
+
+    while(added.size() < n){
+        int parent = -1;
+        int child = -1;
         int minimum = numeric_limits<int>::max();
-        int source = -1;
-        int insertedIndex = -1;
-        for (auto insertedNode : inserted){
-            for (int i = 0; i < queue.size(); i++){
-                if (distances[insertedNode][queue[i]].distance < minimum){
-                    int gonnaInsert = queue[i];
-                    minimum = distances[insertedNode][queue[i]].distance;
-                    insertedIndex = i;
-                    source = insertedNode;
+        for (int node: added){
+            for (int i = 0; i < n; i++){
+                if (find(added.begin(), added.end(), i) != added.end())
+                    continue;
+                int value = table[node][i];
+                if (value < minimum && value != 0){
+                    minimum = value;
+                    parent = node;
+                    child = i;
                 }
             }
         }
-        cout << "insert node: " << queue[insertedIndex] << endl;
-        inserted.push_back(queue[insertedIndex]);
-        graph_c.nodes.push_back(Node(queue[insertedIndex]));
-        Edge e; 
-        e.src = nodeCount;
-        nodeCount++;
-        e.trg = nodeCount;
-        e.cost = minimum;
-        graph_c.edges.push_back(e);
-        queue.erase(queue.begin() + insertedIndex);
+        treeCosts += minimum;
+        added.push_back(child);
+        tree[parent].children.push_back(child);
     }
-    cout << "generated MST" << endl;
-    graph_c.generateOffsetOut();
+
     vector<int> visited;
-    int current = 0;
-    visit(&graph_c, &visited, current);
-    cout << "before testing: Path: 0";
+    deque<int> queue;
+
+    queue.push_back(0);
+    while (!queue.empty()){
+        int current = queue.front();
+        visited.push_back(current);
+        for (auto child: tree[current].children){
+            queue.push_back(child);
+        }
+        queue.pop_front();
+    }
+
+
+    cout << " treeCosts: "<< treeCosts <<  "before testing: Path: 0";
     for (auto nodeId: visited) cout << "->" << nodeId;
     cout << endl;
     // get costs of calculated path
-    int currentCosts = getCosts(distances, visited, graph_c);
     // check for all node pairs of swapping them 
-    vector<int> tmpVisited(visited);
+    int currentCosts = getCosts(distances, visited, tree, indexToNodeId);
+     vector<int> tmpVisited(visited);
     for (int i = 1; i < visited.size(); i++){
-        for (int j = 1; i < visited.size(); i++){
+        for (int j = 1; j < visited.size(); j++){
             if(i == j) continue;
             int swap_i = visited[i];
             tmpVisited[i] = visited[j];
             int swap_j = visited[j];
             tmpVisited[j] = visited[i];
-            int costs = getCosts(distances, tmpVisited, graph_c);
+            int costs = getCosts(distances, tmpVisited, tree, indexToNodeId);
             if (costs < currentCosts){
                 currentCosts = costs;
             }else {
@@ -309,24 +337,27 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
                 tmpVisited[j] = swap_j;
             }
         }
-    }
-    //visited = tmpVisited;
-    int source = graph_c.nodes[visited[0]].id;
-    int costs = 0;
-    int target = -1;
-    cout << "Path: 0";
-    for (auto nodeId: visited) cout << "->" << nodeId;
-    cout << endl;
+    } 
+    visited = tmpVisited;
+    int apxCosts = 0;
 
-    for (int i = 1; i < visited.size(); i++){
-        target = graph_c.nodes[visited[i]].id;
-        for (auto node: distances[source][target].path){
+    auto it_0 = visited.begin();
+    auto it_1 = visited.begin() + 1;
+    int source; 
+    int target;
+    while (it_1 != visited.end()){
+        source = indexToNodeId[*it_0];
+        target = indexToNodeId[*it_1];
+        for (Node node: distances[source][target].path){
             path.push_back(node);
         }
-        costs += distances[source][target].distance;
-        source = target;
+        apxCosts += distances[source][target].distance;
+        it_0++;
+        it_1++;
     }
-    costs += distances[target][graph_c.nodes[visited[0]].id].distance;
-    for (auto node: distances[target][graph_c.nodes[visited[0]].id].path) path.push_back(node);
-    return make_pair(costs, path);
+    for (Node node: distances[target][indexToNodeId[0]].path){
+        path.push_back(node);
+    }
+    apxCosts += distances[target][indexToNodeId[0]].distance;
+    return make_pair(apxCosts, path);
 }
