@@ -5,6 +5,8 @@
   position: absolute;
   top: 0;
   left: 0;
+  overflow: auto;
+  max-height: 100vh;
 }
 
 .containerbox {
@@ -14,7 +16,7 @@
   margin-right: auto;
   margin-left: 5px;
   padding: 10px 10px 10px 10px;
-  width: 95%;
+  width: 80%;
   background-color: rgba(0,0,0, 0.7);
   border-radius: 10px;
   color: white;

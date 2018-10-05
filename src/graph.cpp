@@ -69,22 +69,6 @@ void Graph::generateOffsetOutAndCosts() {
 
 
 
-int Graph::findNode(double lat, double lon){
-  int node = -1;
-  double epsilon = 0.1;
-  double shortest = std::numeric_limits<int>::max();
-  for (auto i: grid[(int)floor(lat)][(int) floor(lon)]) {
-    double current = haversine(lat, lon, this->nodes[i].lati, this->nodes[i].loni);
-    if (current < epsilon){
-      return i;
-    }
-    if (current < shortest){
-      shortest = current;
-      node = i;
-    }
-  }
-  return node;
-}
 
   vector<pair<int, int>> getCellsToSearch(int lat, int lon){
     vector<pair<int, int>> pairs;
@@ -99,6 +83,29 @@ int Graph::findNode(double lat, double lon){
     pairs.push_back(make_pair(lat-1, lon -1 ));
     return pairs;
   }
+
+int Graph::findNode(double lat, double lon){
+  int node = -1;
+  double epsilon = 0.1;
+  double shortest = std::numeric_limits<int>::max();
+  int currentLatInt = (int)(floor(lat));
+  int currentLonInt = (int)(floor(lon));
+  vector<pair<int, int>> pairsToSearch = getCellsToSearch(currentLatInt, currentLonInt);
+  for (auto pair: pairsToSearch){
+    for (auto i: connectedGrid[pair.first][pair.second]) {
+      double current = haversine(lat, lon, this->nodes[i].lati, this->nodes[i].loni);
+      if (current < epsilon){
+        return i;
+      }
+      if (current < shortest){
+        shortest = current;
+        node = i;
+      }
+  }
+
+}
+  return node;
+}
 
   int Graph::findNodeByCategory(string group, string category, double currentLat, double currentLon, vector<int> alreadyFound){
   int node = -1;

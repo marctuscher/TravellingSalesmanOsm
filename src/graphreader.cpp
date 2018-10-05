@@ -68,7 +68,7 @@ struct sort_operatorNodes
     osmpbf::OSMFileIn inFile(inputFileName, verbose);
     osmpbf::PrimitiveBlockInputAdaptor pbi;
     osmpbf::KeyMultiValueTagFilter motorWayFilter("highway", {"motorway", "motorway_link", "primary", "primary_link", "secondary",
-          "secondary_link", "tertiary", "tertiary_link", "trunk", "trunk_link", "unclassified", "residential", "living_street", "road", "service", "turning_circle"});
+          "secondary_link", "tertiary", "tertiary_link", "trunk", "trunk_link", "unclassified", "living_street", "road", "service", "turning_circle"});
     osmpbf::KeyMultiValueTagFilter oneWayFilter("oneway", {"yes"});
     osmpbf::KeyMultiValueTagFilter maxSpeedFilter("maxspeed", {"none", "signals"});
     osmpbf::OrTagFilter category_filter;
@@ -145,6 +145,7 @@ struct sort_operatorNodes
 
       }
     }
+    std::cout << "Last nodecount in connected: " << nodesCount << endl;
     if (!inFile.open())
       return -1;
     while(inFile.parseNextBlock(pbi)){
@@ -156,7 +157,7 @@ struct sort_operatorNodes
               double latitude = node.latd();
               double longitude = node.lond();
               inserted = nodeMap.insert({node.id(), 0});
-              out->grid[(int)floor(latitude)][(int)floor(longitude)].push_back(inserted.first->second);
+              out->connectedGrid[(int)floor(latitude)][(int)floor(longitude)].push_back(inserted.first->second);
               out->nodes[inserted.first->second].tags = map<string, string>();
               for(uint32_t i = 0, s = node.tagsSize();  i < s; ++i) {
                 out->nodes[inserted.first->second].tags.insert({node.key(i), node.value(i)});

@@ -222,6 +222,9 @@ void Webserver::run_server(char* filename, char* config_file){
       pt.put("duration:localization", durationLocalization);
       std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
       Result searchResult = search.oneToOne(internalSourceIDX, internalTargetIDX);
+      if (searchResult.distance == -1){
+        pt.put("error", "A path could not be found");
+      }
       std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
       auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
       pt.put("duration:compute", durationEdge);

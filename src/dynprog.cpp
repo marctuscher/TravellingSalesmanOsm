@@ -23,6 +23,7 @@ DynProg::DynProg(Graph* graph){
  map<int, map<int, Result>> DynProg::calcDistances(vector<int> nodes){
     map<int, map<int, Result>> distances;
     int i = 0;
+    vector<int> notFound;
     for (auto it = nodes.begin(); it != nodes.end(); ++it){
         // TODO clean up search and use multiple times
         Search s(this->g);
@@ -33,9 +34,29 @@ DynProg::DynProg(Graph* graph){
                 targets.push_back(target);
             }
         }
+        if (find(notFound.begin(), notFound.end(), *it) != notFound.end())
+            continue;
         map<int, Result> m = s.oneToMany(*it, targets);
+        for (auto node: nodes){
+            if(node != *it && m.find(node) == m.end() && find(notFound.begin(), notFound.end(), node) == notFound.end()){
+                cout << "Not found: " << node << endl;
+                notFound.push_back(node);
+            }
+        }
         distances.insert(pair<int, map<int, Result>>(*it, m));
         ++i;
+    }
+    //erasing the nodes which could not be found
+
+    for (auto notFoundNode: notFound){
+        auto it = distances.find(notFoundNode);
+        if ( it != distances.end())
+            distances.erase(distances.find(notFoundNode));
+        for (auto mapPair: distances){
+            auto notFoundIterator = mapPair.second.find(notFoundNode);
+            if (notFoundIterator != mapPair.second.end())
+                distances[mapPair.first].erase(notFoundIterator);
+        }
     }
     return distances;
 }
@@ -67,8 +88,6 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
         ++i;
     }
 
-    cout << table[0][0] << endl;
-    cout <<table [0][1] << endl;
     vector<vector<double>> costs;
     for (int i = 0; i < n; ++i){
         costs.push_back(vector<double>(1<<n, numeric_limits<double>::max()));
@@ -78,51 +97,18 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
         costs[i][1<<i] = table[0][i];
     }
 
-
-    // all subsets with size are the individual distances from one node to all others
-    // -> subsets with size 1 have already been calcualated. Starting at size 2
-    for (int subset_size = 2; subset_size < n; ++subset_size){
-        int v = 0;
-        // calculating the number of possible combinations
-        long binom = binomial(n, subset_size);
-        for (int i= 0; i < binom; i++){
-            // iterate all possible permutations of #subset_size bits
-            // https://graphics.stanford.edu/~seander/bithacks.html#NextBitPermutation
-            if(i == 0){
-                for (int s = 0; s < subset_size; s++){
-                    v += (1 << s);
-                }
-            }else {
-            int t = (v | (v - 1))+1;
-            v = t | ((((t & -t)/(v & -v))>> 1)-1);
-            }
-            
-            for (int k= 0; k < n ; k++){
-                // only look at nodes which are in the subset
-                if((v & (1 << k )) == 0){
+    for (int v = 1; v < (1<<n); v++){
+        for (int k = 0; k < n; k++){
+            if ((v & (1 << k)) == 0)
+                continue;
+            for (int m = 0; m < n; m++){
+                if ((v & (1 << m )) != 0)
                     continue;
-                }
-
-                double minimum = numeric_limits<double>::max();
-                for (int m = 0; m < n; m++){
-                    // if m in subset and  m == k: skip
-                    // https://en.wikipedia.org/wiki/Held%E2%80%93Karp_algorithm
-                    if (m == k || (v & (1 << m)) == 0){
-                        continue;
-                    }
-                    // calculate the the value of using this node in this subset
-                    // and check if it is smaller than minimum
-                    double value = costs[m][v & ~(1 << k)] + table[m][k];
-                    if (value < minimum){
-                        minimum = value;
-                    }
-
-                }
-                //insert the costs of this subset
-                costs[k][v] = minimum;
+                costs[m][v | (1 << m)] = min(costs[m][v | (1 << m)], costs[k][v] + table[k][m]);
             }
         }
     }
+
     double opt = numeric_limits<double>::max();
     double local_opt = numeric_limits<double>::max();
     int min = -1; 
@@ -153,12 +139,13 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
         v = v & ~(1 << (min));
         local_opt = numeric_limits<double>::max();
     }
-    int tspcosts = 0;
-    int source = indexToNodeId[0];
     cout << "Path: ";
     for (auto nodeId: intermediate_path) cout << "->" << nodeId;
     cout << endl;
     cout << "size of intermediate path: " << intermediate_path.size() << endl;
+    reverse(intermediate_path.begin(), intermediate_path.end());
+    int tspcosts = 0;
+    int source = indexToNodeId[0];
     for (auto it = intermediate_path.begin(); it != intermediate_path.end(); ++it){
         int target = indexToNodeId[*it];
         for (auto node: distances[source][target].path){
@@ -167,9 +154,8 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
         tspcosts += distances[source][target].distance;
         source = target;
     }
-    for (auto node: distances[source][indexToNodeId[0]].path){
+    for (auto node: distances[source][indexToNodeId[0]].path)
         path.push_back(node);
-    }
     tspcosts += distances[source][indexToNodeId[0]].distance;
     cout << endl;
     cout << "optimal path:" << opt << endl;
@@ -212,12 +198,20 @@ void DynProg::printDistances(map<int, map<int, Result>> distances){
 
 
 pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
+    cout << "Starting calculation of APX" << endl;
     vector<Node> path;
 
     Graph graph_c;
     vector<int> queue;
     vector<int> inserted;
     for (auto distancePair: distances) queue.push_back(distancePair.first);
+
+    cout << "Length of queue: " << queue.size() << endl;
+    if (queue.size() == 0){
+        cout << "No Node has been found" << endl;
+        return make_pair(-1, path);
+    }
+
     
     graph_c.nodes.push_back(Node(queue[0]));
     int nodeCount = 0;
