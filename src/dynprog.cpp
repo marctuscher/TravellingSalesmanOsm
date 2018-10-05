@@ -119,6 +119,7 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
             if (bitset<32>(mask).count() != s){
                 continue;
             }
+            cout << "Subset: " << s << " Mask: " << bitset<8>(mask) << endl;
             for (int k = 0; k < n; k++){
                 if ((mask & (1 << k)) == 0){
                     continue;
@@ -134,6 +135,7 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
                     }
 
                 }
+                cout << " k: " << k << " mask: " << bitset<8>(mask) << " value: " << minimum << endl;
                 costs[k][mask] = minimum;
             }
         }
@@ -144,7 +146,6 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     int minimumNode = -1; 
 
     vector<int> intermediatePath;
-
     int mask = 0;
     int currentNode = 0;
     for (int s = 1; s < n; s++){
@@ -154,6 +155,8 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     for (int i = 1; i < n; i++){
         cout << bitset<8>(mask) << endl;
         for (int k = 1; k < n; k++){
+            if ((mask &( 1 << k )) == 0)
+                continue;
             int value = costs[k][mask] + table[k][currentNode];
             if (value < opt){
                 opt = value;
@@ -178,20 +181,20 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     cout << endl;
     cout << "size of intermediate path: " << intermediatePath.size() << endl;
     int tspcosts = 0;
-    auto it_0 = intermediatePath.begin();
-    auto it_1 = intermediatePath.begin() + 1; 
-    while (it_1 != intermediatePath.end()){
-        int source = indexToNodeId[*it_0];
-        int target = indexToNodeId[*it_1];
-        for (auto node: distances[source][target].path)
+    reverse(intermediatePath.begin(), intermediatePath.end());
+    int source = indexToNodeId[0];
+    int target = -1;
+    for (auto it: intermediatePath){
+        target = indexToNodeId[it];
+        for (auto node: distances[source][target].path){
             path.push_back(node);
-        tspcosts += distances[source][target].distance;
-        ++it_0;
-        ++it_1;
+        }
+        source = target;
     }
-    for (auto node: distances[*it_1][indexToNodeId[0]].path)
+
+    for (auto node: distances[target][indexToNodeId[0]].path)
         path.push_back(node);
-    tspcosts += distances[*it_1][indexToNodeId[0]].distance;
+    tspcosts += distances[target][indexToNodeId[0]].distance;
     cout << endl;
     cout << "optimal path:" << tspcosts << endl;
     return make_pair(tspcosts, path);
@@ -248,11 +251,12 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
         return make_pair(-1, path);
     }
 
-    
+    printDistances(distances);
     graph_c.nodes.push_back(Node(queue[0]));
     int nodeCount = 0;
     inserted.push_back(queue[0]);
     queue.erase(queue.begin());
+    bool insertedTrue = false;
     while(!queue.empty()){
         int minimum = numeric_limits<int>::max();
         int source = -1;
@@ -260,6 +264,7 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
         for (auto insertedNode : inserted){
             for (int i = 0; i < queue.size(); i++){
                 if (distances[insertedNode][queue[i]].distance < minimum){
+                    int gonnaInsert = queue[i];
                     minimum = distances[insertedNode][queue[i]].distance;
                     insertedIndex = i;
                     source = insertedNode;
