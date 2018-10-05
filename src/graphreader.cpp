@@ -68,7 +68,7 @@ struct sort_operatorNodes
     osmpbf::OSMFileIn inFile(inputFileName, verbose);
     osmpbf::PrimitiveBlockInputAdaptor pbi;
     osmpbf::KeyMultiValueTagFilter motorWayFilter("highway", {"motorway", "motorway_link", "primary", "primary_link", "secondary",
-          "secondary_link", "tertiary", "tertiary_link", "trunk", "trunk_link", "unclassified", "living_street", "road", "service", "turning_circle"});
+          "secondary_link", "tertiary", "tertiary_link", "trunk", "trunk_link", "unclassified", "residential", "living_street", "road", "service", "turning_circle"});
     osmpbf::KeyMultiValueTagFilter oneWayFilter("oneway", {"yes"});
     osmpbf::KeyMultiValueTagFilter maxSpeedFilter("maxspeed", {"none", "signals"});
     osmpbf::OrTagFilter category_filter;

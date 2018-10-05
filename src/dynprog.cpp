@@ -2,6 +2,7 @@
 #include "search.h"
 #include <iostream>
 #include <limits>
+#include <bitset>
 
 inline long binomial(int n, int k){
     if(k> n -k ){
@@ -67,6 +68,8 @@ DynProg::DynProg(Graph* graph){
  * is using bitmasking to indicate subsets
  **/
 
+
+
 pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances){
     vector<Node> path;
     int n = distances.size();
@@ -88,77 +91,88 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
         ++i;
     }
 
-    vector<vector<double>> costs;
+    vector<vector<int>> costs;
     for (int i = 0; i < n; ++i){
-        costs.push_back(vector<double>(1<<n, numeric_limits<double>::max()));
+        costs.push_back(vector<int>(1<<n, numeric_limits<int>::max()));
     }
     for (int i = 0; i < n; ++i){
         // Fill in the initial distances
         costs[i][1<<i] = table[0][i];
     }
 
-    for (int v = 1; v < (1<<n); v++){
-        for (int k = 0; k < n; k++){
-            if ((v & (1 << k)) == 0)
-                continue;
-            for (int m = 0; m < n; m++){
-                if ((v & (1 << m )) != 0)
+    for (int s = 2; s < n; s++){
+            for (int mask = 0; mask < (1 << n); mask++){
+                if (bitset<32>(mask).count() != s){
                     continue;
-                costs[m][v | (1 << m)] = min(costs[m][v | (1 << m)], costs[k][v] + table[k][m]);
-            }
+                }
+                for (int k = 0; k < n; k++){
+                    if (((1 << k) & mask ) == 0)
+                        continue;
+                    int minimum = numeric_limits<int>::max();
+                    cout << "initial min: " << minimum << endl;
+                    for (int m = 0; m < n; m++){
+                        if (m == k || ((1 << m ) & mask ) == 0)
+                            continue;
+                        
+                        int val = costs[m][mask & ~(1 << k)] + table[m][k];
+                        cout << "value: " << val << " minimum: " << minimum << endl;
+                        if (val < minimum)
+                            minimum = val;
+                    }
+                    costs[k][mask] = minimum;
+                }
         }
     }
 
-    double opt = numeric_limits<double>::max();
-    double local_opt = numeric_limits<double>::max();
-    int min = -1; 
 
-    int v = 0;
+    int min_node = -1; 
+
+    int mask = 0;
     for (int s = 1; s < n ; s++){
-        v += (1 << s);
+        mask += (1 << s);
     }
-    int ck = 0;
+    int current = 0;
     vector<int> intermediate_path;
+    intermediate_path.push_back(current);
+    int min = numeric_limits<int>::max();
+
+    for (int j = 1; j < n; j++){
+        for (int i = 1; i < n; i++){
+            int val = costs[i][mask] + table[i][current];
+            if (val < min){
+                min_node = i;
+            }
+        }
+        intermediate_path.push_back(min_node);
+        current = min_node;
+        mask = (mask & ~(1 << min_node));
+        min = numeric_limits<int>::max();
+    }
+     
 
     // search for the best path in the table
     // get the n-1 nodes which build the path starting from source node [0][0]
-    for (int i = 1; i <n; i++){
-        for (int k = 1; k <n; k++){
-            double value = costs[k][v] + table[k][ck];
-            if (value < local_opt){
-                local_opt = value;
-                if (i == 1){
-                    opt = local_opt;
-                }
-                min = k;
-            }
-        }
-        // insert the best
-        intermediate_path.push_back(min);
-        ck = min;
-        v = v & ~(1 << (min));
-        local_opt = numeric_limits<double>::max();
-    }
     cout << "Path: ";
     for (auto nodeId: intermediate_path) cout << "->" << nodeId;
     cout << endl;
     cout << "size of intermediate path: " << intermediate_path.size() << endl;
-    reverse(intermediate_path.begin(), intermediate_path.end());
     int tspcosts = 0;
-    int source = indexToNodeId[0];
-    for (auto it = intermediate_path.begin(); it != intermediate_path.end(); ++it){
-        int target = indexToNodeId[*it];
-        for (auto node: distances[source][target].path){
+    auto it_0 = intermediate_path.begin();
+    auto it_1 = intermediate_path.begin() + 1; 
+    while (it_1 != intermediate_path.end()){
+        int source = indexToNodeId[*it_0];
+        int target = indexToNodeId[*it_1];
+        for (auto node: distances[source][target].path)
             path.push_back(node);
-        }
         tspcosts += distances[source][target].distance;
-        source = target;
+        ++it_0;
+        ++it_1;
     }
-    for (auto node: distances[source][indexToNodeId[0]].path)
+    for (auto node: distances[*it_1][indexToNodeId[0]].path)
         path.push_back(node);
-    tspcosts += distances[source][indexToNodeId[0]].distance;
+    tspcosts += distances[*it_1][indexToNodeId[0]].distance;
     cout << endl;
-    cout << "optimal path:" << opt << endl;
+    cout << "optimal path:" << tspcosts << endl;
     return make_pair(tspcosts, path);
 }
 
@@ -246,6 +260,9 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
     vector<int> visited;
     int current = 0;
     visit(&graph_c, &visited, current);
+    cout << "before testing: Path: 0";
+    for (auto nodeId: visited) cout << "->" << nodeId;
+    cout << endl;
     // get costs of calculated path
     int currentCosts = getCosts(distances, visited, graph_c);
     // check for all node pairs of swapping them 
@@ -266,10 +283,14 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
             }
         }
     }
-    visited = tmpVisited;
+    //visited = tmpVisited;
     int source = graph_c.nodes[visited[0]].id;
     int costs = 0;
     int target = -1;
+    cout << "Path: 0";
+    for (auto nodeId: visited) cout << "->" << nodeId;
+    cout << endl;
+
     for (int i = 1; i < visited.size(); i++){
         target = graph_c.nodes[visited[i]].id;
         for (auto node: distances[source][target].path){
