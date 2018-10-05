@@ -4,11 +4,11 @@
 #include <limits>
 #include <bitset>
 
-inline long binomial(int n, int k){
+inline int binomial(int n, int k){
     if(k> n -k ){
         k = n-k;
     }
-    long b = 1;
+    int b = 1;
     int i;
     int m; 
     for (i = 1,m = n; i <= k; i++, m--){
@@ -74,22 +74,36 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     vector<Node> path;
     int n = distances.size();
     int table[n][n];
-    int i = 0;
     map<int, int> indexToNodeId;
     // Generate actual distance table and remember which index belongs to which vertex
+    int i = 0;
     for (auto it = distances.begin(); it != distances.end(); ++it){
         indexToNodeId.insert(pair<int, int>(i, it->first));
-        int j = 0;
-        for (auto it2= it->second.begin(); it2 != it->second.end(); ++it2){
-            if (i == j){
-                table[i][j] = 0;
-            }else{
-                table[i][j] = it2->second.distance;
-            }
-            ++j;
-        }
-        ++i;
+        i++;
     }
+    printDistances(distances);
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            if (i == j)
+                table[i][j] = 0;
+            else{
+                int source = indexToNodeId[i];
+                int target = indexToNodeId[j];
+                table[i][j] = distances[source][target].distance;
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            cout << table[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+
+
+
 
     vector<vector<int>> costs;
     for (int i = 0; i < n; ++i){
@@ -97,69 +111,76 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     }
     for (int i = 0; i < n; ++i){
         // Fill in the initial distances
-        costs[i][1<<i] = table[0][i];
+        costs[i][1<<i]=table[0][i];
     }
 
     for (int s = 2; s < n; s++){
-            for (int mask = 0; mask < (1 << n); mask++){
-                if (bitset<32>(mask).count() != s){
+        for (int mask = 0; mask < (1 << n); mask++){
+            if (bitset<32>(mask).count() != s){
+                continue;
+            }
+            for (int k = 0; k < n; k++){
+                if ((mask & (1 << k)) == 0){
                     continue;
                 }
-                for (int k = 0; k < n; k++){
-                    if (((1 << k) & mask ) == 0)
+                int minimum = numeric_limits<int>::max();
+                for (int m = 0; m < n; m++){
+                    if (m == k || (mask & (1 << m ))== 0){
                         continue;
-                    int minimum = numeric_limits<int>::max();
-                    cout << "initial min: " << minimum << endl;
-                    for (int m = 0; m < n; m++){
-                        if (m == k || ((1 << m ) & mask ) == 0)
-                            continue;
-                        
-                        int val = costs[m][mask & ~(1 << k)] + table[m][k];
-                        cout << "value: " << val << " minimum: " << minimum << endl;
-                        if (val < minimum)
-                            minimum = val;
                     }
-                    costs[k][mask] = minimum;
+                    int value = costs[m][mask & ~(1 << k)] + table[m][k];
+                       if (value < minimum){
+                        minimum = value;
+                    }
+
                 }
-        }
-    }
-
-
-    int min_node = -1; 
-
-    int mask = 0;
-    for (int s = 1; s < n ; s++){
-        mask += (1 << s);
-    }
-    int current = 0;
-    vector<int> intermediate_path;
-    intermediate_path.push_back(current);
-    int min = numeric_limits<int>::max();
-
-    for (int j = 1; j < n; j++){
-        for (int i = 1; i < n; i++){
-            int val = costs[i][mask] + table[i][current];
-            if (val < min){
-                min_node = i;
+                costs[k][mask] = minimum;
             }
         }
-        intermediate_path.push_back(min_node);
-        current = min_node;
-        mask = (mask & ~(1 << min_node));
-        min = numeric_limits<int>::max();
     }
+
+    int opt = numeric_limits<int>::max();
+    int local_opt = numeric_limits<int>::max();
+    int minimumNode = -1; 
+
+    vector<int> intermediatePath;
+
+    int mask = 0;
+    int currentNode = 0;
+    for (int s = 1; s < n; s++){
+        mask += (1 << s);
+    }
+
+    for (int i = 1; i < n; i++){
+        cout << bitset<8>(mask) << endl;
+        for (int k = 1; k < n; k++){
+            int value = costs[k][mask] + table[k][currentNode];
+            if (value < opt){
+                opt = value;
+                minimumNode = k;
+            }
+        }
+        intermediatePath.push_back(minimumNode);
+        currentNode = minimumNode;
+        mask = (mask & ~( 1 << minimumNode));
+        opt = numeric_limits<int>::max();
+    }
+
+
+    // search for the best path in the table
+    // get the n-1 nodes which build the path starting from source node [0][0]
      
 
     // search for the best path in the table
     // get the n-1 nodes which build the path starting from source node [0][0]
     cout << "Path: ";
-    for (auto nodeId: intermediate_path) cout << "->" << nodeId;
+    for (auto nodeId: intermediatePath) cout << "->" << nodeId;
     cout << endl;
-    cout << "size of intermediate path: " << intermediate_path.size() << endl;
+    cout << "size of intermediate path: " << intermediatePath.size() << endl;
     int tspcosts = 0;
-    auto it_0 = intermediate_path.begin();
-    auto it_1 = intermediate_path.begin() + 1; 
-    while (it_1 != intermediate_path.end()){
+    auto it_0 = intermediatePath.begin();
+    auto it_1 = intermediatePath.begin() + 1; 
+    while (it_1 != intermediatePath.end()){
         int source = indexToNodeId[*it_0];
         int target = indexToNodeId[*it_1];
         for (auto node: distances[source][target].path)
@@ -175,6 +196,7 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     cout << "optimal path:" << tspcosts << endl;
     return make_pair(tspcosts, path);
 }
+
 
 
 
