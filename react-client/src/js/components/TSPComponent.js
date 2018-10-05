@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import '../../css/components/TSPComponent.css'
 import CategoryComponent from './CategoryComponent';
 import SourceTargetComponent from './SourceTargetComponent';
+import AddButtons from './AddButtons'
+import '../../css/components/SidebarContent.css'
 
 
 class TSPComponent extends React.Component {
@@ -53,22 +55,19 @@ class TSPComponent extends React.Component {
     deleteTarget(index){
         this.props.coreActions.deleteTspTarget(index);
     }
+    changeNumberOfElem(value, index){
+        this.props.coreActions.changeNumberOfElemTsp(value, index);
+    }
 
     renderAddSource(){
         return (
-            <div>
-                <button onClick={this.setCategorySource}>Category source</button>
-                <button onClick={this.setCurrentSource}>Current location source</button>
-            </div>
+            <AddButtons addCategory={this.setCategorySource} addCurrent={this.setCurrentSource}/>
         )
     }
 
     renderAddTarget(){
         return (
-            <div>
-                <button onClick={this.addCategoryTarget}>Category target</button>
-                <button onClick={this.addCurrentTarget}>Current location target</button>
-            </div>
+            <AddButtons addCategory={this.addCategoryTarget} addCurrent={this.addCurrentTarget}/>
         )
     }
 
@@ -80,7 +79,15 @@ class TSPComponent extends React.Component {
     renderTarget(){
         return this.props.targets.map((elem, index) => {
             return (
-                <SourceTargetComponent key={index} type={"target"} elem={elem} delete={()=> this.deleteTarget(index)} changeCategory={(e)=> this.changeCategoryTarget(e, index)}/>
+                <SourceTargetComponent 
+                key={index} 
+                type={"target"} 
+                elem={elem} 
+                delete={()=> this.deleteTarget(index)} 
+                changeCategory={(e)=> this.changeCategoryTarget(e, index)}
+                changeNumber={true}
+                changeNumberOfElem={(value)=> this.changeNumberOfElem(value, index)}
+                />
             )
         })
     }
@@ -91,8 +98,10 @@ class TSPComponent extends React.Component {
             {this.props.source ? this.renderSource(): this.renderAddSource()}
             {this.props.targets ? this.renderTarget(): null}
             {this.renderAddTarget()}
-            <button onClick={this.heldKarp}>Calc</button>
-            <button onClick={this.apx}>Calc APX</button>
+            <div class="containerbox">
+                <button class="btn-calc" onClick={this.heldKarp}>Calc</button>
+                <button class="btn-calc" onClick={this.apx}>Calc APX</button>
+            </div>
             </div>
         )
     }

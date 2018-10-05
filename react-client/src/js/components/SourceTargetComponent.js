@@ -6,7 +6,7 @@ import '../../css/components/SourceTargetComponent.css'
 import CategoryComponent from './CategoryComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMinusSquare } from '@fortawesome/free-regular-svg-icons'
-
+import '../../css/components/SidebarContent.css'
 
 
 
@@ -16,8 +16,8 @@ export default class SourceTargetComponent extends React.Component {
     renderOuterElem(){
         var name = this.props.type== "source"? "Source": "Target"
         return (
-            <div className="container">
-            <div className="delete-btn" onClick={this.props.delete}><FontAwesomeIcon color="#fa8231" icon={faMinusSquare}></FontAwesomeIcon></div>
+            <div className="containerbox">
+            <div className="delete-btn" onClick={this.props.delete}><FontAwesomeIcon color="#44bd32" icon={faMinusSquare}></FontAwesomeIcon></div>
                 <h6>{name}</h6>
                 {this.renderInnerElem()}
             </div>
@@ -29,9 +29,13 @@ export default class SourceTargetComponent extends React.Component {
         if (this.props.elem.mode === "category"){
             var defaultValue = this.props.elem.group?this.props.elem.group + ":" + this.props.elem.category:null;
             return (
-                <div>
+                <div className="category-box">
                     <p>Choose a category</p>
-                    <CategoryComponent defaultValue={defaultValue} onChange={this.props.changeCategory}/>
+                    <CategoryComponent className="category-pick" defaultValue={defaultValue} onChange={this.props.changeCategory}/>
+                    {this.props.changeNumber ? <form>
+                        <label>#POIs</label>
+                        <input type="number" value={this.props.elem.numberOfElem} onChange={this.props.changeNumberOfElem}></input>
+                    </form> : null}
                 </div>
             )
         }else if (this.props.elem.mode === "marker"){

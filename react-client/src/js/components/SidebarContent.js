@@ -8,31 +8,46 @@ import '../../css/components/SidebarContent.css'
 import Tab from './Tab'
 import RoutingComponent from './RoutingComponent'
 import TSPComponent from './TSPComponent'
+import PoiComponent from './PoiComponent'
 
 class SidebarContent extends React.Component {
     constructor(props){
         super(props);
-        this.setTSP = this.setTSP.bind(this)
-        this.unsetTSP = this.unsetTSP.bind(this)
     }
 
     componentWillMount(props){
         this.props.coreActions.getCategories();
     }
 
-    setTSP(){
-        this.props.coreActions.setTsp(true);
+    setAppState(appState){
+        this.props.coreActions.setAppState(appState);
     }
-    unsetTSP(){
-        this.props.coreActions.setTsp(false);
+
+    renderApp(){
+        if (this.props.appState === "tsp"){
+            return (
+                <TSPComponent/>
+            )
+        }else if (this.props.appState ==="routing"){
+            return (
+                <RoutingComponent/>
+            )
+        }else if (this.props.appState === "poi"){
+            return (
+                <PoiComponent/>
+            )
+        }
     }
 
     render(){
         return (
-            <div className="sidebar-container">
-                <Tab name="TSP" active={this.props.tsp} onClick={this.setTSP}/>
-                <Tab name="Routing" active={!this.props.tsp} onClick={this.unsetTSP}/>
-                { this.props.tsp ? <TSPComponent/>: <RoutingComponent/>}
+            <div className="sidebar">
+                <div className="containerbox">
+                <Tab name="TSP" active={this.props.appState === "tsp"} onClick={()=> this.setAppState("tsp")}/>
+                <Tab name="Routing" active={this.props.appState === "routing"} onClick={()=> this.setAppState("routing")}/>
+                <Tab name="POI" active={this.props.appState === "poi"} onClick={()=> this.setAppState("poi")}/>
+                </div>
+                {this.renderApp()}
            </div>
         )
     }
@@ -41,7 +56,7 @@ class SidebarContent extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        tsp: state.core.tsp
+        appState: state.core.appState
     }
 }
 

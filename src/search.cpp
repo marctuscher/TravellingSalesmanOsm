@@ -66,6 +66,7 @@ Result Search::oneToOne(int source, int target){
 map<int, Result> Search::oneToMany(int source, vector<int> targets){
   map<int, Result> output_map;
   pair<int,int> current;
+
   this->expand(source, 0);
   while(!this->pq.empty()){
     current = pq.top();

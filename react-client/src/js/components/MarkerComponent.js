@@ -5,6 +5,8 @@ import '../../css/components/MarkerComponent.css'
 import {Marker, Popup} from 'react-leaflet'
 import { connect } from 'react-redux';
 import {bindActionCreators} from 'redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMinusSquare } from '@fortawesome/free-regular-svg-icons'
 class MarkerComponent extends React.Component {
 
     constructor(props){
@@ -19,16 +21,16 @@ class MarkerComponent extends React.Component {
     }
 
     setTarget(){
-        if (this.props.tsp){
+        if (this.props.appState === "tsp"){
             this.props.coreActions.addTspMarkerTarget(this.props.index);
-        }else {
+        }else if (this.props.appState === "routing") {
             this.props.coreActions.setRoutingTargetMarker(this.props.index)
         }
     }
     setSource(){
-        if (this.props.tsp){
-            this.props.coreActions.setTspSource(this.props.index);
-        }else {
+        if (this.props.appState === "tsp"){
+            this.props.coreActions.setTspMarkerSource(this.props.index);
+        }else if (this.props.appState === "routing"){
             this.props.coreActions.setRoutingSourceMarker(this.props.index);
         }
     }
@@ -37,21 +39,25 @@ class MarkerComponent extends React.Component {
 
     renderPopup(){
         return (
-            <div>
                 <Popup>
-                <button onClick={this.setSource}>Set source</button>
-                <button onClick={this.setTarget}>Set target</button>
-                <button onClick={this.deleteMarker}>deleteMarker</button>
-                {this.props.markerText}
+                    <div className="delete-marker-btn" onClick={this.deleteMarker}><FontAwesomeIcon color="#44bd32" icon={faMinusSquare}></FontAwesomeIcon></div>
+                    <div className="popup">
+                    <h4>{this.props.marker.tags ? this.props.marker.tags.name: null}</h4>
+                    {this.props.marker.tags.opening_hours ?<p className="opening"><strong>Open:</strong> {this.props.marker.tags.opening_hours}</p>: null}
+                    <p>{this.props.marker.text}</p> 
+                    <div className="btn-box">
+                    <button className="btn-set-marker" onClick={this.setSource}>Set source</button>
+                    <button className="btn-set-marker" onClick={this.setTarget}>Set target</button>
+                    </div>
+                    </div>
                 </Popup>
-            </div>
         )
     }
 
     render(){
         return (
         <div>
-            <Marker position={this.props.coord}>
+            <Marker position={this.props.coord} color="#44bd32">
                 {this.renderPopup()}
             </Marker>
         </div>
@@ -62,7 +68,7 @@ class MarkerComponent extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        tsp: state.core.tsp
+        appState: state.core.appState
     }
 }
 

@@ -69,38 +69,66 @@ void Graph::generateOffsetOutAndCosts() {
 
 
 
+
+  vector<pair<int, int>> getCellsToSearch(int lat, int lon){
+    vector<pair<int, int>> pairs;
+    pairs.push_back(make_pair(lat, lon));
+    pairs.push_back(make_pair((lat-1), lon));
+    pairs.push_back(make_pair(lat, (lon-1)));
+    pairs.push_back(make_pair(lat +1 , lon));
+    pairs.push_back(make_pair(lat, lon +1 ));
+    pairs.push_back(make_pair(lat+1, lon +1 ));
+    pairs.push_back(make_pair(lat-1, lon +1 ));
+    pairs.push_back(make_pair(lat+1, lon -1 ));
+    pairs.push_back(make_pair(lat-1, lon -1 ));
+    return pairs;
+  }
+
 int Graph::findNode(double lat, double lon){
   int node = -1;
   double epsilon = 0.1;
   double shortest = std::numeric_limits<int>::max();
-  for (auto i: grid[(int)floor(lat)][(int) floor(lon)]) {
-    double current = haversine(lat, lon, this->nodes[i].lati, this->nodes[i].loni);
-    if (current < epsilon){
-      return i;
-    }
-    if (current < shortest){
-      shortest = current;
-      node = i;
-    }
+  int currentLatInt = (int)(floor(lat));
+  int currentLonInt = (int)(floor(lon));
+  vector<pair<int, int>> pairsToSearch = getCellsToSearch(currentLatInt, currentLonInt);
+  for (auto pair: pairsToSearch){
+    for (auto i: connectedGrid[pair.first][pair.second]) {
+      double current = haversine(lat, lon, this->nodes[i].lati, this->nodes[i].loni);
+      if (current < epsilon){
+        return i;
+      }
+      if (current < shortest){
+        shortest = current;
+        node = i;
+      }
   }
+
+}
   return node;
 }
 
-  int Graph::findNodeByCategory(string group, string category, double currentLat, double currentLon){
+  int Graph::findNodeByCategory(string group, string category, double currentLat, double currentLon, vector<int> alreadyFound){
   int node = -1;
   double epsilon = 0.1;
   double shortest = std::numeric_limits<int>::max();
-  for (auto i: grid[(int)floor(currentLat)][(int) floor(currentLon)]) {
-    if (this->nodes[i].tags.find(group) == this->nodes[i].tags.end()) continue;
-    if (!(this->nodes[i].tags[group] == category)) continue;
-    double current = haversine(currentLat, currentLon, this->nodes[i].lati, this->nodes[i].loni);
-    if (current < epsilon){
-      return i;
-    }
-    if (current < shortest){
-      shortest = current;
-      node = i;
-    }
+  int currentLatInt = (int)(floor(currentLat));
+  int currentLonInt = (int)(floor(currentLon));
+  vector<pair<int, int>> pairsToSearch = getCellsToSearch(currentLatInt, currentLonInt);
+  for (auto pair: pairsToSearch){
+    for (auto i: grid[pair.first][pair.second]) {
+      if (find(alreadyFound.begin(), alreadyFound.end(), i) != alreadyFound.end()) continue;
+      if (this->nodes[i].tags.find(group) == this->nodes[i].tags.end()) continue;
+      if (!(this->nodes[i].tags[group] == category)) continue;
+      double current = haversine(currentLat, currentLon, this->nodes[i].lati, this->nodes[i].loni);
+      if (current < epsilon){
+        return i;
+      }
+      if (current < shortest){
+        shortest = current;
+        node = i;
+      }
+  }
+
   }
   return node;
  }

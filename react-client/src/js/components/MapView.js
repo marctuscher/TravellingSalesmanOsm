@@ -47,10 +47,22 @@ class MapView extends React.Component {
 				key={i} 
 				coord={marker.latlng} 
 				type={marker.type}
-				markerText={marker.text}
+				marker={marker}
 				index={i}/>
 				)
 		})
+	}
+
+	renderMap(){
+		if (this.props.appState === "tsp"){
+			return (
+				<TspMap/>
+			)
+		}else if (this.props.appState === "routing"){
+			return (
+				<RoutingMap/>
+			)
+		}
 	}
 
 	
@@ -63,12 +75,13 @@ class MapView extends React.Component {
 				zoom={this.props.zoom}
 				onClick={this.handleMapClick}
 				ref={this.mapRef} 
+				zoomControl={false}
 			>
 			{this.renderClickMarkers()}
 				<TileLayer
 			  	attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
 			  	url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-			{this.props.tsp? <TspMap/>: <RoutingMap/>}
+			{this.renderMap()}
 		  </Map>
 		)
 	}
@@ -76,7 +89,7 @@ class MapView extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-		tsp: state.core.tsp,
+		appState: state.core.appState,
 		position: state.core.position,
 		path: state.core.path,
 		zoom: state.core.zoom, 

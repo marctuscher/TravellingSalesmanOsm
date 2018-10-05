@@ -24,7 +24,7 @@ int main (int argc, char* argv[]){
   }
   cout << "starting search on " << vec.size() << " elements" << endl;
   map<int, map<int, Result>> distances = dyn.calcDistances(vec);
-  dyn.christofides(distances);
+  dyn.apx(distances);
   //int nodeId = g.findNode(48.9053, 9.1350);
   //std::cout << nodeId << endl;
 }

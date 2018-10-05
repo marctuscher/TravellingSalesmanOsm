@@ -1,8 +1,12 @@
 
 import React, { PropTypes } from 'react';
-import Icon from './Icon';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux'
 
-export default class Notifications extends React.Component{
+import * as coreActions from '../services/core/actions'
+import '../../css/components/notifications.css'
+
+class Notifications extends React.Component{
 
 	constructor(props){
 		super(props)
@@ -22,24 +26,13 @@ export default class Notifications extends React.Component{
 			<span>
 				{
 					notifications.map(notification => {
-						switch (notification.type){
-							case 'shortcut':
-								return (
-									<div className={"notification shortcut-notification"+(notification.closing ? ' closing' : '')} key={notification.key} data-duration={notification.duration}>
-										<Icon type="fontawesome" name={notification.content} />
-									</div>
-								)
-
-							default:
 								return (
 									<div className={notification.type+" notification"+(notification.closing ? ' closing' : '')} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
-										<Icon name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
 										{notification.title ? <h4>{notification.title}</h4> : null}
 										<p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p>
 										{notification.description ? <p className="description" dangerouslySetInnerHTML={{__html: notification.description}}></p> : null }
 									</div>
 								)
-						}
 					})
 				}
 			</span>
@@ -63,7 +56,6 @@ export default class Notifications extends React.Component{
 							</div>
 						</div>
 						{process.message}
-						<Icon name="close" className="close-button" onClick={e => {this.props.uiActions.cancelProcess(process.key)}} />
 					</div>
 				)
 
@@ -135,10 +127,24 @@ export default class Notifications extends React.Component{
 	render(){
 		return (
 			<div className="notifications">
-				{this.renderLoader()}
+				{/*this.renderLoader()*/}
 				{this.renderNotifications()}
-				{this.renderProcesses()}
+				{/*this.renderProcesses()*/}
 			</div>
 		)
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {
+		notifications: (state.core.notifications ? state.core.notifications : [])
+	}
+};
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		coreActions: bindActionCreators(coreActions, dispatch)
+	}
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Notifications)

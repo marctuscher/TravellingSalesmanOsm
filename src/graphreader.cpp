@@ -145,6 +145,7 @@ struct sort_operatorNodes
 
       }
     }
+    std::cout << "Last nodecount in connected: " << nodesCount << endl;
     if (!inFile.open())
       return -1;
     while(inFile.parseNextBlock(pbi)){
@@ -156,7 +157,7 @@ struct sort_operatorNodes
               double latitude = node.latd();
               double longitude = node.lond();
               inserted = nodeMap.insert({node.id(), 0});
-              out->grid[(int)floor(latitude)][(int)floor(longitude)].push_back(inserted.first->second);
+              out->connectedGrid[(int)floor(latitude)][(int)floor(longitude)].push_back(inserted.first->second);
               out->nodes[inserted.first->second].tags = map<string, string>();
               for(uint32_t i = 0, s = node.tagsSize();  i < s; ++i) {
                 out->nodes[inserted.first->second].tags.insert({node.key(i), node.value(i)});
