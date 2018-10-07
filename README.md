@@ -92,4 +92,14 @@ npm start
 ```
 
 ## Docker
+In case you want to spend your time using this app instead of compiling it, there is also a docker image available on dockerhub.
+```
+docker pull marctuscher/travellingsalesmanosm
+```
+
+To run the image copy your `config.json` and your osm.pbf file to a folder. Now you just need to mount this folder into the container and tell the container the name of your osm.pbf file in the run command:
+```
+docker run -d -v path/to/folderContainingData/:/usr/app/data -e filename="nameOfYour.osm.pbf" marctuscher/travellingsalesmanosm
+```
+
 
