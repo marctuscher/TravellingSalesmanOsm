@@ -1,15 +1,6 @@
 [submodule "osmpbf"]
 	path = osmpbf
-	url = git@github.com:marctuscher/osmpbf.git
-[submodule "src/sparsehash"]
-	path = src/sparsehash
-	url = https://github.com/sparsehash/sparsehash.git
-[submodule "sparsehash"]
-	path = sparsehash
-	url = https://github.com/sparsehash/sparsehash.git
-[submodule "sparsepp"]
-	path = sparsepp
-	url = git@github.com:marctuscher/sparsepp.git
+	url = https://github.com/marctuscher/osmpbf.git
 [submodule "Simple-Web-Server"]
 	path = Simple-Web-Server
-	url = git@github.com:marctuscher/Simple-Web-Server.git
+	url = https://github.com/marctuscher/Simple-Web-Server.git

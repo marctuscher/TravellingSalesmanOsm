@@ -93,6 +93,10 @@ export default function reducer(core = {}, action){
             var notifications = Object.assign({}, core.notifications);
             delete notifications[action.key];
             return Object.assign({}, core, {notifications: notifications});
+        case 'GET_MARKER_DESCRIPTION':
+            var markers = Object.assign({}, core.markers);
+            markers[action.index].description = action.description;
+            return {...core, markers: markers}
         case 'CLEAR_MARKERS':
             return {...core, markers: []}
         default:

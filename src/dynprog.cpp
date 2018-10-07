@@ -8,19 +8,6 @@
 #include <vector>
 #include <algorithm>
 
-inline int binomial(int n, int k){
-    if(k> n -k ){
-        k = n-k;
-    }
-    int b = 1;
-    int i;
-    int m; 
-    for (i = 1,m = n; i <= k; i++, m--){
-        b = b*m/i;
-    }
-    return b;
-}
-
 DynProg::DynProg(Graph* graph){
     this->g = graph;
 }
@@ -156,6 +143,8 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     for (int s = 1; s < n; s++){
         mask += (1 << s);
     }
+    // search for the best path in the table
+    // get the n-1 nodes which build the path starting from source node [0][0]
 
     for (int i = 1; i < n; i++){
         cout << bitset<8>(mask) << endl;
@@ -177,12 +166,6 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     }
 
 
-    // search for the best path in the table
-    // get the n-1 nodes which build the path starting from source node [0][0]
-     
-
-    // search for the best path in the table
-    // get the n-1 nodes which build the path starting from source node [0][0]
     cout << "Costs: "<< cost <<"Path: ";
     for (auto nodeId: intermediatePath) cout << "->" << nodeId;
     cout << endl;

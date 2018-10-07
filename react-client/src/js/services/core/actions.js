@@ -294,3 +294,12 @@ export function removeNotification(key, manual = false){
         manual: manual
     }
 }
+
+export function getMarkerDescription(index, lat, lng){
+    return {
+        type: 'GET_MARKER_DESCRIPTION',
+        index: index,
+        lat: lat,
+        lng: lng
+    }
+}

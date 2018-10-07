@@ -284,8 +284,9 @@ const coreMiddleware = (function () {
 					}
 				}
 				if (!action.payload.tags) action.payload.tags = {}
+
 				if (!action.exists) {
-					
+					store.dispatch(coreActions.getMarkerDescription(store.getState().core.markers.length, action.payload.latlng.lat, action.payload.latlng.lng))
 					next(action);
 				}
 				break;
@@ -407,7 +408,7 @@ const coreMiddleware = (function () {
 				if (!action.notification.sticky) {
 					var timeout = setTimeout(
 						function () {
-							store.dispatch(coreActions.closeNotification(action.notification.key))
+							store.dispatch(coreActions.removeNotification(action.notification.key))
 						},
 						action.notification.duration * 1000
 					)
@@ -450,6 +451,9 @@ const coreMiddleware = (function () {
 				break;
 			case "CLEAR_MARKERS":
 				next(action);
+			break;
+			case "GET_MARKER_DESCRIPTION":
+				
 			break;
 			default:
 				break;
