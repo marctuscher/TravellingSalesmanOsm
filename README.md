@@ -100,7 +100,7 @@ docker pull marctuscher/travellingsalesmanosm
 
 To run the image copy your `config.json` and your osm.pbf file to a folder. Now you just need to mount this folder into the container and tell the container the name of your osm.pbf file in the run command:
 ```
-docker run -d -v path/to/folderContainingData/:/usr/app/data -e filename="nameOfYour.osm.pbf" marctuscher/travellingsalesmanosm
+docker run -d -v /path/to/datafolder/:/usr/app/data -e FILENAME="yourfilename.osm.pbf" -p 8080:8080 marctuscher/travellingsalesmanosm
 ```
 The appilication can now be accessed on `http://localhost:8080`
 
