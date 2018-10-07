@@ -4,6 +4,7 @@
 #include "stdio.h"
 #include <limits>
 #include <iostream>
+#include <algorithm>
 
 const static double EarthRadiusKm = 6372.8;
 inline double DegreeToRadian(double angle)
