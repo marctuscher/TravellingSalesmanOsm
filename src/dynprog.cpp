@@ -8,6 +8,8 @@
 #include <vector>
 #include <algorithm>
 
+using namespace std;
+
 DynProg::DynProg(Graph* graph){
     this->g = graph;
 }
