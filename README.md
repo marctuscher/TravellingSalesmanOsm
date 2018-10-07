@@ -11,7 +11,13 @@ spanning trees. Since finding shortest-path distances between each target of the
 also provides an implementation of Dijkstra's algorithmn for this purpose. Targets can either be the current location, points of interest
 which are selected by category or a marker on the map. Using the functionality can be done by either interfacing
 the HTTP API or using the web application which is also part of this repo. The web application is built using react and leaflet. A production build of the client is already included in the codebase. Parsing the OpenStreetMap files is done using [osmpbf](https://github.com/inphos42/osmpbf).
+
 Screenshots:
+
+![Alt Text](https://github.com/marctuscher/TravellingSalesmanOsm/blob/master/assets/tsp.png)
+![Alt Text](https://github.com/marctuscher/TravellingSalesmanOsm/blob/master/assets/apx.png)
+![Alt Text](https://github.com/marctuscher/TravellingSalesmanOsm/blob/master/assets/route.png)
+![Alt Text](https://github.com/marctuscher/TravellingSalesmanOsm/blob/master/assets/poi.png)
 
 ## Installation
 
@@ -86,4 +92,14 @@ npm start
 ```
 
 ## Docker
+In case you want to spend your time using this app instead of compiling it, there is also a docker image available on dockerhub.
+```
+docker pull marctuscher/travellingsalesmanosm
+```
+
+To run the image copy your `config.json` and your osm.pbf file to a folder. Now you just need to mount this folder into the container and tell the container the name of your osm.pbf file in the run command:
+```
+docker run -d -v path/to/folderContainingData/:/usr/app/data -e filename="nameOfYour.osm.pbf" marctuscher/travellingsalesmanosm
+```
+
 
