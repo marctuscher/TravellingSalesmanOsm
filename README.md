@@ -14,7 +14,7 @@ Screenshots:
 This installation guide focuses building the app on Ubuntu systems. Building on Windows or macOs is possible but additional steps, which are not covered by this guide, might be required to successfully build the binaries for such systems.
 
 ### Prerequisities
-Be sure to have [Boost] (https://www.boost.org/), [protobuf](https://github.com/protocolbuffers/protobuf) at version 3.5.1 and zlib installed on your system.
+Be sure to have [Boost](https://www.boost.org/), [protobuf](https://github.com/protocolbuffers/protobuf) at version 3.5.1 and zlib installed on your system.
 Boost and zlib can be installed by the following command. 
 ```
 sudo apt-get install libboost-all-dev zlib1g-dev
@@ -27,10 +27,59 @@ Please clone this repo recursively:
 ```
 git clone --recurse-submodules https://github.com/marctuscher/TravellingSalesmanOsm.git
 ```
+First, build the osmpbf library required for parsing the protobuf files:
+```
+cd osmpbf/
+mkdir build
+cd build/
+cmake ..
+make
+```
+As soon as this process finishes successfully, the main program can be build using
+```
+cd src/
+make
+```
+in the projects root directory.
+
+## Starting
+
+Configuring the selectable categories for POI search is done using a .json file which should have following structure:
+```
+{
+    "shop": [
+        "bakery", "supermarket", "mall", "kiosk", "beverages", "butcher", "deli", "dairy", "wholesale", "baby_goods", "bag", "clothes", "shoes"
+    ], 
+    "amenity": [
+        "bar", "bbq"
+    ]
+}
+```
+Possible values can be found on https://wiki.openstreetmap.org/wiki/Map_Features
+
+The application is run by issuing following commands:
+```
+./src/main.out /path/to/osm/file.osm.pbf /path/to/config.json
+```
 
 
 ## Client
+The source code for the client web application is located in the `react-client/` directory. Being able to build changes to the client requires Node. For installation, please refer to the official installation guide https://nodejs.org/en/download/
 
+All of the following commands should only be run in the `react-client` subdirectory.
+
+Creating a production build of the web application:
+```
+npm run build
+```
+Creating a development build of the web application:
+```
+npm run dev
+```
+Starting the development server:
+```
+npm start
+```
 
 ## Docker
 
