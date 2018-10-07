@@ -41,7 +41,7 @@ class PoiComponent extends React.Component {
     renderAddTarget(){
         return (
             <div className="containerbox">
-             <button className="btn-addbox" style={{width: "100%"}} onClick={this.addCategoryTarget} ><FontAwesomeIcon icon={faBars}/></button>
+             <button className="btn-addbox" style={{width: "100%"}} onClick={this.addCategoryTarget} ><FontAwesomeIcon icon={faBars}/> Category</button>
             </div>
         )
     }

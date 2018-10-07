@@ -286,7 +286,8 @@ const coreMiddleware = (function () {
 				if (!action.payload.tags) action.payload.tags = {}
 
 				if (!action.exists) {
-					store.dispatch(coreActions.getMarkerDescription(store.getState().core.markers.length, action.payload.latlng.lat, action.payload.latlng.lng))
+					// apparently the wikilocation api does not exist anymore
+					//store.dispatch(coreActions.getMarkerDescription(store.getState().core.markers.length, action.payload.latlng.lat, action.payload.latlng.lng))
 					next(action);
 				}
 				break;
@@ -453,7 +454,14 @@ const coreMiddleware = (function () {
 				next(action);
 			break;
 			case "GET_MARKER_DESCRIPTION":
-				
+				axios({
+					method: "get",
+					url: "http://api.wikilocation.org/articles?lat=" + action.lat + "&lng=" + action.lng +"&limit=1&radius=50",
+				}).then(res=> {
+					next(action);
+				}).catch(err => {
+					console.error(err)
+				})
 			break;
 			default:
 				break;

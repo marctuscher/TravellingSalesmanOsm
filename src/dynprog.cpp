@@ -16,27 +16,26 @@ DynProg::DynProg(Graph* graph){
     map<int, map<int, Result>> distances;
     int i = 0;
     vector<int> notFound;
-    for (auto it = nodes.begin(); it != nodes.end(); ++it){
+    for (int i = 0; i < nodes.size(); i++){
         // TODO clean up search and use multiple times
         Search s(this->g);
         vector<int> targets;
-        for (auto it_targets = nodes.begin(); it_targets != nodes.end(); ++it_targets){
-            if (it != it_targets){
-                int target = *it_targets;
+        for (int j = 0; j < nodes.size(); j++ ){
+            if (i != j){
+                int target = nodes[j];
                 targets.push_back(target);
             }
         }
-        if (find(notFound.begin(), notFound.end(), it) != notFound.end())
+        if (find(notFound.begin(), notFound.end(), nodes[i]) != notFound.end())
             continue;
-        map<int, Result> m = s.oneToMany(*it, targets);
+        map<int, Result> m = s.oneToMany(nodes[i], targets);
         for (int node: nodes){
-            if(node != *it && m.find(node) == m.end() && find(notFound.begin(), notFound.end(), node) == notFound.end()){
+            if(node != nodes[i] && m.find(node) == m.end() && find(notFound.begin(), notFound.end(), node) == notFound.end()){
                 cout << "Not found: " << node << endl;
                 notFound.push_back(node);
             }
         }
-        distances.insert(pair<int, map<int, Result>>(*it, m));
-        ++i;
+        distances.insert(pair<int, map<int, Result>>(nodes[i], m));
     }
     //erasing the nodes which could not be found
 

@@ -11,8 +11,8 @@ export default class AddButtons extends React.Component {
     render(){
         return (
             <div className="containerbox">
-                <button className="btn-addbox" onClick={this.props.addCategory}><FontAwesomeIcon icon={faBars}/></button>
-                <button className="btn-addbox" onClick={this.props.addCurrent}><FontAwesomeIcon icon={faLocationArrow}/>></button>
+                <button className="btn-addbox" onClick={this.props.addCategory}><FontAwesomeIcon icon={faBars}/> Category</button>
+                <button className="btn-addbox" onClick={this.props.addCurrent}><FontAwesomeIcon icon={faLocationArrow}/> Current</button>
             </div>
         )
     }

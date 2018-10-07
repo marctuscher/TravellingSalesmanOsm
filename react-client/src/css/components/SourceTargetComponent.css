@@ -21,3 +21,13 @@ h6 {
     right: 15px;
 }
 
+.input-style {
+    background-color: black;
+    color: white;
+    margin-left : 10px;
+    border-color: black;
+}
+.input-container {
+    margin-top: 10px;
+}
+

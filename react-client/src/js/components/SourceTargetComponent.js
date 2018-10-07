@@ -51,10 +51,12 @@ import '../../css/components/SidebarContent.css'
                 <div className="category-box">
                     <p>Choose a category</p>
                     <CategoryComponent className="category-pick" defaultValue={defaultValue} onChange={this.props.changeCategory}/>
-                    {this.props.changeNumber ? <form>
+                    {this.props.changeNumber ? <div className="input-container">
+                    <form>
                         <label>#POIs</label>
-                        <input type="number" value={this.state.numberOfElem} onChange={(e) => this.changeNumberOfElem(e.target.value)}></input>
-                    </form> : null}
+                        <input className="input-style" type="number" value={this.state.numberOfElem} onChange={(e) => this.changeNumberOfElem(e.target.value)}></input>
+                    </form> </div>: null}
+                    
                 </div>
             )
         }else if (this.props.elem.mode === "marker"){
