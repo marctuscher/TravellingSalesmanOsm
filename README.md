@@ -1,5 +1,7 @@
 # TravellingSalesmanOsm
 
+This repository serves as part of an assignment at my university.
+
 OpenStreetMap protobuf files as found on http://download.geofabrik.de/europe.html are read into an efficient internal
 graph representation. Solving instances of the Travelling Salesman Problem is done using the [Held-Karp algorithmn](https://en.wikipedia.org/wiki/Held%E2%80%93Karp_algorithm)
 with bitmasking for representation of subsets. Additionally, the Travelling Salesman problem is approximated by the 2-APX using minimum
