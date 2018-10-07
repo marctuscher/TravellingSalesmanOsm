@@ -227,6 +227,16 @@ void DynProg::printDistances(map<int, map<int, Result>> distances){
     }
 }
 
+bool getAllIn(vector<int> visited){
+
+    for (int i = 0; i < visited.size(); i++){
+        if (find(visited.begin(), visited.end(), i) == visited.end()){
+            return false;
+        }
+    }
+    return true;
+}
+
 
 pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
     cout << "Starting calculation of APX" << endl;
@@ -301,49 +311,55 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
     }
 
 
-    cout << " treeCosts: "<< treeCosts <<  "before testing: Path: 0";
+    cout << " treeCosts: "<< treeCosts <<  "before testing: Path:";
     for (auto nodeId: visited) cout << "->" << nodeId;
     cout << endl;
     // get costs of calculated path
     // check for all node pairs of swapping them 
     int currentCosts = getCosts(distances, visited, tree, indexToNodeId);
+    cout << "costs before testing: " << currentCosts << endl;
      vector<int> tmpVisited(visited);
+     vector<int> finalVisited;
     for (int i = 1; i < visited.size(); i++){
         for (int j = 1; j < visited.size(); j++){
             if(i == j) continue;
             int swap_i = visited[i];
-            tmpVisited[i] = visited[j];
             int swap_j = visited[j];
-            tmpVisited[j] = visited[i];
+            tmpVisited[i] = swap_j;
+            tmpVisited[j] = swap_i;
             int costs = getCosts(distances, tmpVisited, tree, indexToNodeId);
-            if (costs < currentCosts){
+            bool allIn = getAllIn(tmpVisited);
+            if (costs < currentCosts && allIn){
                 currentCosts = costs;
-            }else {
+                finalVisited = tmpVisited;
+            }else{
                 tmpVisited[i] = swap_i;
                 tmpVisited[j] = swap_j;
             }
+
         }
     } 
-    visited = tmpVisited;
+    for (auto nodeId: finalVisited) cout << "->" << nodeId;
+    cout << endl;
+    visited = finalVisited;
+    cout << " Costs : "<< currentCosts <<  "after testing: Path:";
+    for (auto nodeId: visited) cout << "->" << nodeId;
+    cout << endl;
     int apxCosts = 0;
-
-    auto it_0 = visited.begin();
-    auto it_1 = visited.begin() + 1;
-    int source; 
-    int target;
-    while (it_1 != visited.end()){
-        source = indexToNodeId[*it_0];
-        target = indexToNodeId[*it_1];
+    int source = indexToNodeId[visited[0]];
+    int target = -1;
+    // get costs of calculated path
+    for (int i = 1; i < visited.size(); i++){
+        target = indexToNodeId[visited[i]];
+        apxCosts += distances[source][target].distance;
         for (Node node: distances[source][target].path){
             path.push_back(node);
         }
-        apxCosts += distances[source][target].distance;
-        it_0++;
-        it_1++;
+        source = target;
     }
-    for (Node node: distances[target][indexToNodeId[0]].path){
-        path.push_back(node);
-    }
+        for (Node node: distances[target][indexToNodeId[0]].path){
+            path.push_back(node);
+        }
     apxCosts += distances[target][indexToNodeId[0]].distance;
     return make_pair(apxCosts, path);
 }

@@ -1,7 +1,5 @@
 FROM ubuntu:latest
 
-WORKDIR /usr/app/
-COPY . .
 
 
 RUN apt-get update
@@ -19,7 +17,17 @@ RUN curl -L -s https://github.com/google/protobuf/releases/download/v${PROTOBUF_
 	&& make install \
 	&& ldconfig \
 	&& rm -rf /tmp/protobuf-${PROTOBUF_VERSION}
+RUN curl -sL https://deb.nodesource.com/setup_10.x |  bash - && \
+    apt-get install -y nodejs
 
+WORKDIR /usr/app/
+COPY . .
+# installing node
+# building the client
+RUN cd react-client && \
+    npm install && \
+    npm run build && \
+    cd ..
 # building osmpbf
 RUN cd osmpbf && \
     mkdir build && \
@@ -31,16 +39,9 @@ RUN cd osmpbf && \
 RUN cd src &&  \
     make
 
-# installing node
-RUN curl -sL https://deb.nodesource.com/setup_10.x |  bash - && \
-    apt-get install -y nodejs
-# building the client
-RUN cd react-client && \
-    npm install && \
-    npm run build && \
-    cd ..
+EXPOSE 8080
 
-VOLUME /usr/app/data/
+WORKDIR /usr/app/src
 
-CMD [ "./src/main.out", "/usr/app/data/" + ${filename}, "/usr/app/data/config.json" ]
+CMD /usr/app/src/main.out /usr/app/data/$FILENAME /usr/app/data/config.json
 
