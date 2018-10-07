@@ -12,6 +12,10 @@ also provides an implementation of Dijkstra's algorithmn for this purpose. Targe
 which are selected by category or a marker on the map. Using the functionality can be done by either interfacing
 the HTTP API or using the web application which is also part of this repo. The web application is built using react and leaflet. A production build of the client is already included in the codebase. Parsing the OpenStreetMap files is done using [osmpbf](https://github.com/inphos42/osmpbf).
 Screenshots:
+![Alt Text](https://github.com/marctuscher/TravellingSalesmanOsm/blob/master/assets/tsp.png)
+![Alt Text](https://github.com/marctuscher/TravellingSalesmanOsm/blob/master/assets/apx.png)
+![Alt Text](https://github.com/marctuscher/TravellingSalesmanOsm/blob/master/assets/route.png)
+![Alt Text](https://github.com/marctuscher/TravellingSalesmanOsm/blob/master/assets/poi.png)
 
 ## Installation
 
