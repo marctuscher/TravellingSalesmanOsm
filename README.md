@@ -71,6 +71,7 @@ The application is run by issuing following commands:
 ```
 ./src/main.out /path/to/osm/file.osm.pbf /path/to/config.json
 ```
+The frontend can now be accessed on `http://localhost:8080`
 
 
 ## Client
@@ -101,5 +102,6 @@ To run the image copy your `config.json` and your osm.pbf file to a folder. Now 
 ```
 docker run -d -v path/to/folderContainingData/:/usr/app/data -e filename="nameOfYour.osm.pbf" marctuscher/travellingsalesmanosm
 ```
+The appilication can now be accessed on `http://localhost:8080`
 
 
