@@ -48,6 +48,9 @@ function processResult(res, action, store) {
 }
 
 function processPoiResult(res, action, store) {
+	if (res.data.markers === ""){
+		return action;
+	}
 	res.data.markers.forEach((elem, index) => {
 		let marker = {
 			latlng: {
@@ -82,9 +85,18 @@ const coreMiddleware = (function () {
 	return store => next => action => {
 		switch (action.type) {
 			case "TSP_HELD_KARP":
+				if (!action.source || action.targets.length === 0){
+						store.dispatch(coreActions.createNotification({
+							title: "Error",
+							content: "Please select source and targets",
+							type: "bad"
+						}))
+					break;
+				}
 				let targets = action.targets.slice();
 				targets.unshift(action.source);
-				targets = prepareDataTsp(targets, store)
+				targets = prepareDataTsp(targets, store);
+
 				axios({
 					method: 'POST',
 					url: '/tspheldkarp',
@@ -95,11 +107,12 @@ const coreMiddleware = (function () {
 					store.dispatch(coreActions.createNotification({
 						title: "Optimal",
 						sticky: true,
+						appState: "tsp",
 						content: '<h6 style="color:#44bd32">Calculation Times:</h6></br>' +
 							'Finding Nodes: ' + getSecondsString(res.data["duration:localization"]) + '</br>' +
 							'Dijkstra: ' + getSecondsString(res.data["duration:dijkstra"]) + '</br>' +
 							'TSP: ' + getSecondsString(res.data["duration:compute"]) + '</br>' +
-                            'Costs:' + res.data.costs
+                            'Costs: ' + res.data.costs
 					}));
 					action = processResult(res, action, store);
 					next(action)
@@ -108,6 +121,14 @@ const coreMiddleware = (function () {
 				})
 				break;
 			case "APX":
+				if (!action.source || action.targets.length === 0){
+						store.dispatch(coreActions.createNotification({
+							title: "Error",
+							content: "Please select source and targets",
+							type: "bad"
+						}))
+					break;
+				}
 				targets = action.targets.slice();
 				targets.unshift(action.source);
 				targets = prepareDataTsp(targets, store)
@@ -121,11 +142,12 @@ const coreMiddleware = (function () {
 					store.dispatch(coreActions.createNotification({
 						title: "2-APX",
 						sticky: true,
+						appState: "tsp",
 						content: '<h6 style="color:#44bd32">Calculation Times:</h6></br>' +
 							'Finding Nodes: ' + getSecondsString(res.data["duration:localization"]) + '</br>' +
 							'Dijkstra: ' + getSecondsString(res.data["duration:dijkstra"]) + '</br>' +
 							'TSP: ' + getSecondsString(res.data["duration:compute"]) + '</br>' +
-                            'Costs:' + res.data.costs
+                            'Costs: ' + res.data.costs
 					}));
 					action = processResult(res, action, store);
 					next(action)
@@ -134,6 +156,14 @@ const coreMiddleware = (function () {
 				})
 				break;
 			case "POI":
+				if (action.targets.length === 0){
+						store.dispatch(coreActions.createNotification({
+							title: "Error",
+							content: "Please select categories to search for",
+							type: "bad"
+						}))
+					break;
+				}
 				targets = action.targets.slice();
 				targets = prepareDataTsp(targets, store)
 				axios({
@@ -143,6 +173,21 @@ const coreMiddleware = (function () {
 						targets: targets
 					}
 				}).then(res => {
+					if (res.data.markers === ""){
+						store.dispatch(coreActions.createNotification({
+							title: "Error",
+							content: "Could not find any matching POI",
+							type: "bad"
+						}))
+					}else {
+						store.dispatch(coreActions.createNotification({
+							title: "POI",
+							sticky: true,
+							appState: "poi",
+							content: '<h6 style="color:#44bd32">Calculation Times:</h6></br>' +
+								'Finding Nodes: ' + getSecondsString(res.data["duration:localization"])
+						}));
+					}
 					action = processPoiResult(res, action, store);
 					next(action)
 				}).catch(err => {
@@ -152,6 +197,14 @@ const coreMiddleware = (function () {
 
 
 			case "CALC_ROUTE":
+				if (!action.source || !action.target){
+						store.dispatch(coreActions.createNotification({
+							title: "Error",
+							content: "Please select source and target",
+							type: "bad"
+						}))
+					break;
+				}
 				action.data = {}
 				action.data.sourceMode = action.source.mode;
 				action.data.targetMode = action.target.mode;
@@ -178,6 +231,15 @@ const coreMiddleware = (function () {
 					url: '/routebycoordinates',
 					data: action.data
 				}).then(res => {
+					store.dispatch(coreActions.createNotification({
+						title: "Dijkstra",
+						sticky: true,
+						appState: "routing",
+						content: '<h6 style="color:#44bd32">Calculation Times:</h6></br>' +
+							'Finding Nodes: ' + getSecondsString(res.data["duration:localization"]) + '</br>' +
+							'Dijkstra: ' + getSecondsString(res.data["duration:dijkstra"]) + '</br>' +
+                            'Costs: ' + res.data.costs
+					}));
 					action = processResult(res, action, store)
 					next(action);
 				}).catch(err => {
@@ -214,6 +276,7 @@ const coreMiddleware = (function () {
 				});
 				break;
 			case "ADD_MARKER":
+				
 				action.exists = false;
 				for (let marker of store.getState().core.markers) {
 					if (marker.latlng.lat === action.payload.latlng.lat && marker.latlng.lng === action.payload.latlng.lng) {
@@ -222,6 +285,7 @@ const coreMiddleware = (function () {
 				}
 				if (!action.payload.tags) action.payload.tags = {}
 				if (!action.exists) {
+					
 					next(action);
 				}
 				break;
@@ -318,6 +382,15 @@ const coreMiddleware = (function () {
 				addMarkerAtCurrentLocation(store);
 				next(action);
 				break
+			case "CLEAR_TSP":
+				next(action);
+				break
+			case "CLEAR_ROUTING":
+				next(action);
+				break
+			case "CLEAR_APX":
+				next(action);
+				break
 			case "SET_ROUTING_TARGET_CURRENT":
 				addMarkerAtCurrentLocation(store);
 				next(action);
@@ -326,6 +399,11 @@ const coreMiddleware = (function () {
 			case 'CREATE_NOTIFICATION':
 
 				// start a timeout to close this notification
+				for (let note in store.getState().core.notifications){
+					if (store.getState().core.notifications[note].title === action.notification.title){
+						store.dispatch(coreActions.removeNotification(note));
+					}
+				}
 				if (!action.notification.sticky) {
 					var timeout = setTimeout(
 						function () {
@@ -347,7 +425,7 @@ const coreMiddleware = (function () {
 					function () {
 						store.dispatch(coreActions.removeNotification(action.key))
 					},
-					200
+					500
 				)
 
 				next(action);
@@ -357,10 +435,10 @@ const coreMiddleware = (function () {
 
 				// Manual removal
 				if (action.manual) {
-					var notifications = Object.assign({}, store.getState().ui.notifications);
+					var notifications = Object.assign({}, store.getState().core.notifications);
 
 					// If a broadcast, add to suppressed_broadcasts
-					if (notifications[action.key] && notifications[action.key].type == 'broadcast') {
+					if (notifications[action.key] && notifications[action.key].type === 'broadcast') {
 						store.dispatch({
 							type: 'SUPPRESS_BROADCAST',
 							key: action.key
@@ -370,6 +448,9 @@ const coreMiddleware = (function () {
 
 				next(action);
 				break;
+			case "CLEAR_MARKERS":
+				next(action);
+			break;
 			default:
 				break;
 		}

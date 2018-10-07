@@ -1,0 +1,11 @@
+.vscode
+osmpbf/build/
+static/
+react-client/node_modules
+
+
+*.exe
+*.out
+*.app
+*.dSYM/
+config.json

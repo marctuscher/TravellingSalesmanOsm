@@ -5,7 +5,7 @@ import coreMiddleware from './services/core/middleware';
 import core from './services/core/reducer';
 
 let reducers = combineReducers({
-    core
+    core,
 });
 
 

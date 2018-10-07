@@ -55,7 +55,8 @@ class PoiComponent extends React.Component {
                 delete={()=> this.deleteTarget(index)} 
                 changeCategory={(e)=> this.changeCategoryTarget(e, index)}
                 changeNumber={true}
-                changeNumberOfElem={(value)=> this.changeNumberOfElem(value, index)}
+                poi={true}
+                index={index}
                 />
             )
         })

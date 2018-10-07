@@ -5,11 +5,30 @@ import { connect } from 'react-redux'
 
 import * as coreActions from '../services/core/actions'
 import '../../css/components/notifications.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimesCircle } from '@fortawesome/free-regular-svg-icons'
+import { toHtml } from '@fortawesome/fontawesome-svg-core';
 
 class Notifications extends React.Component{
 
 	constructor(props){
 		super(props)
+	}
+
+	deleteNotification(keyToDelete){
+		switch(this.props.notifications[keyToDelete].title){
+			case "Optimal":
+				this.props.coreActions.clearTsp();
+			break;
+			case "Dijkstra":
+				this.props.coreActions.clearRouting();
+			break;
+			case "2-APX":
+				this.props.coreActions.clearApx();
+			break;
+			default:
+		}
+		this.props.coreActions.removeNotification(keyToDelete);
 	}
 
 	renderNotifications(){
@@ -26,9 +45,13 @@ class Notifications extends React.Component{
 			<span>
 				{
 					notifications.map(notification => {
+						if (notification.appState && notification.appState !== this.props.appState){
+							return null;
+						}
 								return (
 									<div className={notification.type+" notification"+(notification.closing ? ' closing' : '')} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
-										{notification.title ? <h4>{notification.title}</h4> : null}
+										{notification.title ? <div className="title"><h4>{notification.title}</h4><div className="close-button" onClick={()=>this.deleteNotification(notification.key)}><FontAwesomeIcon icon={faTimesCircle}></FontAwesomeIcon></div></div> : null}
+										
 										<p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p>
 										{notification.description ? <p className="description" dangerouslySetInnerHTML={{__html: notification.description}}></p> : null }
 									</div>
@@ -137,7 +160,8 @@ class Notifications extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		notifications: (state.core.notifications ? state.core.notifications : [])
+		notifications: (state.core.notifications ? state.core.notifications : []),
+		appState : state.core.appState
 	}
 };
 

@@ -55,9 +55,6 @@ class TSPComponent extends React.Component {
     deleteTarget(index){
         this.props.coreActions.deleteTspTarget(index);
     }
-    changeNumberOfElem(value, index){
-        this.props.coreActions.changeNumberOfElemTsp(value, index);
-    }
 
     renderAddSource(){
         return (
@@ -82,11 +79,12 @@ class TSPComponent extends React.Component {
                 <SourceTargetComponent 
                 key={index} 
                 type={"target"} 
+                poi={false}
                 elem={elem} 
                 delete={()=> this.deleteTarget(index)} 
                 changeCategory={(e)=> this.changeCategoryTarget(e, index)}
                 changeNumber={true}
-                changeNumberOfElem={(value)=> this.changeNumberOfElem(value, index)}
+                index={index}
                 />
             )
         })
@@ -99,8 +97,8 @@ class TSPComponent extends React.Component {
             {this.props.targets ? this.renderTarget(): null}
             {this.renderAddTarget()}
             <div class="containerbox">
-                <button class="btn-calc" onClick={this.heldKarp}>Calc</button>
-                <button class="btn-calc" onClick={this.apx}>Calc APX</button>
+                <button className="btn-calc" onClick={this.heldKarp}>Calc</button>
+                <button className="btn-calc" onClick={this.apx}>Calc APX</button>
             </div>
             </div>
         )
@@ -108,16 +106,16 @@ class TSPComponent extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    return {
-        source: state.core.tspSource,
-        targets: state.core.tspTargets
-    }
+return {
+    source: state.core.tspSource,
+    targets: state.core.tspTargets
+}
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return {
-        coreActions: bindActionCreators(coreActions, dispatch)
-    }
+return {
+    coreActions: bindActionCreators(coreActions, dispatch)
+}
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(TSPComponent);

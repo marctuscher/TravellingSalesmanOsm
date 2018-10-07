@@ -52,7 +52,12 @@ export default function reducer(core = {}, action){
             return {...core, tspTargets: [...core.tspTargets, {...core.markers[action.index].latlng, mode: "marker"}]}
         case 'SET_TSP_MARKER_SOURCE':
             return {...core, tspSource: {...core.markers[action.index].latlng, mode:"marker"}}
-
+        case 'CLEAR_TSP':
+            return {...core, tspPath: []}
+        case 'CLEAR_APX':
+            return {...core, apxPath: []}
+        case 'CLEAR_ROUTING':
+            return {...core, routePath: []}
         /** Routing stuff */
         case 'SET_ROUTING_SOURCE_MARKER':
             return {...core, dijkstraSource: {latlng: core.markers[action.payload].latlng, mode: "marker"}}
@@ -88,6 +93,8 @@ export default function reducer(core = {}, action){
             var notifications = Object.assign({}, core.notifications);
             delete notifications[action.key];
             return Object.assign({}, core, {notifications: notifications});
+        case 'CLEAR_MARKERS':
+            return {...core, markers: []}
         default:
             return core;
     }

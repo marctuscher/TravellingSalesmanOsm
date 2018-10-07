@@ -118,7 +118,7 @@ void Webserver::run_server(char* filename, char* config_file){
 
   server.default_resource["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
     try {
-      auto web_root_path = boost::filesystem::canonical("static");
+      auto web_root_path = boost::filesystem::canonical("../static");
       auto path = boost::filesystem::canonical(web_root_path / request->path);
       if(distance(web_root_path.begin(), web_root_path.end()) > distance(path.begin(), path.end()) ||
          !equal(web_root_path.begin(), web_root_path.end(), path.begin()))
@@ -227,10 +227,10 @@ void Webserver::run_server(char* filename, char* config_file){
       }
       std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
       auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
-      pt.put("duration:compute", durationEdge);
+      pt.put("duration:dijkstra", durationEdge);
       pt.add_child("markers", markers_to_ptree(markers));
       pt.add_child("path", path_to_ptree(searchResult.path));
-      pt.put("distance", searchResult.distance);
+      pt.put("costs", searchResult.distance);
       write_json(oss, pt);
       std::string jsonString = oss.str();
       std::cout << jsonString << std::endl;

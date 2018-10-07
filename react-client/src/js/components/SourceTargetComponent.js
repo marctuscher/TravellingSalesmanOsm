@@ -10,7 +10,26 @@ import '../../css/components/SidebarContent.css'
 
 
 
-export default class SourceTargetComponent extends React.Component {
+
+
+ class SourceTargetComponent extends React.Component {
+
+    constructor(props){
+        super(props)
+        this.state = {
+            numberOfElem: this.props.elem.numberOfElem
+        }
+    }
+
+    changeNumberOfElem(value){
+        if (value !== "")value = Number(value);
+        this.setState({numberOfElem: value})
+        if (this.props.poi){
+            this.props.coreActions.changeNumberOfElemPoi(value, this.props.index);
+        }else{
+        this.props.coreActions.changeNumberOfElemTsp(value, this.props.index);
+        }
+    }
 
 
     renderOuterElem(){
@@ -34,7 +53,7 @@ export default class SourceTargetComponent extends React.Component {
                     <CategoryComponent className="category-pick" defaultValue={defaultValue} onChange={this.props.changeCategory}/>
                     {this.props.changeNumber ? <form>
                         <label>#POIs</label>
-                        <input type="number" value={this.props.elem.numberOfElem} onChange={this.props.changeNumberOfElem}></input>
+                        <input type="number" value={this.state.numberOfElem} onChange={(e) => this.changeNumberOfElem(e.target.value)}></input>
                     </form> : null}
                 </div>
             )
@@ -62,3 +81,18 @@ export default class SourceTargetComponent extends React.Component {
         )
     }
 }
+
+
+
+const mapStateToProps = (state) => {
+    return {
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        coreActions: bindActionCreators(coreActions, dispatch)
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SourceTargetComponent);
