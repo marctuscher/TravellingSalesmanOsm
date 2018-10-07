@@ -1,5 +1,7 @@
 # TravellingSalesmanOsm
 
+Travelling salesman problem on OpenStreetMap data. Shortest path distances by Dijkstra's algortihmn. Frontend built with react and leaflet.
+
 This repository serves as part of an assignment at my university.
 
 OpenStreetMap protobuf files as found on http://download.geofabrik.de/europe.html are read into an efficient internal
