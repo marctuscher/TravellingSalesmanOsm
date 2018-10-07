@@ -37,7 +37,7 @@ DynProg::DynProg(Graph* graph){
                 targets.push_back(target);
             }
         }
-        if (find(notFound.begin(), notFound.end(), *it) != notFound.end())
+        if (find(notFound.begin(), notFound.end(), it) != notFound.end())
             continue;
         map<int, Result> m = s.oneToMany(*it, targets);
         for (auto node: nodes){
