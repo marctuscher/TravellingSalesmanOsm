@@ -69,7 +69,8 @@ Possible values can be found on https://wiki.openstreetmap.org/wiki/Map_Features
 
 The application is run by issuing following commands:
 ```
-./src/main.out /path/to/osm/file.osm.pbf /path/to/config.json
+cd src/
+./main.out /path/to/osm/file.osm.pbf /path/to/config.json
 ```
 The frontend can now be accessed on `http://localhost:8080`
 
