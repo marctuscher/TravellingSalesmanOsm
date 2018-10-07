@@ -7,10 +7,13 @@ import {Polyline} from 'react-leaflet'
 
 class RoutingMap extends React.Component {
 
+
+
+
     render(){
         return (
             <div>
-                {this.props.path ? <Polyline positions={this.props.path}/>: null}
+                {this.props.path ? <Polyline ref={line => {this.line = line}} positions={this.props.path} />: null}
             </div>
         )
     }

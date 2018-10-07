@@ -9,7 +9,7 @@ function fillNotification(data){
             content: null,
             description: null,
             sticky: false,
-            closing: false
+            closing: false,
         })
 
    if (typeof data.title !== 'undefined' ) notification.title = data.title
@@ -18,6 +18,7 @@ function fillNotification(data){
    if (typeof data.sticky !== 'undefined' ) notification.sticky = data.sticky
    if (typeof data.closing !== 'undefined' ) notification.closing = data.closing
    if (typeof data.type !== 'undefined') notification.type = data.type
+   if (typeof data.appState !== 'undefined') notification.appState = data.appState
    console.log(notification)
     
    return notification
@@ -44,6 +45,24 @@ export function calcPoi(targets){
     return {
         type: "POI",
         targets: targets
+    }
+}
+
+export function clearTsp(){
+    return {
+        type: "CLEAR_TSP"
+    }
+}
+
+export function clearRouting(){
+    return {
+        type: "CLEAR_ROUTING"
+    }
+}
+
+export function clearApx(){
+    return {
+        type: "CLEAR_APX"
     }
 }
 
@@ -160,9 +179,15 @@ export function changeNumberOfElemTsp(value, index){
 }
 export function changeNumberOfElemPoi(value, index){
     return {
-        type: "CHANGE_NUMBER_OF_ELEM_TSP", 
+        type: "CHANGE_NUMBER_OF_ELEM_POI", 
         index: index,
         payload: value
+    }
+}
+
+export function clearMarkers(){
+    return {
+        type: "CLEAR_MARKERS"
     }
 }
 

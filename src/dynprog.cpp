@@ -5,6 +5,8 @@
 #include <bitset>
 #include "treeNode.h"
 #include <deque>
+#include <vector>
+#include <algorithm>
 
 inline int binomial(int n, int k){
     if(k> n -k ){
@@ -37,10 +39,10 @@ DynProg::DynProg(Graph* graph){
                 targets.push_back(target);
             }
         }
-        if (find(notFound.begin(), notFound.end(), *it) != notFound.end())
+        if (find(notFound.begin(), notFound.end(), it) != notFound.end())
             continue;
         map<int, Result> m = s.oneToMany(*it, targets);
-        for (auto node: nodes){
+        for (int node: nodes){
             if(node != *it && m.find(node) == m.end() && find(notFound.begin(), notFound.end(), node) == notFound.end()){
                 cout << "Not found: " << node << endl;
                 notFound.push_back(node);

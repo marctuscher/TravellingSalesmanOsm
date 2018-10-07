@@ -1,10 +1,15 @@
 CXXFLAGS= -std=c++11 -Wall -g
+TARGETOS= $(shell uname -s)
 
+ifeq ($(TARGETOS), Darwin)
+    LIBS=-losmpbf -lprotobuf -lz -pthread -lboost_thread-mt -lboost_system -lboost_filesystem
+else 
+    LIBS=-losmpbf -lprotobuf -lz -pthread -lboost_thread -lboost_system -lboost_filesystem
+endif
 
 LIB=-L ./../osmpbf/build/osmpbf/
 INC=-I ./include/ -I ../osmpbf/osmpbf/include -I ../osmpbf -I ./ -I ../Simple-Web-Server/
 INC_DEBUG=-I ./include/ -I ../osmpbf/osmpbf/include -I ../osmpbf -I ./
-LIBS=-losmpbf -lprotobuf -lz -pthread -lboost_thread-mt -lboost_system -lboost_filesystem
 LIBS_DEBUG=-losmpbf -lprotobuf -lz 
 
 

@@ -4,15 +4,19 @@ import { connect } from 'react-redux';
 import * as coreActions from '../services/core/actions';
 import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import '../../css/components/TSPComponent.css'
 import '../../css/components/MapView.css'
+
 
 import RoutingMap from './RoutingMap'
 import TspMap from './TspMap'
 import MarkerComponent from './MarkerComponent'
+import '../../css/components/SidebarContent.css'
 
 // Making markers work without having to use the google CDN
 // https://github.com/PaulLeCam/react-leaflet/issues/453
 import L from 'leaflet';
+import { faTextHeight } from '@fortawesome/free-solid-svg-icons';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -26,6 +30,7 @@ class MapView extends React.Component {
 	constructor(props) {
 		super(props)
 			this.props.coreActions.get_current_geolocation();
+			this.clearMarkers = this.clearMarkers.bind(this)
 	}
 	mapRef = createRef()
 
@@ -34,11 +39,6 @@ class MapView extends React.Component {
 	}
 		
 
-	componentWillReceiveProps(nextProps){
-		console.log(nextProps);
-		if (this.props.path !== nextProps.path){
-		}
-	}
 
 	renderClickMarkers(){
 		return this.props.markers.map((marker, i) => {
@@ -51,6 +51,10 @@ class MapView extends React.Component {
 				index={i}/>
 				)
 		})
+	}
+
+	clearMarkers(){
+		this.props.coreActions.clearMarkers();
 	}
 
 	renderMap(){
@@ -70,13 +74,16 @@ class MapView extends React.Component {
 	render() {
 		var position = [this.props.position.latitude, this.props.position.longitude];
 		return ( 
-			<Map 
+			<Map className="map-view" 
 				center={position}
 				zoom={this.props.zoom}
 				onClick={this.handleMapClick}
 				ref={this.mapRef} 
 				zoomControl={false}
 			>
+			<div className="box">
+			  <button className="btn-clear" onClick={this.clearMarkers}>ClearMarkers</button>
+			</div>
 			{this.renderClickMarkers()}
 				<TileLayer
 			  	attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"

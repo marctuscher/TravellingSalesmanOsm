@@ -50,6 +50,7 @@
     "react-redux": "^5.0.7",
     "react-sidebar": "^3.0.2",
     "redux": "^4.0.0",
+    "redux-form": "^7.4.2",
     "redux-thunk": "^2.3.0",
     "resolve": "1.6.0",
     "skeleton-css": "^2.0.4",
@@ -65,7 +66,7 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
-    "dev": "NODE_ENV=development webpack -w --config config/webpack.config.dev.js --output-path ../src/static"
+    "dev": "NODE_ENV=development webpack -w --config config/webpack.config.dev.js --output-path ../static"
   },
   "jest": {
     "collectCoverageFrom": [
