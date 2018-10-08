@@ -1,4 +1,4 @@
-CXXFLAGS= -std=c++11 -Wall -g
+CXXFLAGS= -std=c++11 -Wall -g -march=native -O3
 TARGETOS= $(shell uname -s)
 
 ifeq ($(TARGETOS), Darwin)

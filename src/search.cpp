@@ -33,7 +33,6 @@ void Search::expand(int source, int costs){
     pq.push(make_pair((this->g->edges[i].cost + costs), this->g->edges[i].trg));
     if(this->distances[this->g->edges[i].trg]> this->g->edges[i].cost + costs){
       this->parents[this->g->edges[i].trg] = i;
-      this->touch_parents.push_back(this->g->edges[i].trg);
       this->distances[this->g->edges[i].trg] = this->g->edges[i].cost + costs;
     }
   }

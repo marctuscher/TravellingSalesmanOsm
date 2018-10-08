@@ -294,7 +294,6 @@ void Webserver::run_server(char* filename, char* config_file){
       pt.put("duration:localization", durationLocalization);
 
       map<int, map<int, Result>> distances = dyn.calcDistances(targetsAndMarkers.first);
-      dyn.printDistances(distances);
       std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
       auto durationDijkstra = std::chrono::duration_cast<std::chrono::microseconds>( t3 - t2 ).count();
       pt.put("duration:dijkstra", durationDijkstra);
