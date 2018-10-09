@@ -14,44 +14,42 @@ DynProg::DynProg(Graph* graph){
     this->g = graph;
 }
 
- map<int, map<int, Result>> DynProg::calcDistances(vector<int> nodes){
-    map<int, map<int, Result>> distances;
-    int i = 0;
+ void DynProg::calcDistances(vector<int>* nodes, map<int, map<int, Result>>* distances){
     vector<int> notFound;
-    for (int i = 0; i < nodes.size(); i++){
+    for (int i = 0; i < nodes->size(); i++){
         // TODO clean up search and use multiple times
         Search s(this->g);
         vector<int> targets;
-        for (int j = 0; j < nodes.size(); j++ ){
+        for (int j = 0; j < nodes->size(); j++ ){
             if (i != j){
-                int target = nodes[j];
+                int target = nodes->operator[](j);
                 targets.push_back(target);
             }
         }
-        if (find(notFound.begin(), notFound.end(), nodes[i]) != notFound.end())
+        if (find(notFound.begin(), notFound.end(), nodes->operator[](i)) != notFound.end())
             continue;
-        map<int, Result> m = s.oneToMany(nodes[i], targets);
-        for (int node: nodes){
-            if(node != nodes[i] && m.find(node) == m.end() && find(notFound.begin(), notFound.end(), node) == notFound.end()){
+        map<int, Result> m;
+        s.oneToMany(nodes->operator[](i), &targets, &m);
+        for (int node: *nodes){
+            if(node != nodes->operator[](i) && m.find(node) == m.end() && find(notFound.begin(), notFound.end(), node) == notFound.end()){
                 cout << "Not found: " << node << endl;
                 notFound.push_back(node);
             }
         }
-        distances.insert(pair<int, map<int, Result>>(nodes[i], m));
+        distances->insert(pair<int, map<int, Result>>(nodes->operator[](i), m));
     }
     //erasing the nodes which could not be found
 
     for (auto notFoundNode: notFound){
-        auto it = distances.find(notFoundNode);
-        if ( it != distances.end())
-            distances.erase(distances.find(notFoundNode));
-        for (auto mapPair: distances){
+        auto it = distances->find(notFoundNode);
+        if ( it != distances->end())
+            distances->erase(distances->find(notFoundNode));
+        for (auto mapPair: *distances){
             auto notFoundIterator = mapPair.second.find(notFoundNode);
             if (notFoundIterator != mapPair.second.end())
-                distances[mapPair.first].erase(notFoundIterator);
+                distances->operator[](mapPair.first).erase(notFoundIterator);
         }
     }
-    return distances;
 }
 
 
@@ -62,15 +60,14 @@ DynProg::DynProg(Graph* graph){
 
 
 
-pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances){
+int DynProg::heldKarp(map<int, map<int, Result>>*  distances, vector<Node>* path){
     bool verbose = false;
-    vector<Node> path;
-    int n = distances.size();
+    int n = distances->size();
     int table[n][n];
     map<int, int> indexToNodeId;
     // Generate actual distance table and remember which index belongs to which vertex
     int i = 0;
-    for (auto it = distances.begin(); it != distances.end(); ++it){
+    for (auto it = distances->begin(); it != distances->end(); ++it){
         indexToNodeId.insert(pair<int, int>(i, it->first));
         i++;
     }
@@ -82,7 +79,7 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
             else{
                 int source = indexToNodeId[i];
                 int target = indexToNodeId[j];
-                table[i][j] = distances[source][target].distance;
+                table[i][j] = distances->operator[](source)[target].distance;
             }
         }
     }
@@ -140,7 +137,6 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     // get the n-1 nodes which build the path starting from source node [0][0]
 
     for (int i = 1; i < n; i++){
-        cout << bitset<8>(mask) << endl;
         for (int k = 1; k < n; k++){
             if ((mask &( 1 << k )) == 0)
                 continue;
@@ -159,9 +155,7 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     }
 
 
-    cout << "Costs: "<< cost <<"Path: ";
-    for (auto nodeId: intermediatePath) cout << "->" << nodeId;
-    cout << endl;
+    cout << "Costs: "<< cost << endl;
     cout << "size of intermediate path: " << intermediatePath.size() << endl;
     int tspcosts = 0;
     reverse(intermediatePath.begin(), intermediatePath.end());
@@ -169,31 +163,20 @@ pair<int, vector<Node>> DynProg::heldKarp(map<int, map<int, Result>>  distances)
     int target = -1;
     for (auto it: intermediatePath){
         target = indexToNodeId[it];
-        for (auto node: distances[source][target].path){
-            path.push_back(node);
+        for (auto node: distances->operator[](source)[target].path){
+            path->push_back(node);
         }
-        tspcosts += distances[source][target].distance;
+        tspcosts += distances->operator[](source)[target].distance;
         source = target;
     }
 
-    for (auto node: distances[target][indexToNodeId[0]].path)
-        path.push_back(node);
-    tspcosts += distances[target][indexToNodeId[0]].distance;
-    cout << endl;
+    for (auto node: distances->operator[](target)[indexToNodeId[0]].path)
+        path->push_back(node);
+    tspcosts += distances->operator[](target)[indexToNodeId[0]].distance;
     cout << "optimal path:" << tspcosts << endl;
-    return make_pair(tspcosts, path);
+    return tspcosts;
 }
 
-
-
-
-void visit(vector<TreeNode> *tree, vector<int> *visited, int current){
-    visited->push_back(current);
-    if(visited->size() == tree->size()) return;
-    for (auto child: tree->operator[](current).children){
-        visit(tree, visited, child);
-    }
-}
 
 int getCosts (vector<int>* visited, int *table, int n){
     int source = 0;
@@ -209,6 +192,7 @@ int getCosts (vector<int>* visited, int *table, int n){
     return currentCosts;
 }
 
+
 void DynProg::printDistances(map<int, map<int, Result>> distances){
     for (auto source: distances){
         cout << "Source: " << source.first << " targets: ";
@@ -219,22 +203,32 @@ void DynProg::printDistances(map<int, map<int, Result>> distances){
     }
 }
 
-bool swapNodes(vector<int> *visited,int* table, int* currentCosts, int n){
-    vector<int> tmpVisited(*visited);
+
+
+
+bool swapNodes(vector<int> *visited, int* table, int* currentCosts, int n){
     for (int i = 1; i< n; i++){
-            for (int j = 1; j < n; j++){
-                if(i == j) continue;
+            for (int j = i + 1; j < n; j++){
+                if(i == j) 
+                    continue;
+                int source_i = i-1;
+                int source_j = j-1;
+                int target_i = i < (n-1) ? i + 1 : 0;
+                int target_j = j < (n-1) ? j + 1 : 0;
+                int localCostsBefore = *((table + visited->operator[](source_i) * n )+ visited->operator[](i)) + *((table + visited->operator[](source_j) * n) + visited->operator[](j))
+                    + *((table + visited->operator[](i) * n )+ visited->operator[](target_i)) + *((table + visited->operator[](j) * n) + visited->operator[](target_j));
                 int swap_i = visited->operator[](i);
                 int swap_j = visited->operator[](j);
-                tmpVisited[i] = swap_j;
-                tmpVisited[j] = swap_i;
-                int costs = getCosts(&tmpVisited, table, n);
-                if (costs < *currentCosts){
-                    *currentCosts = costs;
+                visited->operator[](i) = swap_j;
+                visited->operator[](j) = swap_i;
+                int localCostsAfter = *((table + visited->operator[](source_i) * n )+ visited->operator[](i)) + *((table + visited->operator[](source_j) * n) + visited->operator[](j))
+                    + *((table + visited->operator[](i) * n )+ visited->operator[](target_i)) + *((table + visited->operator[](j) * n) + visited->operator[](target_j));
+                if (localCostsAfter < localCostsBefore){
+                    *currentCosts -= (localCostsBefore - localCostsAfter);
                     return true;
                 }else{
-                    tmpVisited[i] = swap_i;
-                    tmpVisited[j] = swap_j;
+                    visited->operator[](i) = swap_i;
+                    visited->operator[](j) = swap_j;
                 }
 
             }
@@ -243,16 +237,15 @@ bool swapNodes(vector<int> *visited,int* table, int* currentCosts, int n){
 }
 
 
-pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
+int DynProg::apx(map<int, map<int, Result>>  *distances, vector<Node>* path){
     cout << "Starting calculation of APX" << endl;
-    vector<Node> path;
 
-    int n = distances.size();
+    int n = distances->size();
     int table[n][n];
     map<int, int> indexToNodeId;
     // Generate actual distance table and remember which index belongs to which vertex
     int i = 0;
-    for (auto it = distances.begin(); it != distances.end(); ++it){
+    for (auto it = distances->begin(); it != distances->end(); ++it){
         indexToNodeId.insert(pair<int, int>(i, it->first));
         i++;
     }
@@ -263,7 +256,7 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
             else{
                 int source = indexToNodeId[i];
                 int target = indexToNodeId[j];
-                table[i][j] = distances[source][target].distance;
+                table[i][j] = distances->operator[](source)[target].distance;
             }
         }
     }
@@ -293,7 +286,7 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
         }
         treeCosts += minimum;
         added.push_back(child);
-        alreadyAdded[child]=true;
+        alreadyAdded[child] = true;
         tree[parent].children.push_back(child);
     }
 
@@ -326,13 +319,13 @@ pair<int, vector<Node>> DynProg::apx(map<int, map<int, Result>>  distances){
     // get costs of calculated path
     for (int i = 1; i < visited.size(); i++){
         target = indexToNodeId[visited[i]];
-        for (Node node: distances[source][target].path){
-            path.push_back(node);
+        for (Node node: distances->operator[](source)[target].path){
+            path->push_back(node);
         }
         source = target;
     }
-        for (Node node: distances[target][indexToNodeId[0]].path){
-            path.push_back(node);
+        for (Node node: distances->operator[](target)[indexToNodeId[0]].path){
+            path->push_back(node);
         }
-    return make_pair(currentCosts, path);
+    return currentCosts;
 }

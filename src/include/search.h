@@ -25,6 +25,7 @@ class Search
 {
  public:
   Graph* g;
+  Search();
   std::vector<bool> visited;
   std::vector<int> parents;
   std::vector<int> distances;
@@ -32,9 +33,9 @@ class Search
   std::vector<int> touch_parents;
   Search(Graph* g);
   std::priority_queue<pair<int, int>, std::vector<pair<int, int>>, sort_operator> pq;
-  Result oneToOne(int source, int target);
-  map<int, Result> oneToMany(int source, std::vector<int> targets);
-  vector<Node> getPath(int source,int currNode);
+  void oneToOne(int source, int target, Result* result);
+  void oneToMany(int source, std::vector<int>* targets , map<int, Result>* resultMap);
+  void getPath(int source,int currNode, vector<Node>* path);
   void expand(int source, int costs);
   void reset();
 };

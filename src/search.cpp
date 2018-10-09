@@ -2,6 +2,9 @@
 #include <cstdint>
 #include <limits>
 #include <algorithm>
+#include "graph.h"
+
+
 
 Search::Search(Graph* graph){
   this->g = graph;
@@ -38,20 +41,18 @@ void Search::expand(int source, int costs){
   }
 }
 
-Result Search::oneToOne(int source, int target){
-  Result result;
+void Search::oneToOne(int source, int target, Result* result){
   pair<int,int> current;
   this->expand(source, 0);
   while(!this->pq.empty()){
     current = pq.top();
     if (get<1>(current) == target){
-      result.distance = get<0>(current);
-      std::cout << result.distance << std::endl;
+      result->distance = get<0>(current);
       int currNode = target;
-      result.path.insert(result.path.begin(), this->g->nodes[currNode]);
+      result->path.insert(result->path.begin(), this->g->nodes[currNode]);
       while (currNode != source){
         currNode = this->g->edges[this->parents[currNode]].src;
-        result.path.insert(result.path.begin(), this->g->nodes[currNode]);
+        result->path.insert(result->path.begin(), this->g->nodes[currNode]);
       }
       break;
     }
@@ -59,44 +60,39 @@ Result Search::oneToOne(int source, int target){
     if(!this->visited[get<1>(current)])
       this->expand(get<1>(current), get<0>(current));
   }
-  return result;
+  return;
 }
 
-map<int, Result> Search::oneToMany(int source, vector<int> targets){
-  map<int, Result> output_map;
+void Search::oneToMany(int source, vector<int>* targets, map<int, Result>* resultMap){
   pair<int,int> current;
-
   this->expand(source, 0);
   while(!this->pq.empty()){
     current = pq.top();
-    auto it = find(targets.begin(), targets.end(), current.second); 
-      if (it != targets.end()){
-        cout << "found " << current.second << endl;
+    auto it = find(targets->begin(), targets->end(), current.second); 
+      if (it != targets->end()){
         Result res;
         res.distance = current.first;
         int target = current.second;
-        res.path = getPath(source, target);
-        output_map.insert(pair<int, Result>(current.second, res));
-        targets.erase(it);
-        if(targets.size() == 0){
-          return output_map;
+        getPath(source, target, &(res.path));
+        resultMap->insert(pair<int, Result>(current.second, res));
+        targets->erase(it);
+        if(targets->size() == 0){
+          return;
         }
       }
     pq.pop();
-    if(!this->visited[get<1>(current)])
+    if(!this->visited[get<1>(current)]){
       this->expand(get<1>(current), get<0>(current));
+    }
   }
-  return output_map;
 }
 
-vector<Node> Search::getPath(int source, int currNode){
-  vector<Node> path;
-      path.insert(path.begin(), this->g->nodes[currNode]);
+void Search::getPath(int source, int currNode, vector<Node>* path){
+      path->insert(path->begin(), this->g->nodes[currNode]);
       while (currNode != source){
         currNode = this->g->edges[this->parents[currNode]].src;
-        path.insert(path.begin(), this->g->nodes[currNode]);
+        path->insert(path->begin(), this->g->nodes[currNode]);
       }
-    return path;
 }
 
 

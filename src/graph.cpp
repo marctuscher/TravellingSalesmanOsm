@@ -108,7 +108,7 @@ int Graph::findNode(double lat, double lon){
   return node;
 }
 
-  int Graph::findNodeByCategory(string group, string category, double currentLat, double currentLon, vector<int> alreadyFound){
+  int Graph::findNodeByCategory(string group, string category, double currentLat, double currentLon, vector<int>* alreadyFound){
   int node = -1;
   double epsilon = 0.1;
   double shortest = std::numeric_limits<int>::max();
@@ -117,7 +117,7 @@ int Graph::findNode(double lat, double lon){
   vector<pair<int, int>> pairsToSearch = getCellsToSearch(currentLatInt, currentLonInt);
   for (auto pair: pairsToSearch){
     for (auto i: grid[pair.first][pair.second]) {
-      if (find(alreadyFound.begin(), alreadyFound.end(), i) != alreadyFound.end()) continue;
+      if (find(alreadyFound->begin(), alreadyFound->end(), i) != alreadyFound->end()) continue;
       if (this->nodes[i].tags.find(group) == this->nodes[i].tags.end()) continue;
       if (!(this->nodes[i].tags[group] == category)) continue;
       double current = haversine(currentLat, currentLon, this->nodes[i].lati, this->nodes[i].loni);

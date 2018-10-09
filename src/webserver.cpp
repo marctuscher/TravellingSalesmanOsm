@@ -59,7 +59,7 @@ pair<vector<int>, vector<Node>> getTargets(ptree const& pt, Graph* g){
       double numberOfElem = item.second.get<int>("numberOfElem");
       vector<int> alreadyFound;
       for (int i = 0; i < numberOfElem; i++){
-        int tmpNodeId = g->findNodeByCategory(group, cat, currentLat, currentLon, alreadyFound);
+        int tmpNodeId = g->findNodeByCategory(group, cat, currentLat, currentLon, &alreadyFound);
         if (tmpNodeId != -1) alreadyFound.push_back(tmpNodeId);
       }
       for (auto markerNodeId: alreadyFound){
@@ -85,7 +85,7 @@ vector<Node> getMarkers(ptree const& pt, Graph* g){
       double numberOfElem = item.second.get<int>("numberOfElem");
       vector<int> alreadyFound;
       for (int i = 0; i < numberOfElem; i++){
-        int tmpNodeId = g->findNodeByCategory(group, cat, currentLat, currentLon, alreadyFound);
+        int tmpNodeId = g->findNodeByCategory(group, cat, currentLat, currentLon, &alreadyFound);
         if (tmpNodeId != -1) alreadyFound.push_back(tmpNodeId);
       }
       for (auto markerNodeId: alreadyFound){
@@ -199,7 +199,7 @@ void Webserver::run_server(char* filename, char* config_file){
 
       std::chrono::high_resolution_clock::time_point localization_t1 = std::chrono::high_resolution_clock::now();
       if (sourceMode == "category"){
-        srcIDX = g.findNodeByCategory(pt.get<string>("sourceGroup"), pt.get<string>("sourceCat"), pt.get<double>("sourceOriginLat"), pt.get<double>("sourceOriginLon"), alreadyFound);
+        srcIDX = g.findNodeByCategory(pt.get<string>("sourceGroup"), pt.get<string>("sourceCat"), pt.get<double>("sourceOriginLat"), pt.get<double>("sourceOriginLon"), &alreadyFound);
         internalSourceIDX = g.findNode(g.nodes[srcIDX].lati, g.nodes[srcIDX].loni);
         markers.push_back(g.nodes[srcIDX]);
       }else{
@@ -210,7 +210,7 @@ void Webserver::run_server(char* filename, char* config_file){
         string targetCat = pt.get<string>("targetCat");
         double targetOriginLat = pt.get<double>("targetOriginLat");
         double targetOriginLon = pt.get<double>("targetOriginLon");
-        trgIDX = g.findNodeByCategory(targetGroup, targetCat, targetOriginLat, targetOriginLon, alreadyFound);
+        trgIDX = g.findNodeByCategory(targetGroup, targetCat, targetOriginLat, targetOriginLon, &alreadyFound);
         internalTargetIDX = g.findNode(g.nodes[trgIDX].lati, g.nodes[trgIDX].loni);
         markers.push_back(g.nodes[trgIDX]);
       }else{
@@ -221,7 +221,8 @@ void Webserver::run_server(char* filename, char* config_file){
       auto durationLocalization = std::chrono::duration_cast<std::chrono::microseconds>( localization_t2 - localization_t1 ).count();
       pt.put("duration:localization", durationLocalization);
       std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-      Result searchResult = search.oneToOne(internalSourceIDX, internalTargetIDX);
+      Result searchResult;
+      search.oneToOne(internalSourceIDX, internalTargetIDX, &searchResult);
       if (searchResult.distance == -1){
         pt.put("error", "A path could not be found");
       }
@@ -233,7 +234,6 @@ void Webserver::run_server(char* filename, char* config_file){
       pt.put("costs", searchResult.distance);
       write_json(oss, pt);
       std::string jsonString = oss.str();
-      std::cout << jsonString << std::endl;
       *response << "HTTP/1.1 200 OK\r\nContent-Length: " << jsonString.length() << "\r\n\r\n" << jsonString;
     }
     catch(const exception &e) {
@@ -255,21 +255,23 @@ void Webserver::run_server(char* filename, char* config_file){
       std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
       auto durationLocalization = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
       pt.put("duration:localization", durationLocalization);
-
-      map<int, map<int, Result>> distances = dyn.calcDistances(targetsAndMarkers.first);
+      
+      map<int, map<int, Result>> distances;
+      dyn.calcDistances(&(targetsAndMarkers.first), &distances);
       std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
       auto durationDijkstra = std::chrono::duration_cast<std::chrono::microseconds>( t3 -t2 ).count();
       pt.put("duration:dijkstra", durationDijkstra);
 
-      pair<int, vector<Node>> costsAndPath = dyn.heldKarp(distances);
+      vector<Node> path;
+      int costs = dyn.heldKarp(&distances, &path);
       std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
       auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
       pt.put("duration:compute", durationEdge);
 
 
-      pt.put("costs", costsAndPath.first);
+      pt.put("costs", costs);
       pt.add_child("markers", markers_to_ptree(targetsAndMarkers.second));
-      pt.add_child("path", path_to_ptree(costsAndPath.second));
+      pt.add_child("path", path_to_ptree(path));
       write_json(oss, pt);
       std::string jsonString = oss.str();
       *response << "HTTP/1.1 200 OK\r\nContent-Length: " << jsonString.length() << "\r\n\r\n" << jsonString;
@@ -292,20 +294,21 @@ void Webserver::run_server(char* filename, char* config_file){
       std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
       auto durationLocalization = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count();
       pt.put("duration:localization", durationLocalization);
-
-      map<int, map<int, Result>> distances = dyn.calcDistances(targetsAndMarkers.first);
+      map<int, map<int, Result>> distances;
+      dyn.calcDistances(&(targetsAndMarkers.first), &distances);
       std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
       auto durationDijkstra = std::chrono::duration_cast<std::chrono::microseconds>( t3 - t2 ).count();
       pt.put("duration:dijkstra", durationDijkstra);
 
-      pair<int, vector<Node>> costsAndPath = dyn.apx(distances);
+      vector<Node> path;
+      int costs = dyn.apx(&distances, &path);
       std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
       auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
       pt.put("duration:compute", durationEdge);
 
-      pt.put("costs", costsAndPath.first);
+      pt.put("costs", costs);
       pt.add_child("markers", markers_to_ptree(targetsAndMarkers.second));
-      pt.add_child("path", path_to_ptree(costsAndPath.second));
+      pt.add_child("path", path_to_ptree(path));
       write_json(oss, pt);
       std::string jsonString = oss.str();
       *response << "HTTP/1.1 200 OK\r\nContent-Length: " << jsonString.length() << "\r\n\r\n" << jsonString;
