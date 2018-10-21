@@ -298,7 +298,8 @@ int DynProg::apx(map<int, map<int, Result>>  *distances, vector<Node>* path){
         int current = queue.front();
         visited.push_back(current);
         for (auto child: tree[current].children){
-            queue.push_back(child);
+            if(find(visited.begin(), visited.end(), child) == visited.end())
+                queue.push_back(child);
         }
         queue.pop_front();
     }
