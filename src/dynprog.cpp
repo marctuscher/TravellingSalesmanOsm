@@ -237,7 +237,7 @@ bool swapNodes(vector<int> *visited, int* table, int* currentCosts, int n){
 }
 
 
-int DynProg::apx(map<int, map<int, Result>>  *distances, vector<Node>* path){
+pair<int, int> DynProg::apx(map<int, map<int, Result>>  *distances, vector<Node>* path){
     cout << "Starting calculation of APX" << endl;
 
     int n = distances->size();
@@ -307,6 +307,7 @@ int DynProg::apx(map<int, map<int, Result>>  *distances, vector<Node>* path){
     // get costs of calculated path
     // check for all node pairs of swapping them 
     int currentCosts = getCosts(&visited, &table[0][0], n);
+    int costsBefore = currentCosts;
     cout << "costs before swap: " << currentCosts << endl;
     bool changed = false;
     do {
@@ -327,5 +328,5 @@ int DynProg::apx(map<int, map<int, Result>>  *distances, vector<Node>* path){
         for (Node node: distances->operator[](target)[indexToNodeId[0]].path){
             path->push_back(node);
         }
-    return currentCosts;
+    return make_pair(currentCosts, costsBefore);
 }
