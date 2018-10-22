@@ -148,6 +148,12 @@ int DynProg::heldKarp(map<int, map<int, Result>>*  distances, vector<Node>* path
                     cost = value;
             }
         }
+
+        if (i == 1){
+            cost = opt;
+            cost += table[minimumNode][0];
+        }
+
         intermediatePath.push_back(minimumNode);
         currentNode = minimumNode;
         mask = (mask & ~( 1 << minimumNode));
@@ -179,16 +185,19 @@ int DynProg::heldKarp(map<int, map<int, Result>>*  distances, vector<Node>* path
 
 
 int getCosts (vector<int>* visited, int *table, int n){
-    int source = 0;
     int currentCosts = 0;
     int target = -1;
+    int source = -1;
     // get costs of calculated path
-    for (int i = 1; i < n; i++){
-        target = visited->operator[](i);
+    for (int i = 0; i < n; i++){
+        source = visited->operator[](i);
+        if (i == n-1){
+            target = 0;
+        }else {
+           target = visited->operator[](i + 1);
+        }
         currentCosts += *((table + source * n) + target);
-        source = target;
     }
-    currentCosts += *((table + source * n));
     return currentCosts;
 }
 
@@ -236,8 +245,17 @@ bool swapNodes(vector<int> *visited, int* table, int* currentCosts, int n){
         return false;
 }
 
+void visit(vector<int>* visited, int current, vector<TreeNode>* tree, int n){
+    visited->push_back(current);
+    if (visited->size() == n)
+        return;
+    for (int child: tree->operator[](current).children){
+        visit(visited, child, tree, n);
+    }
+}
 
-int DynProg::apx(map<int, map<int, Result>>  *distances, vector<Node>* path){
+
+pair<int, int> DynProg::apx(map<int, map<int, Result>>  *distances, vector<Node>* path){
     cout << "Starting calculation of APX" << endl;
 
     int n = distances->size();
@@ -293,21 +311,16 @@ int DynProg::apx(map<int, map<int, Result>>  *distances, vector<Node>* path){
     vector<int> visited;
     deque<int> queue;
 
-    queue.push_back(0);
-    while (!queue.empty()){
-        int current = queue.front();
-        visited.push_back(current);
-        for (auto child: tree[current].children){
-            if(find(visited.begin(), visited.end(), child) == visited.end())
-                queue.push_back(child);
-        }
-        queue.pop_front();
-    }
+    visit(&visited, 0, &tree, n);
 
+
+
+    cout << "tree costs: " << treeCosts << endl;
 
     // get costs of calculated path
     // check for all node pairs of swapping them 
     int currentCosts = getCosts(&visited, &table[0][0], n);
+    int costsBefore = currentCosts;
     cout << "costs before swap: " << currentCosts << endl;
     bool changed = false;
     do {
@@ -328,5 +341,5 @@ int DynProg::apx(map<int, map<int, Result>>  *distances, vector<Node>* path){
         for (Node node: distances->operator[](target)[indexToNodeId[0]].path){
             path->push_back(node);
         }
-    return currentCosts;
+    return make_pair(currentCosts, costsBefore);
 }

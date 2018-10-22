@@ -16,7 +16,7 @@ class DynProg
  DynProg(Graph* g);
  void calcDistances(vector<int>* nodes, map<int, map<int, Result>>* distances);
  int heldKarp(map<int, map<int, Result>>* distances, vector<Node>* path); 
- int apx(map<int, map<int, Result>>* distances, vector<Node>* path);
+ pair<int, int> apx(map<int, map<int, Result>>* distances, vector<Node>* path);
  void printDistances(map<int, map<int, Result>> distances); 
  
 };

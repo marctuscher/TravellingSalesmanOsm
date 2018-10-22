@@ -301,12 +301,13 @@ void Webserver::run_server(char* filename, char* config_file){
       pt.put("duration:dijkstra", durationDijkstra);
 
       vector<Node> path;
-      int costs = dyn.apx(&distances, &path);
+      pair<int, int> costsAndCostsBefore = dyn.apx(&distances, &path);
       std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
       auto durationEdge = std::chrono::duration_cast<std::chrono::microseconds>( t4 - t3 ).count();
       pt.put("duration:compute", durationEdge);
 
-      pt.put("costs", costs);
+      pt.put("costs", costsAndCostsBefore.first);
+      pt.put("costsBefore", costsAndCostsBefore.second);
       pt.add_child("markers", markers_to_ptree(targetsAndMarkers.second));
       pt.add_child("path", path_to_ptree(path));
       write_json(oss, pt);

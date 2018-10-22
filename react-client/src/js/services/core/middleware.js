@@ -147,7 +147,8 @@ const coreMiddleware = (function () {
 							'Finding Nodes: ' + getSecondsString(res.data["duration:localization"]) + '</br>' +
 							'Dijkstra: ' + getSecondsString(res.data["duration:dijkstra"]) + '</br>' +
 							'TSP: ' + getSecondsString(res.data["duration:compute"]) + '</br>' +
-                            'Costs: ' + res.data.costs
+                            'Costs before swap: ' + res.data.costsBefore +'</br>' +
+                            'Costs after swap: ' + res.data.costs
 					}));
 					action = processResult(res, action, store);
 					next(action)
